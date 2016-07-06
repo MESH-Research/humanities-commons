@@ -1,2 +1,2 @@
-# humanities-commons
-Customize BuddyPress for the HCommons multi-network setup
+# Humanities Commons
+Custom BuddyPress functions, filters and actions for the Humanities Commons multi-network setup.
