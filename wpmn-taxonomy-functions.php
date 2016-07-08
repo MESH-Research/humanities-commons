@@ -177,7 +177,6 @@ function wpmn_get_terms( $args = array(), $deprecated = array() ) {
 		$wp_args = $args;
 		unset( $wp_args['taxonomy'] );
 	}
-error_log('******************GET_TERMS**************'.var_export( $taxonomies, true ) );
 
 	// Different taxonomies must be stored on different sites.
 	$taxonomy_site_map = array();
@@ -189,7 +188,6 @@ error_log('******************GET_TERMS**************'.var_export( $taxonomies, t
 	$retval = array();
 	foreach ( $taxonomy_site_map as $taxonomy_site_id => $site_taxonomies ) {
 		$switched = false;
-error_log('******************GET_TERMS**************'.$taxonomy_site_id.'-'.get_current_blog_id());
 		if ( $taxonomy_site_id !== get_current_blog_id() ) {
 			switch_to_blog( $taxonomy_site_id );
 			wpmn_register_taxonomies();
@@ -375,5 +373,19 @@ function wpmn_clean_object_term_cache( $terms, $taxonomy ) {
 
 	return $retval;
 
+}
+
+/**
+ * Return the site url of the root blog of the primary network.
+ *
+ * @since x.x.x
+ *
+ *
+ * @return string Primary network root blog site url
+ */
+function wpmn_get_primary_network_root_domain() {
+	$main_network = wp_get_network( get_main_network_id() );
+	$scheme = ( is_ssl() ) ? 'https://' : 'http://';
+	return apply_filters( 'wpmn_get_primary_network_root_domain', rtrim( $scheme . $main_network->domain . $main_network->path, '/' ) );
 }
 

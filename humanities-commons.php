@@ -20,6 +20,29 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use MLA\Commons\Plugin\Logging\Logger;
+
+global $hcommons_logger;
+$hcommons_logger = new Logger( 'hcommons_error' );
+$hcommons_logger->createLog( 'hcommons_error' );
+
+/**
+ * Write a formatted HCommons error or informational message.
+ */
+function hcommons_write_error_log( $error_type, $error_message, $info = null ) {
+
+        global $hcommons_logger;
+        if ( 'info' === $error_type ) {
+                if ( empty( $info ) ) {
+                        $hcommons_logger->addInfo( $error_message );
+                } else {
+                        $hcommons_logger->addInfo( $error_message . ' : ', $info );
+                }
+        } else {
+                        $hcommons_logger->addError( $error_message );
+        }
+}
+
 require ( dirname( __FILE__ ) . '/wpmn-taxonomy-functions.php' );
 
 class Humanities_Commons {
@@ -202,7 +225,7 @@ class Humanities_Commons {
         	$memberships = array();
 		$member_types = bp_get_member_types();
         	$membership_header = $_SERVER['HTTP_ISMEMBEROF'] . ';';
-        	error_log( '**********************GET_MEMBERSHIPS********************-'.$user_id.'-'.var_export( $membership_header, true ) );
+        	hcommons_write_error_log( 'info', '**********************GET_MEMBERSHIPS********************-'.$user_id.'-'.var_export( $membership_header, true ) );
 
         	foreach ( $member_types as $key=>$value ) {
 
@@ -213,7 +236,7 @@ class Humanities_Commons {
 
                 	$pattern = sprintf( '/Humanities Commons:%1$s_(.*?);/', strtoupper( $key ) );
                 	if ( preg_match_all( $pattern, $membership_header, $matches ) ) {
-				error_log( '**********************GET_MATCHES********************-'.$key.'-'.var_export( $matches, true ) );
+				hcommons_write_error_log( 'info', '**********************GET_MATCHES********************-'.$key.'-'.var_export( $matches, true ) );
                         	$memberships['groups'][$key] = $matches[1];
                 	}
 
@@ -227,13 +250,17 @@ class Humanities_Commons {
 		$user_id = $user->ID;
 		$memberships = $this->hcomm_get_user_memberships( $user_id );
 		$member_types = bp_get_member_types();
-        	error_log( '**********************RETURNED_MEMBERSHIPS********************-'.var_export( $memberships, true ) );
-
+        	hcommons_write_error_log( 'info', '**********************RETURNED_MEMBERSHIPS********************-'.var_export( $memberships, true ) );
+        	hcommons_write_error_log( 'info', '*********************BP_ROOT_DOMAIN*********************-', array( 'txt' => bp_get_root_domain() ) );
+		$main_network = wp_get_network( get_main_network_id() );
+		$scheme = ( is_ssl() ) ? 'https://' : 'http://';
+        	hcommons_write_error_log( 'info', '*********************PRIMARY_ROOT_DOMAIN*********************-', array( 'txt' => rtrim( $scheme . $main_network->domain . $main_network->path ), '/' ) );
+		
 		$result = bp_set_member_type( $user_id, '' ); // Clear existing types, if any.
 		$append = true;
 		foreach( $memberships['societies'] as $member_type ) {
 			$result = bp_set_member_type( $user_id, $member_type, $append );
-			error_log( '**********************SET_EACH_MEMBER_TYPE********************-'.$user_id.'-'.$member_type.'-'.var_export( $result, true ) );
+			hcommons_write_error_log( 'info', '**********************SET_EACH_MEMBER_TYPE********************-'.$user_id.'-'.$member_type.'-'.var_export( $result, true ) );
 		}
 	}
 
@@ -366,18 +393,18 @@ function wp_verify_nonce( $nonce, $action = -1 ) {
 }
 
 function hcomm_debug_shibboleth_user_role( $user_role ) {
-	error_log( '**********************USER_ROLE********************-'.$user_role.'-'.var_export( $_SERVER, true ) );
+	hcommons_write_error_log( 'info', '**********************USER_ROLE********************-'.$user_role.'-'.var_export( $_SERVER, true ) );
 	return $user_role;
 }
 add_filter( 'shibboleth_user_role', 'hcomm_debug_shibboleth_user_role', 10, 3 );
 
 function hcomm_debug_ajax_referer( $action, $result ) {
-	error_log( '**********************AJAX_REFERER********************-'.$action.'-'.var_export( $result, true ).'-'.var_export( $_REQUEST, true ) );
+	hcommons_write_error_log( 'info', '**********************AJAX_REFERER********************-'.$action.'-'.var_export( $result, true ).'-'.var_export( $_REQUEST, true ) );
 }
 add_action( 'check_ajax_referer', 'hcomm_debug_ajax_referer', 10, 2 );
 
 function hcomm_debug_nonce_failed( $nonce, $action, $user, $token ) {
-	error_log( '**********************NONCE_FAILED********************-'.var_export( $nonce, true ).'-'.var_export( $action, true).'-'.var_export( $user->ID, true ).'-'.var_export( $token, true ) );
+	hcommons_write_error_log( 'info', '**********************NONCE_FAILED********************-'.var_export( $nonce, true ).'-'.var_export( $action, true).'-'.var_export( $user->ID, true ).'-'.var_export( $token, true ) );
 }
 add_action( 'wp_verify_nonce_failed', 'hcomm_debug_nonce_failed', 10, 4 );
 
