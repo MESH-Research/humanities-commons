@@ -49,26 +49,29 @@ class Humanities_Commons {
 
         public function __construct() {
 
-		add_filter( 'bp_get_taxonomy_term_site_id', array( $this, 'hcomm_filter_bp_taxonomy_storage_site' ), 10, 2 );
-		add_filter( 'wpmn_get_taxonomy_term_site_id', array( $this, 'hcomm_filter_hc_taxonomy_storage_site' ), 10, 2 );
-		add_action( 'bp_register_member_types', array( $this, 'hcomm_register_member_types' ) );
-		add_action( 'bp_groups_register_group_types', array( $this, 'hcomm_register_group_types' ) );
-		add_action( 'bp_after_has_members_parse_args', array( $this, 'hcomm_set_members_query' ) );
-		add_filter( 'bp_after_has_groups_parse_args', array( $this, 'hcomm_set_groups_query_args' ) );
-		add_action( 'groups_create_group_step_save_group-details', array( $this, 'hcomm_set_group_type' ) );
-		add_action( 'shibboleth_set_user_roles', array( $this, 'hcomm_set_user_member_types' ) );
-		add_filter( 'bp_before_has_blogs_parse_args', array( $this, 'hcomm_set_network_blogs_query' ) );
-		add_filter( 'bp_before_has_activities_parse_args', array( $this, 'hcomm_set_network_activities_query' ) );
-		add_filter( 'bp_activity_after_save', array( $this, 'hcomm_set_activity_society_meta' ) );
-		add_filter( 'body_class', array( $this, 'hcomm_society_body_class_name' ) );
-                add_filter( 'bp_current_user_can', array( $this, 'hcomm_check_user_member_type' ), 10, 4 );
-                add_filter( 'shibboleth_user_role', array( $this, 'hcomm_check_user_site_membership' ) );
-                add_filter( 'bp_get_groups_directory_permalink', array( $this, 'hcomm_set_group_permalink' ) );
-                add_filter( 'get_blogs_of_user', array( $this, 'hcomm_filter_get_blogs_of_user'), 10, 3 );
+		add_filter( 'bp_get_taxonomy_term_site_id', array( $this, 'hcommons_filter_bp_taxonomy_storage_site' ), 10, 2 );
+		add_filter( 'wpmn_get_taxonomy_term_site_id', array( $this, 'hcommons_filter_hc_taxonomy_storage_site' ), 10, 2 );
+		add_action( 'bp_register_member_types', array( $this, 'hcommons_register_member_types' ) );
+		add_action( 'bp_groups_register_group_types', array( $this, 'hcommons_register_group_types' ) );
+		add_action( 'bp_after_has_members_parse_args', array( $this, 'hcommons_set_members_query' ) );
+		add_filter( 'bp_after_has_groups_parse_args', array( $this, 'hcommons_set_groups_query_args' ) );
+		add_action( 'groups_create_group_step_save_group-details', array( $this, 'hcommons_set_group_type' ) );
+		add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_set_user_member_types' ) );
+		add_filter( 'bp_before_has_blogs_parse_args', array( $this, 'hcommons_set_network_blogs_query' ) );
+		add_filter( 'bp_before_has_activities_parse_args', array( $this, 'hcommons_set_network_activities_query' ) );
+		add_filter( 'bp_activity_after_save', array( $this, 'hcommons_set_activity_society_meta' ) );
+		add_filter( 'body_class', array( $this, 'hcommons_society_body_class_name' ) );
+                add_filter( 'bp_current_user_can', array( $this, 'hcommons_check_user_member_type' ), 10, 4 );
+                add_filter( 'shibboleth_user_role', array( $this, 'hcommons_check_user_site_membership' ) );
+                add_filter( 'bp_get_groups_directory_permalink', array( $this, 'hcommons_set_group_permalink' ) );
+                add_filter( 'get_blogs_of_user', array( $this, 'hcommons_filter_get_blogs_of_user'), 10, 3 );
+		add_filter( 'bp_core_avatar_upload_path', array( $this, 'hcommons_set_bp_core_avatar_upload_path' ) );
+		add_filter( 'bp_core_avatar_url', array( $this, 'hcommons_set_bp_core_avatar_url' ) );
+		add_filter( 'bp_get_group_join_button', array( $this, 'hcommons_check_bp_get_group_join_button' ), 10, 3 );
 
 	}
 
-	public function hcomm_filter_bp_taxonomy_storage_site( $site_id, $taxonomy ) {
+	public function hcommons_filter_bp_taxonomy_storage_site( $site_id, $taxonomy ) {
 
 		if ( in_array( $taxonomy, array( 'bp_group_type', 'bp_member_type' ) ) ) {
 			$main_network = wp_get_network( get_main_network_id() );
@@ -79,7 +82,7 @@ class Humanities_Commons {
 		}
 	}
 
-	public function hcomm_filter_hc_taxonomy_storage_site( $site_id, $taxonomy ) {
+	public function hcommons_filter_hc_taxonomy_storage_site( $site_id, $taxonomy ) {
 
 		if ( in_array( $taxonomy, array( 'mla_academic_interests', 'humcore_deposit_subject', 'humcore_deposit_tag' ) ) ) {
 			$main_network = wp_get_network( get_main_network_id() );
@@ -90,7 +93,7 @@ class Humanities_Commons {
 		}
 	}
 
-	public function hcomm_register_member_types() {
+	public function hcommons_register_member_types() {
 
 		bp_register_member_type(
 			'ajs',
@@ -143,7 +146,7 @@ class Humanities_Commons {
 			) );
 		}
 
-	public function hcomm_register_group_types() {
+	public function hcommons_register_group_types() {
 
 		bp_groups_register_group_type(
 			'ajs',
@@ -196,14 +199,14 @@ class Humanities_Commons {
 			) );
 	}
 
-	public function hcomm_set_members_query( $args ) {
+	public function hcommons_set_members_query( $args ) {
 
 		$society_id = get_network_option( '', 'society_id' );
 		$args['member_type'] = $society_id;
 		return $args;
 	}
 
-	public function hcomm_set_groups_query_args( $args ) {
+	public function hcommons_set_groups_query_args( $args ) {
 
 		$member_types = bp_get_member_types();
         	hcommons_write_error_log( 'info', '****GROUP_QUERY_MEMBER_TYPES****-'.var_export($member_types,true) );
@@ -220,7 +223,7 @@ class Humanities_Commons {
 		return $args;
 	}
 
-	public function hcomm_set_group_type( $group_id ) {
+	public function hcommons_set_group_type( $group_id ) {
 
 		global $bp;
 		if ( $bp->groups->new_group_id ) {
@@ -233,7 +236,7 @@ class Humanities_Commons {
 		bp_groups_set_group_type( $id, $society_id );
 	}
 
-	public function hcomm_get_user_memberships() {
+	public function hcommons_get_user_memberships() {
 
         	$memberships = array();
 		$member_types = bp_get_member_types();
@@ -258,10 +261,10 @@ class Humanities_Commons {
 		return $memberships;
 	}
 
-	public function hcomm_set_user_member_types( $user ) {
+	public function hcommons_set_user_member_types( $user ) {
 
 		$user_id = $user->ID;
-		$memberships = $this->hcomm_get_user_memberships();
+		$memberships = $this->hcommons_get_user_memberships();
         	hcommons_write_error_log( 'info', '****RETURNED_MEMBERSHIPS****-'.var_export($memberships,true) );
 		$main_network = wp_get_network( get_main_network_id() );
 		
@@ -275,7 +278,7 @@ class Humanities_Commons {
 		}
 	}
 
-	public function hcomm_set_network_blogs_query( $args ) {
+	public function hcommons_set_network_blogs_query( $args ) {
 
                 $current_society_id = get_network_option( '', 'society_id' );
                 if ( 'hc' !== $current_society_id ) {
@@ -295,7 +298,7 @@ class Humanities_Commons {
 		return $args;
 	}
 
-	public function hcomm_set_network_activities_query( $args ) {
+	public function hcommons_set_network_activities_query( $args ) {
 
 		$society_id = get_network_option( '', 'society_id' );
 		$args['meta_query'] = array(
@@ -310,20 +313,20 @@ class Humanities_Commons {
 		return $args;
 	}
 
-	public function hcomm_set_activity_society_meta( $activity ) {
+	public function hcommons_set_activity_society_meta( $activity ) {
 
 		$society_id = get_network_option( '', 'society_id' );
 		bp_activity_add_meta( $activity->id, 'society_id', $society_id, true );
 	}
 
-	public function hcomm_society_body_class_name( $classes ) {
+	public function hcommons_society_body_class_name( $classes ) {
 
 		$society_id = get_network_option( '', 'society_id' );
         	$classes[] = 'society-' . $society_id;
         	return $classes;
 	}
 
-        public function hcomm_check_user_member_type( $retval, $capability, $blog_id, $args ) {
+        public function hcommons_check_user_member_type( $retval, $capability, $blog_id, $args ) {
 
 		//hcommons_write_error_log( 'info', '****CHECK_USER_MEMBER_TYPE***-'.var_export( $retval, true ).'-'.var_export( $capability, true ).'-'.$blog_id.'-'.var_export( $args, true ) );
 		$user_id = get_current_user_id();
@@ -342,18 +345,22 @@ class Humanities_Commons {
 		}
         }
 
-        public function hcomm_check_user_site_membership( $user_role ) {
+        public function hcommons_check_user_site_membership( $user_role ) {
+
+                $user_login = $_SERVER['HTTP_EMPLOYEENUMBER'];
+		$user = get_user_by( 'login', $user_login );
+		$user_id = $user->ID;
 
                 $society_id = get_network_option( '', 'society_id' );
-		$memberships = $this->hcomm_get_user_memberships();
-		if ( in_array( $society_id, $memberships['societies'] ) ) {
+		$memberships = $this->hcommons_get_user_memberships();
+		if ( in_array( $society_id, $memberships['societies'] ) || is_super_admin( $user_id ) ) {
                 	return $user_role;
 		} else {
 			return '';
 		}
         }
 
-        public function hcomm_set_group_permalink( $group_permalink ) {
+        public function hcommons_set_group_permalink( $group_permalink ) {
 
                 $current_society_id = get_network_option( '', 'society_id' );
                 if ( 'hc' !== $current_society_id ) {
@@ -371,7 +378,7 @@ class Humanities_Commons {
 		return $group_permalink;
         }
 
-	public function hcomm_filter_get_blogs_of_user( $blogs, $user_id, $all ) {
+	public function hcommons_filter_get_blogs_of_user( $blogs, $user_id, $all ) {
 
 		$network_blogs = $blogs;
                 $current_network = get_current_site();
@@ -383,6 +390,56 @@ class Humanities_Commons {
 		}
 		return $network_blogs;
 	}
+
+	public function hcommons_set_bp_core_avatar_upload_path( $path  ) {
+
+		if ( ! empty( $path ) ) {
+			$site_loc = strpos( $path, '/site' );
+			if ( false === $site_loc ) {
+				return $path;
+			} else {
+				$global_path = substr( $path, 0, $site_loc );
+				//hcommons_write_error_log( 'info', '****BP_CORE_AVATAR_UPLOAD_PATH****-'.var_export( $global_path, true ) );
+				return $global_path;
+			}
+		} else {
+			return $path;
+		}
+
+	}
+
+	public function hcommons_set_bp_core_avatar_url( $url  ) {
+
+		if ( ! empty( $url ) ) {
+			$site_loc = strpos( $url, '/site' );
+			if ( false === $site_loc ) {
+				return $url;
+			} else {
+				$global_url = substr( $url, 0, $site_loc );
+				//hcommons_write_error_log( 'info', '****BP_CORE_AVATAR_URL****-'.var_export( $global_url, true ) );
+				return $global_url;
+			}
+		} else {
+			return $url;
+		}
+
+	}
+
+        public function hcommons_check_bp_get_group_join_button( $button, $group ) {
+
+                $current_society_id = get_network_option( '', 'society_id' );
+                if ( 'hc' !== $current_society_id ) {
+                        return $button;
+                }
+                $society_id = bp_groups_get_group_type( $group->id );
+		hcommons_write_error_log( 'info', '****BP_GET_GROUP_JOIN_BUTTON****-'.var_export( $society_id, true ).'-'.var_export( $group, true ) );
+		if ( 'hc' !== $society_id ) {
+			return null;
+		} else {
+			return $button;
+		}
+
+        }
 
 }
 
@@ -453,19 +510,24 @@ function wp_verify_nonce( $nonce, $action = -1 ) {
 	//return 1;
 }
 
-function hcomm_debug_shibboleth_user_role( $user_role ) {
-	hcommons_write_error_log( 'info', '**********************USER_ROLE********************-'.$user_role.'-'.var_export( $_SERVER, true ) );
+function hcommons_debug_shibboleth_user_role( $user_role ) {
+	//hcommons_write_error_log( 'info', '****USER_ROLE****-'.$user_role.'-'.var_export( $_SERVER, true ) );
 	return $user_role;
 }
-add_filter( 'shibboleth_user_role', 'hcomm_debug_shibboleth_user_role', 10, 3 );
+add_filter( 'shibboleth_user_role', 'hcommons_debug_shibboleth_user_role', 10, 3 );
 
-function hcomm_debug_ajax_referer( $action, $result ) {
-	hcommons_write_error_log( 'info', '**********************AJAX_REFERER********************-'.$action.'-'.var_export( $result, true ).'-'.var_export( $_REQUEST, true ) );
+function hcommons_debug_ajax_referer( $action, $result ) {
+	hcommons_write_error_log( 'info', '****AJAX_REFERER****-'.$action.'-'.var_export( $result, true ).'-'.var_export( $_REQUEST, true ) );
 }
-add_action( 'check_ajax_referer', 'hcomm_debug_ajax_referer', 10, 2 );
+add_action( 'check_ajax_referer', 'hcommons_debug_ajax_referer', 10, 2 );
 
-function hcomm_debug_nonce_failed( $nonce, $action, $user, $token ) {
-	hcommons_write_error_log( 'info', '**********************NONCE_FAILED********************-'.var_export( $nonce, true ).'-'.var_export( $action, true).'-'.var_export( $user->ID, true ).'-'.var_export( $token, true ) );
+function hcommons_debug_nonce_failed( $nonce, $action, $user, $token ) {
+	hcommons_write_error_log( 'info', '****NONCE_FAILED****-'.var_export( $nonce, true ).'-'.var_export( $action, true).'-'.var_export( $user->ID, true ).'-'.var_export( $token, true ) );
 }
-add_action( 'wp_verify_nonce_failed', 'hcomm_debug_nonce_failed', 10, 4 );
+add_action( 'wp_verify_nonce_failed', 'hcommons_debug_nonce_failed', 10, 4 );
+
+function hcommons_debug_auth_cookie_malformed( $cookie, $scheme  ) {
+	hcommons_write_error_log( 'info', '****AUTH_COOKIE_MALFORMED****-'.var_export( $cookie, true ).'-'.var_export( $scheme, true) );
+}
+add_action( 'auth_cookie_malformed', 'hcommons_debug_auth_cookie_malformed' );
 
