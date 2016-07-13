@@ -278,6 +278,18 @@ class Humanities_Commons {
 		}
 	}
 
+        public function hcommons_get_blog_society_id( $blog_id = '' ) {
+
+                $fields = array();
+                if ( ! empty( $blog_id ) ) {
+                        $fields['blog_id'] = $blog_id;
+                }
+                $blog_details = get_blog_details( $fields );
+                $current_society_id = get_network_option( $blog_details->site_id, 'society_id' );
+
+                return $current_society_id;
+        }
+
 	public function hcommons_set_network_blogs_query( $args ) {
 
                 $current_society_id = get_network_option( '', 'society_id' );
