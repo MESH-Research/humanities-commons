@@ -67,7 +67,7 @@ class Humanities_Commons {
                 add_filter( 'get_blogs_of_user', array( $this, 'hcommons_filter_get_blogs_of_user'), 10, 3 );
 		add_filter( 'bp_core_avatar_upload_path', array( $this, 'hcommons_set_bp_core_avatar_upload_path' ) );
 		add_filter( 'bp_core_avatar_url', array( $this, 'hcommons_set_bp_core_avatar_url' ) );
-		add_filter( 'bp_get_group_join_button', array( $this, 'hcommons_check_bp_get_group_join_button' ), 10, 3 );
+		add_filter( 'bp_get_group_join_button', array( $this, 'hcommons_check_bp_get_group_join_button' ), 10, 2 );
 
 	}
 
@@ -280,11 +280,11 @@ class Humanities_Commons {
 
         public function hcommons_get_blog_society_id( $blog_id = '' ) {
 
-                $fields = array();
-                if ( ! empty( $blog_id ) ) {
-                        $fields['blog_id'] = $blog_id;
-                }
-                $blog_details = get_blog_details( $fields );
+		$fields = array();
+		if ( ! empty( $blog_id ) ) {
+			$fields['blog_id'] = $blog_id;
+		}
+		$blog_details = get_blog_details( $fields );
                 $current_society_id = get_network_option( $blog_details->site_id, 'society_id' );
 
                 return $current_society_id;
@@ -437,6 +437,15 @@ class Humanities_Commons {
 
 	}
 
+        /**
+         * Filter the group join button by network.
+         *
+         * @since HCommons
+         *
+         * @param array       $button Button settings.
+         * @param object      $group
+         * @return array|null Button attributes.
+         */
         public function hcommons_check_bp_get_group_join_button( $button, $group ) {
 
                 $current_society_id = get_network_option( '', 'society_id' );
@@ -444,7 +453,7 @@ class Humanities_Commons {
                         return $button;
                 }
                 $society_id = bp_groups_get_group_type( $group->id );
-		hcommons_write_error_log( 'info', '****BP_GET_GROUP_JOIN_BUTTON****-'.var_export( $society_id, true ).'-'.var_export( $group, true ) );
+		//hcommons_write_error_log( 'info', '****BP_GET_GROUP_JOIN_BUTTON****-'.var_export( $society_id, true ).'-'.var_export( $group, true ) );
 		if ( 'hc' !== $society_id ) {
 			return null;
 		} else {
@@ -457,89 +466,84 @@ class Humanities_Commons {
 
 $humanities_commons = new Humanities_Commons;
 
-/**
- * Verify that correct nonce was used with time limit.
- *
- * The user is given an amount of time to use the token, so therefore, since the
- * UID and $action remain the same, the independent variable is the time.
- *
- * @since 2.0.3
- *
- * @param string     $nonce  Nonce that was used in the form to verify
- * @param string|int $action Should give context to what is taking place and be the same when nonce was created.
- * @return false|int False if the nonce is invalid, 1 if the nonce is valid and generated between
- *                   0-12 hours ago, 2 if the nonce is valid and generated between 12-24 hours ago.
- */
-function wp_verify_nonce( $nonce, $action = -1 ) {
-	$nonce = (string) $nonce;
-	$user = wp_get_current_user();
-	$uid = (int) $user->ID;
-	if ( ! $uid ) {
-		/**
-		 * Filter whether the user who generated the nonce is logged out.
-		 *
-		 * @since 3.5.0
-		 *
-		 * @param int    $uid    ID of the nonce-owning user.
-		 * @param string $action The nonce action.
-		 */
-		$uid = apply_filters( 'nonce_user_logged_out', $uid, $action );
-	}
-
-	if ( empty( $nonce ) ) {
-		return false;
-	}
-
-	$token = wp_get_session_token();
-	$i = wp_nonce_tick();
-
-	// Nonce generated 0-12 hours ago
-	$expected = substr( wp_hash( $i . '|' . $action . '|' . $uid . '|' . $token, 'nonce'), -12, 10 );
-	if ( hash_equals( $expected, $nonce ) ) {
-		return 1;
-	}
-
-	// Nonce generated 12-24 hours ago
-	$expected = substr( wp_hash( ( $i - 1 ) . '|' . $action . '|' . $uid . '|' . $token, 'nonce' ), -12, 10 );
-	if ( hash_equals( $expected, $nonce ) ) {
-		return 2;
-	}
-
-	/**
-	 * Fires when nonce verification fails.
-	 *
-	 * @since 4.4.0
-	 *
-	 * @param string     $nonce  The invalid nonce.
-	 * @param string|int $action The nonce action.
-	 * @param WP_User    $user   The current user object.
-	 * @param string     $token  The user's session token.
-	 */
-	do_action( 'wp_verify_nonce_failed', $nonce, $action, $user, $token );
-
-	// Invalid nonce
-	return false;
-	//return 1;
-}
-
 function hcommons_debug_shibboleth_user_role( $user_role ) {
-	//hcommons_write_error_log( 'info', '****USER_ROLE****-'.$user_role.'-'.var_export( $_SERVER, true ) );
+	hcommons_write_error_log( 'info', '****USER_ROLE****-'.$user_role.'-'.var_export( $_SERVER, true ) );
 	return $user_role;
 }
-add_filter( 'shibboleth_user_role', 'hcommons_debug_shibboleth_user_role', 10, 3 );
+//add_filter( 'shibboleth_user_role', 'hcommons_debug_shibboleth_user_role', 10, 3 );
 
 function hcommons_debug_ajax_referer( $action, $result ) {
 	hcommons_write_error_log( 'info', '****AJAX_REFERER****-'.$action.'-'.var_export( $result, true ).'-'.var_export( $_REQUEST, true ) );
 }
-add_action( 'check_ajax_referer', 'hcommons_debug_ajax_referer', 10, 2 );
+//add_action( 'check_ajax_referer', 'hcommons_debug_ajax_referer', 10, 2 );
 
 function hcommons_debug_nonce_failed( $nonce, $action, $user, $token ) {
 	hcommons_write_error_log( 'info', '****NONCE_FAILED****-'.var_export( $nonce, true ).'-'.var_export( $action, true).'-'.var_export( $user->ID, true ).'-'.var_export( $token, true ) );
+	$cookie = wp_parse_auth_cookie( '', 'logged_in' );
+	hcommons_write_error_log( 'info', '****NONCE_FAILED-COOKIE****-'.var_export( $cookie, true ) );
 }
-add_action( 'wp_verify_nonce_failed', 'hcommons_debug_nonce_failed', 10, 4 );
+//add_action( 'wp_verify_nonce_failed', 'hcommons_debug_nonce_failed', 10, 4 );
 
 function hcommons_debug_auth_cookie_malformed( $cookie, $scheme  ) {
 	hcommons_write_error_log( 'info', '****AUTH_COOKIE_MALFORMED****-'.var_export( $cookie, true ).'-'.var_export( $scheme, true) );
 }
-add_action( 'auth_cookie_malformed', 'hcommons_debug_auth_cookie_malformed' );
+//add_action( 'auth_cookie_malformed', 'hcommons_debug_auth_cookie_malformed' );
+
+function hcommons_debug_auth_cookie_expired( $cookie_elements  ) {
+	hcommons_write_error_log( 'info', '****AUTH_COOKIE_EXPIRED****-'.var_export( $cookie_elements, true ) );
+}
+//add_action( 'auth_cookie_expired', 'hcommons_debug_auth_cookie_expired' );
+
+function hcommons_debug_auth_cookie_bad_username( $cookie_elements  ) {
+	hcommons_write_error_log( 'info', '****AUTH_COOKIE_BAD_USERNAME****-'.var_export( $cookie_elements, true ) );
+}
+//add_action( 'auth_cookie_bad_username', 'hcommons_debug_auth_cookie_bad_username' );
+
+function hcommons_debug_auth_cookie_bad_hash( $cookie_elements  ) {
+	hcommons_write_error_log( 'info', '****AUTH_COOKIE_BAD_HASH****-'.var_export( $cookie_elements, true ) );
+}
+//add_action( 'auth_cookie_bad_hash', 'hcommons_debug_auth_cookie_bad_hash' );
+
+function hcommons_debug_auth_cookie_bad_session_token( $cookie_elements  ) {
+	hcommons_write_error_log( 'info', '****AUTH_COOKIE_BAD_SESSION_TOKEN****-'.var_export( $cookie_elements, true ) );
+}
+//add_action( 'auth_cookie_bad_session_token', 'hcommons_debug_auth_cookie_bad_session_token' );
+
+function hcommons_debug_nonce_user_logged_out( $uid, $action ) {
+	hcommons_write_error_log( 'info', '****NONCE_USER_LOGGED_OUT****-'.var_export( $uid, true ).'-'.var_export( $action, true) );
+	return uid;
+}
+//add_filter( 'nonce_user_logged_out', 'hcommons_debug_nonce_user_logged_out', 10, 2 );
+
+function hcommons_debug_secure_logged_in_cookie( $secure_logged_in_cookie, $user_id, $secure ) {
+	hcommons_write_error_log( 'info', '****SECURE_LOGGED_IN_COOKIE****-'.$user_id.'-'.var_export( $secure_logged_in_cookie, true ).'-'.var_export( $secure, true) );
+	return $secure_logged_in_cookie;
+}
+//add_filter( 'secure_logged_in_cookie', 'hcommons_debug_secure_logged_in_cookie', 10, 3 );
+
+function hcommons_debug_set_auth_cookie( $auth_cookie, $expire, $expiration, $user_id, $scheme ) {
+        hcommons_write_error_log( 'info', '****SET_AUTH_COOKIE****-'.var_export( $auth_cookie, true ).'-'.var_export( $expire, true).'-'.var_export( $expiration, true).'-'.var_export( $user_id, true ).'-'.var_export( $scheme, true ) );
+}
+//add_action( 'set_auth_cookie', 'hcommons_debug_set_auth_cookie', 10, 5 );
+
+function hcommons_debug_set_logged_in_cookie( $logged_in_cookie, $expire, $expiration, $user_id, $scheme ) {
+        hcommons_write_error_log( 'info', '****SET_LOGGED_IN_COOKIE****-'.var_export( $logged_in_cookie, true ).'-'.var_export( $expire, true).'-'.var_export( $expiration, true).'-'.var_export( $user_id, true ).'-'.var_export( $scheme, true ) );
+}
+//add_action( 'set_logged_in_cookie', 'hcommons_debug_set_logged_in_cookie', 10, 5 );
+
+function hcommons_debug_load_widgets() {
+        hcommons_write_error_log( 'info', '****LOAD_WIDGETS.PHP****' );
+}
+//add_action( 'load-widgets.php', 'hcommons_debug_load_widgets' );
+
+function hcommons_debug_sidebar_admin_page() {
+        hcommons_write_error_log( 'info', '****sidebar_admin_page****' );
+}
+//add_action( 'sidebar_admin_page', 'hcommons_debug_sidebar_admin_page' );
+
+function hcommons_debug_user_has_cap( $all_caps, $caps, $args, $stuff ) {
+	hcommons_write_error_log( 'info', '****USER_HAS_CAP****-'.var_export( $stuff, true ).'-'.var_export( $all_caps, true ).'-'.var_export( $args, true) );
+	return $all_caps;
+}
+//add_filter( 'user_has_cap', 'hcommons_debug_user_has_cap', 10, 4 );
 
