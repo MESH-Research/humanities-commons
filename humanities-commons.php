@@ -57,17 +57,19 @@ class Humanities_Commons {
 		add_filter( 'bp_after_has_groups_parse_args', array( $this, 'hcommons_set_groups_query_args' ) );
 		add_action( 'groups_create_group_step_save_group-details', array( $this, 'hcommons_set_group_type' ) );
 		add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_set_user_member_types' ) );
+		add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_maybe_set_user_role_for_site' ) );
 		add_filter( 'bp_before_has_blogs_parse_args', array( $this, 'hcommons_set_network_blogs_query' ) );
 		add_filter( 'bp_before_has_activities_parse_args', array( $this, 'hcommons_set_network_activities_query' ) );
 		add_filter( 'bp_activity_after_save', array( $this, 'hcommons_set_activity_society_meta' ) );
 		add_filter( 'body_class', array( $this, 'hcommons_society_body_class_name' ) );
-                add_filter( 'bp_current_user_can', array( $this, 'hcommons_check_user_member_type' ), 10, 4 );
+                add_filter( 'bp_current_user_can', array( $this, 'hcommons_check_site_member_can' ), 10, 4 );
                 add_filter( 'shibboleth_user_role', array( $this, 'hcommons_check_user_site_membership' ) );
                 add_filter( 'bp_get_groups_directory_permalink', array( $this, 'hcommons_set_group_permalink' ) );
                 add_filter( 'get_blogs_of_user', array( $this, 'hcommons_filter_get_blogs_of_user'), 10, 3 );
 		add_filter( 'bp_core_avatar_upload_path', array( $this, 'hcommons_set_bp_core_avatar_upload_path' ) );
 		add_filter( 'bp_core_avatar_url', array( $this, 'hcommons_set_bp_core_avatar_url' ) );
 		add_filter( 'bp_get_group_join_button', array( $this, 'hcommons_check_bp_get_group_join_button' ), 10, 2 );
+		add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_sync_bp_profile' ), 10, 3 );
 
 	}
 
@@ -265,7 +267,7 @@ class Humanities_Commons {
 
 		$user_id = $user->ID;
 		$memberships = $this->hcommons_get_user_memberships();
-        	hcommons_write_error_log( 'info', '****RETURNED_MEMBERSHIPS****-'.var_export($memberships,true) );
+        	hcommons_write_error_log( 'info', '****RETURNED_MEMBERSHIPS****-'.$_SERVER['HTTP_HOST'].'-'.var_export($user,true).'-'.var_export($memberships,true) );
 		$main_network = wp_get_network( get_main_network_id() );
 		
 		$member_societies = (array) bp_get_member_type( $user_id, false );
@@ -275,6 +277,41 @@ class Humanities_Commons {
 		foreach( $memberships['societies'] as $member_type ) {
 			$result = bp_set_member_type( $user_id, $member_type, $append );
 			hcommons_write_error_log( 'info', '****SET_EACH_MEMBER_TYPE****-'.$user_id.'-'.$member_type.'-'.var_export( $result, true ) );
+		}
+	}
+
+	public function hcommons_maybe_set_user_role_for_site( $user ) {
+
+		//TODO Can we find WP functions that avoid messing directly with usermeta for a user that has not yet signed in?
+		global $wpdb;
+		$prefix = $wpdb->get_blog_prefix();
+		$user_id = $user->ID;
+		$site_caps = get_user_meta( $user_id, $prefix . 'capabilities', true );
+		$site_caps_array = maybe_unserialize( $site_caps );
+                $society_id = get_network_option( '', 'society_id' );
+		$memberships = $this->hcommons_get_user_memberships();
+		$is_site_member = in_array( $society_id, $memberships['societies'] );
+		
+		if ( $is_site_member ) {
+			$site_role_found = false;
+			foreach( $site_caps_array as $key=>$value ) {
+				if ( in_array( $key, array( 'subscriber', 'contributor', 'author', 'editor', 'administrator' ) ) ) {
+					$site_role_found = true;
+					break;
+				}
+			}
+			if ( $is_site_member && ! $site_role_found ) {
+				$site_caps_array['subscriber'] = true;
+				$site_caps_updated = maybe_serialize( $site_caps_array );
+				$result = update_user_meta( $user_id, $prefix . 'capabilities', $site_caps_updated );
+				$user->init_caps();
+				hcommons_write_error_log( 'info', '****MAYBE_SET_USER_ROLE_FOR_SITE***-'.var_export( $result, true ).'-'.var_export( $is_site_member, true ).'-'.var_export( $site_caps_updated, true ).'-'.var_export( $prefix, true ).'-'.var_export( $user_id, true ) );
+			}
+		} else {
+			if ( ! empty( $site_caps ) ) {
+			delete_user_meta( $user_id, $prefix . 'capabilities' );
+			delete_user_meta( $user_id, $prefix . 'user_level' );
+			}
 		}
 	}
 
@@ -338,7 +375,7 @@ class Humanities_Commons {
         	return $classes;
 	}
 
-        public function hcommons_check_user_member_type( $retval, $capability, $blog_id, $args ) {
+        public function hcommons_check_site_member_can( $retval, $capability, $blog_id, $args ) {
 
 		//hcommons_write_error_log( 'info', '****CHECK_USER_MEMBER_TYPE***-'.var_export( $retval, true ).'-'.var_export( $capability, true ).'-'.$blog_id.'-'.var_export( $args, true ) );
 		$user_id = get_current_user_id();
@@ -359,6 +396,7 @@ class Humanities_Commons {
 
         public function hcommons_check_user_site_membership( $user_role ) {
 
+		//TODO maybe get user role for site here and remove custom code from shibboleth
                 $user_login = $_SERVER['HTTP_EMPLOYEENUMBER'];
 		$user = get_user_by( 'login', $user_login );
 		$user_id = $user->ID;
@@ -461,6 +499,20 @@ class Humanities_Commons {
 		}
 
         }
+
+	/**
+	 * Syncs the HCommons managed WordPress profile data to HCommons XProfile Group fields.
+	 *
+	 * @since HCommons
+	 *
+	 * @param object $user   User object whose profile is being synced. Passed by reference.
+	 */
+	function hcommons_sync_bp_profile( $user ) {
+
+	hcommons_write_error_log( 'info', '****SYNC_BP_PROFILE****-'.var_export( $user, true ) );
+
+	        xprofile_set_field_data( 2, $user->ID, $user->display_name );
+	}
 
 }
 
