@@ -70,6 +70,7 @@ class Humanities_Commons {
 		add_filter( 'bp_core_avatar_url', array( $this, 'hcommons_set_bp_core_avatar_url' ) );
 		add_filter( 'bp_get_group_join_button', array( $this, 'hcommons_check_bp_get_group_join_button' ), 10, 2 );
 		add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_sync_bp_profile' ), 10, 3 );
+		add_action( 'pre_user_query', array( &$this, 'hcommons_filter_site_users_only' ) );
 
 	}
 
@@ -315,6 +316,14 @@ class Humanities_Commons {
 		}
 	}
 
+        /**
+         * Get the society_id for the current blog or a given blog.
+         *
+         * @since HCommons
+         *
+         * @param string $blog_id
+         * @return string $current_society_id
+         */
         public function hcommons_get_blog_society_id( $blog_id = '' ) {
 
 		$fields = array();
@@ -327,6 +336,14 @@ class Humanities_Commons {
                 return $current_society_id;
         }
 
+        /**
+         * Filter the sites query by the society id for the current network except for HC.
+         *
+         * @since HCommons
+         *
+         * @param array $args
+         * @return array $args
+         */
 	public function hcommons_set_network_blogs_query( $args ) {
 
                 $current_society_id = get_network_option( '', 'society_id' );
@@ -347,6 +364,14 @@ class Humanities_Commons {
 		return $args;
 	}
 
+        /**
+         * Filter the activity query by the society id for the current network.
+         *
+         * @since HCommons
+         *
+         * @param array $args
+         * @return array $args
+         */
 	public function hcommons_set_network_activities_query( $args ) {
 
 		$society_id = get_network_option( '', 'society_id' );
@@ -362,12 +387,27 @@ class Humanities_Commons {
 		return $args;
 	}
 
+        /**
+         * Add the current society id to the current activity as an activity_meta record.
+         *
+         * @since HCommons
+         *
+         * @param array $activity
+         */
 	public function hcommons_set_activity_society_meta( $activity ) {
 
 		$society_id = get_network_option( '', 'society_id' );
 		bp_activity_add_meta( $activity->id, 'society_id', $society_id, true );
 	}
 
+        /**
+         * Add the current society id to the body classes.
+         *
+         * @since HCommons
+         *
+         * @param array $classes
+         * @return array $classes
+         */
 	public function hcommons_society_body_class_name( $classes ) {
 
 		$society_id = get_network_option( '', 'society_id' );
@@ -375,6 +415,17 @@ class Humanities_Commons {
         	return $classes;
 	}
 
+        /**
+         * Check if user has a capability on a given site.
+         *
+         * @since HCommons
+         *
+         * @param string $retval
+         * @param string $capability
+         * @param string $blog_id
+         * @param array $args
+         * @return string|bool $retval or false
+         */
         public function hcommons_check_site_member_can( $retval, $capability, $blog_id, $args ) {
 
 		//hcommons_write_error_log( 'info', '****CHECK_USER_MEMBER_TYPE***-'.var_export( $retval, true ).'-'.var_export( $capability, true ).'-'.$blog_id.'-'.var_export( $args, true ) );
@@ -394,6 +445,14 @@ class Humanities_Commons {
 		}
         }
 
+        /**
+         * Check the user's membership to this network prior to login and if valid return the role.
+         *
+         * @since HCommons
+         *
+         * @param string $user_role
+         * @return string $user_role Role or null.
+         */
         public function hcommons_check_user_site_membership( $user_role ) {
 
 		//TODO maybe get user role for site here and remove custom code from shibboleth
@@ -410,6 +469,14 @@ class Humanities_Commons {
 		}
         }
 
+        /**
+         * Set the group permalink to contain the proper network.
+         *
+         * @since HCommons
+         *
+         * @param string $group_permalink
+	 * @return string $group_permalink Modified url.
+         */
         public function hcommons_set_group_permalink( $group_permalink ) {
 
                 $current_society_id = get_network_option( '', 'society_id' );
@@ -428,6 +495,16 @@ class Humanities_Commons {
 		return $group_permalink;
         }
 
+        /**
+         * Filter out the user blogs that are not in the current network.
+         *
+         * @since HCommons
+         *
+         * @param array $blogs
+         * @param string $user_id
+         * @param bool $all
+	 * @return array $network_blogs
+         */
 	public function hcommons_filter_get_blogs_of_user( $blogs, $user_id, $all ) {
 
 		$network_blogs = $blogs;
@@ -441,6 +518,14 @@ class Humanities_Commons {
 		return $network_blogs;
 	}
 
+        /**
+         * Filter the BP Core avatar upload path to be global and not network specific.
+         *
+         * @since HCommons
+         *
+         * @param string $path
+	 * @return string $path Modified path.
+         */
 	public function hcommons_set_bp_core_avatar_upload_path( $path  ) {
 
 		if ( ! empty( $path ) ) {
@@ -458,6 +543,14 @@ class Humanities_Commons {
 
 	}
 
+        /**
+         * Filter the BP Core avatar url to be global and not network specific.
+         *
+         * @since HCommons
+         *
+         * @param string $url
+	 * @return string $url Modified url.
+         */
 	public function hcommons_set_bp_core_avatar_url( $url  ) {
 
 		if ( ! empty( $url ) ) {
@@ -471,6 +564,59 @@ class Humanities_Commons {
 			}
 		} else {
 			return $url;
+		}
+
+	}
+
+        /**
+         * Filter the Invite Anyone user query by member type for this network.
+         *
+         * @since HCommons
+         *
+	 * @param Invite_Anyone_User_Query $query Current instance of Invite_Anyone_User_Query. Passed by reference.
+         */
+	public function hcommons_filter_site_users_only( $query ) {
+
+		global $wpdb;
+		$context = debug_backtrace(); //TODO get a proper filter in Invite Anyone and get rid of backtrace.
+
+		if ( 'Invite_Anyone_User_Query' === get_class( $context[1]['args'][1][0] ) ) {
+			//hcommons_write_error_log( 'info', '****FILTER_SITE_USERS_ONLY_QUERY****-'.var_export( $query, true ) );
+			//hcommons_write_error_log( 'info', '****FILTER_SITE_USERS_ONLY_TRACE****-'.var_export( get_class( $context[1]['args'][1][0] ), true ) );
+                	$current_society_id = get_network_option( '', 'society_id' );
+			$tax_query = new WP_Tax_Query( array(
+				array(
+					'taxonomy' => 'bp_member_type',
+					'field'    => 'name',
+					'operator' => 'IN',
+					'terms'    => $current_society_id,
+				),
+			) );
+
+			// Switch to the root blog, where member type taxonomies live.
+			$site_id  = bp_get_taxonomy_term_site_id( 'bp_member_type' );
+			$switched = false;
+			if ( $site_id !== get_current_blog_id() ) {
+				switch_to_blog( $site_id );
+				$switched = true;
+			}
+
+			$sql_clauses = $tax_query->get_sql( 'u', $this->uid_name );
+
+			$clause = '';
+
+			if ( false !== strpos( $sql_clauses['where'], '0 = 1' ) ) {
+				$clause = array( 'join' => '', 'where' => '0 = 1' );
+			// IN clauses must be converted to a subquery.
+			} elseif ( preg_match( '/' . $wpdb->term_relationships . '\.term_taxonomy_id IN \([0-9, ]+\)/', $sql_clauses['where'], $matches ) ) {
+				$clause = "wp_users.ID IN ( SELECT object_id FROM $wpdb->term_relationships WHERE {$matches[0]} )";
+			}
+
+			if ( $switched ) {
+				restore_current_blog();
+			}
+			//hcommons_write_error_log( 'info', '****FILTER_SITE_USERS_ONLY_CLAUSE****-'.var_export( $clause, true ) );
+	                $query->query_where .= ' AND ' . $clause;
 		}
 
 	}
