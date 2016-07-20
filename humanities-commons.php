@@ -44,6 +44,7 @@ function hcommons_write_error_log( $error_type, $error_message, $info = null ) {
 }
 
 require ( dirname( __FILE__ ) . '/wpmn-taxonomy-functions.php' );
+require ( dirname( __FILE__ ) . '/admin-toolbar.php' );
 
 class Humanities_Commons {
 
