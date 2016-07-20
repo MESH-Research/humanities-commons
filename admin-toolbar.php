@@ -30,6 +30,17 @@ function hcommons_admin_bar_render() {
         $wp_admin_bar->remove_menu( 'my-account-buddydrive-members' );
 
 
+        if ( ! is_user_logged_in() ) {
+                $wp_admin_bar->remove_menu( 'bp-login' );
+                $wp_admin_bar->add_menu( array(
+                        'id' => 'bp-login',
+                        'parent' => false,
+                        'title' => __( 'Log in' ),
+                        'href' => get_site_url() . '/Shibboleth.sso/Login',
+                ) );
+        }
+
+
 	hcommons_write_error_log( 'info', '****ADMIN_BAR_RENDER****-'.var_export($wp_admin_bar,true) );
 
 }
