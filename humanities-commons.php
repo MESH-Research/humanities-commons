@@ -31,16 +31,16 @@ $hcommons_logger->createLog( 'hcommons_error' );
  */
 function hcommons_write_error_log( $error_type, $error_message, $info = null ) {
 
-        global $hcommons_logger;
-        if ( 'info' === $error_type ) {
-                if ( empty( $info ) ) {
-                        $hcommons_logger->addInfo( $error_message );
-                } else {
-                        $hcommons_logger->addInfo( $error_message . ' : ', $info );
-                }
-        } else {
-                        $hcommons_logger->addError( $error_message );
-        }
+	global $hcommons_logger;
+	if ( 'info' === $error_type ) {
+		if ( empty( $info ) ) {
+			$hcommons_logger->addInfo( $error_message );
+		} else {
+			$hcommons_logger->addInfo( $error_message . ' : ', $info );
+		}
+	} else {
+		$hcommons_logger->addError( $error_message );
+	}
 }
 
 require ( dirname( __FILE__ ) . '/wpmn-taxonomy-functions.php' );
@@ -48,7 +48,7 @@ require ( dirname( __FILE__ ) . '/admin-toolbar.php' );
 
 class Humanities_Commons {
 
-        public function __construct() {
+	public function __construct() {
 
 		add_filter( 'bp_get_taxonomy_term_site_id', array( $this, 'hcommons_filter_bp_taxonomy_storage_site' ), 10, 2 );
 		add_filter( 'wpmn_get_taxonomy_term_site_id', array( $this, 'hcommons_filter_hc_taxonomy_storage_site' ), 10, 2 );
@@ -64,10 +64,10 @@ class Humanities_Commons {
 		add_filter( 'bp_activity_after_save', array( $this, 'hcommons_set_activity_society_meta' ) );
 		add_filter( 'bp_activity_get_permalink', array( $this, 'hcommons_filter_activity_permalink' ), 10, 2 );
 		add_filter( 'body_class', array( $this, 'hcommons_society_body_class_name' ) );
-                add_filter( 'bp_current_user_can', array( $this, 'hcommons_check_site_member_can' ), 10, 4 );
-                add_filter( 'shibboleth_user_role', array( $this, 'hcommons_check_user_site_membership' ) );
-                add_filter( 'bp_get_groups_directory_permalink', array( $this, 'hcommons_set_group_permalink' ) );
-                add_filter( 'get_blogs_of_user', array( $this, 'hcommons_filter_get_blogs_of_user'), 10, 3 );
+		add_filter( 'bp_current_user_can', array( $this, 'hcommons_check_site_member_can' ), 10, 4 );
+		add_filter( 'shibboleth_user_role', array( $this, 'hcommons_check_user_site_membership' ) );
+		add_filter( 'bp_get_groups_directory_permalink', array( $this, 'hcommons_set_group_permalink' ) );
+		add_filter( 'get_blogs_of_user', array( $this, 'hcommons_filter_get_blogs_of_user'), 10, 3 );
 		add_filter( 'bp_core_avatar_upload_path', array( $this, 'hcommons_set_bp_core_avatar_upload_path' ) );
 		add_filter( 'bp_core_avatar_url', array( $this, 'hcommons_set_bp_core_avatar_url' ) );
 		add_filter( 'bp_get_group_join_button', array( $this, 'hcommons_check_bp_get_group_join_button' ), 10, 2 );
@@ -102,105 +102,105 @@ class Humanities_Commons {
 
 		bp_register_member_type(
 			'ajs',
-	 		array(
+			array(
 				'labels' => array(
-				'name' => 'AJS',
-				'singular_name' => 'AJS',
-			),
-			'has_directory' => 'ajs'
+					'name' => 'AJS',
+					'singular_name' => 'AJS',
+				),
+				'has_directory' => 'ajs'
 			) );
 
 		bp_register_member_type(
 			'aseees',
-	 		array(
+			array(
 				'labels' => array(
-				'name' => 'ASEEES',
-				'singular_name' => 'ASEEES',
-			),
-			'has_directory' => 'aseees'
+					'name' => 'ASEEES',
+					'singular_name' => 'ASEEES',
+				),
+				'has_directory' => 'aseees'
 			) );
 
 		bp_register_member_type(
 			'caa',
-	 		array(
+			array(
 				'labels' => array(
-				'name' => 'CAA',
-				'singular_name' => 'CAA',
-			),
-			'has_directory' => 'caa'
+					'name' => 'CAA',
+					'singular_name' => 'CAA',
+				),
+				'has_directory' => 'caa'
 			) );
 
 		bp_register_member_type(
 			'hc',
-	 		array(
+			array(
 				'labels' => array(
-				'name' => 'HC',
-				'singular_name' => 'HC',
-			),
-			'has_directory' => 'hc'
+					'name' => 'HC',
+					'singular_name' => 'HC',
+				),
+				'has_directory' => 'hc'
 			) );
 
 		bp_register_member_type(
 			'mla',
-	 		array(
+			array(
 				'labels' => array(
-				'name' => 'MLA',
-				'singular_name' => 'MLA',
-			),
-			'has_directory' => 'mla'
+					'name' => 'MLA',
+					'singular_name' => 'MLA',
+				),
+				'has_directory' => 'mla'
 			) );
-		}
+	}
 
 	public function hcommons_register_group_types() {
 
 		bp_groups_register_group_type(
 			'ajs',
-	 		array(
+			array(
 				'labels' => array(
-				'name' => 'AJS',
-				'singular_name' => 'AJS',
-			),
-			'has_directory' => 'ajs'
+					'name' => 'AJS',
+					'singular_name' => 'AJS',
+				),
+				'has_directory' => 'ajs'
 			) );
 
 		bp_groups_register_group_type(
 			'aseees',
-	 		array(
+			array(
 				'labels' => array(
-				'name' => 'ASEEES',
-				'singular_name' => 'ASEEES',
-			),
-			'has_directory' => 'aseees'
+					'name' => 'ASEEES',
+					'singular_name' => 'ASEEES',
+				),
+				'has_directory' => 'aseees'
 			) );
 
 		bp_groups_register_group_type(
 			'caa',
-	 		array(
+			array(
 				'labels' => array(
-				'name' => 'CAA',
-				'singular_name' => 'CAA',
-			),
-			'has_directory' => 'caa'
+					'name' => 'CAA',
+					'singular_name' => 'CAA',
+				),
+				'has_directory' => 'caa'
 			) );
 
 		bp_groups_register_group_type(
 			'hc',
-	 		array(
+			array(
 				'labels' => array(
-				'name' => 'HC',
-				'singular_name' => 'HC',
-			),
-			'has_directory' => 'hc'
+					'name' => 'HC',
+					'singular_name' => 'HC',
+				),
+				'has_directory' => 'hc'
 			) );
 
 		bp_groups_register_group_type(
 			'mla',
-	 		array(
+			array(
 				'labels' => array(
-				'name' => 'MLA',
-				'singular_name' => 'MLA',
-			),
-			'has_directory' => 'mla'
+					'name' => 'MLA',
+					'singular_name' => 'MLA',
+				),
+				'has_directory' => 'mla'
 			) );
 	}
 
@@ -214,12 +214,12 @@ class Humanities_Commons {
 	public function hcommons_set_groups_query_args( $args ) {
 
 		$member_types = bp_get_member_types();
-        	hcommons_write_error_log( 'info', '****GROUP_QUERY_MEMBER_TYPES****-'.var_export($member_types,true) );
+		hcommons_write_error_log( 'info', '****GROUP_QUERY_MEMBER_TYPES****-'.var_export($member_types,true) );
 		$user_id = get_current_user_id();
 		if ( 0 !== $user_id) {
-                $society_id = get_network_option( '', 'society_id' );
-		$member_societies = (array) bp_get_member_type( $user_id, false );
-        	hcommons_write_error_log( 'info', '****GROUP_QUERY_USER_MEMBER_TYPES****-'.var_export($member_societies,true) );
+			$society_id = get_network_option( '', 'society_id' );
+			$member_societies = (array) bp_get_member_type( $user_id, false );
+			hcommons_write_error_log( 'info', '****GROUP_QUERY_USER_MEMBER_TYPES****-'.var_export($member_societies,true) );
 		}
 		$society_id = get_network_option( '', 'society_id' );
 		if ( 'hc' !== $society_id ) {
@@ -243,25 +243,25 @@ class Humanities_Commons {
 
 	public function hcommons_get_user_memberships() {
 
-        	$memberships = array();
+		$memberships = array();
 		$member_types = bp_get_member_types();
-        	$membership_header = $_SERVER['HTTP_ISMEMBEROF'] . ';';
-        	hcommons_write_error_log( 'info', '**********************GET_MEMBERSHIPS********************-'.var_export( $membership_header, true ).'-'.var_export($member_types,true) );
+		$membership_header = $_SERVER['HTTP_ISMEMBEROF'] . ';';
+		hcommons_write_error_log( 'info', '**********************GET_MEMBERSHIPS********************-'.var_export( $membership_header, true ).'-'.var_export($member_types,true) );
 
-        	foreach ( $member_types as $key=>$value ) {
+		foreach ( $member_types as $key=>$value ) {
 
-                	$pattern = sprintf( '/Humanities Commons:%1$s:members_%1$s;/', strtoupper( $key ) );
-                	if ( preg_match( $pattern, $membership_header, $matches ) ) {
-                        	$memberships['societies'][] = $key;
-                	}
+			$pattern = sprintf( '/Humanities Commons:%1$s:members_%1$s;/', strtoupper( $key ) );
+			if ( preg_match( $pattern, $membership_header, $matches ) ) {
+				$memberships['societies'][] = $key;
+			}
 
-                	$pattern = sprintf( '/Humanities Commons:%1$s_(.*?);/', strtoupper( $key ) );
-                	if ( preg_match_all( $pattern, $membership_header, $matches ) ) {
+			$pattern = sprintf( '/Humanities Commons:%1$s_(.*?);/', strtoupper( $key ) );
+			if ( preg_match_all( $pattern, $membership_header, $matches ) ) {
 				hcommons_write_error_log( 'info', '****GET_MATCHES****-'.$key.'-'.var_export( $matches, true ) );
-                        	$memberships['groups'][$key] = $matches[1];
-                	}
+				$memberships['groups'][$key] = $matches[1];
+			}
 
-        	}
+		}
 
 		return $memberships;
 	}
@@ -270,11 +270,11 @@ class Humanities_Commons {
 
 		$user_id = $user->ID;
 		$memberships = $this->hcommons_get_user_memberships();
-        	hcommons_write_error_log( 'info', '****RETURNED_MEMBERSHIPS****-'.$_SERVER['HTTP_HOST'].'-'.var_export($user,true).'-'.var_export($memberships,true) );
+		hcommons_write_error_log( 'info', '****RETURNED_MEMBERSHIPS****-'.$_SERVER['HTTP_HOST'].'-'.var_export($user,true).'-'.var_export($memberships,true) );
 		$main_network = wp_get_network( get_main_network_id() );
-		
+
 		$member_societies = (array) bp_get_member_type( $user_id, false );
-        	hcommons_write_error_log( 'info', '****PRE_SET_USER_MEMBER_TYPES****-'.var_export($member_societies,true) );
+		hcommons_write_error_log( 'info', '****PRE_SET_USER_MEMBER_TYPES****-'.var_export($member_societies,true) );
 		$result = bp_set_member_type( $user_id, '' ); // Clear existing types, if any.
 		$append = true;
 		foreach( $memberships['societies'] as $member_type ) {
@@ -291,10 +291,10 @@ class Humanities_Commons {
 		$user_id = $user->ID;
 		$site_caps = get_user_meta( $user_id, $prefix . 'capabilities', true );
 		$site_caps_array = maybe_unserialize( $site_caps );
-                $society_id = get_network_option( '', 'society_id' );
+		$society_id = get_network_option( '', 'society_id' );
 		$memberships = $this->hcommons_get_user_memberships();
 		$is_site_member = in_array( $society_id, $memberships['societies'] );
-		
+
 		if ( $is_site_member ) {
 			$site_role_found = false;
 			foreach( $site_caps_array as $key=>$value ) {
@@ -312,44 +312,44 @@ class Humanities_Commons {
 			}
 		} else {
 			if ( ! empty( $site_caps ) ) {
-			delete_user_meta( $user_id, $prefix . 'capabilities' );
-			delete_user_meta( $user_id, $prefix . 'user_level' );
+				delete_user_meta( $user_id, $prefix . 'capabilities' );
+				delete_user_meta( $user_id, $prefix . 'user_level' );
 			}
 		}
 	}
 
-        /**
-         * Get the society_id for the current blog or a given blog.
-         *
-         * @since HCommons
-         *
-         * @param string $blog_id
-         * @return string $current_society_id
-         */
-        public function hcommons_get_blog_society_id( $blog_id = '' ) {
+	/**
+	 * Get the society_id for the current blog or a given blog.
+	 *
+	 * @since HCommons
+	 *
+	 * @param string $blog_id
+	 * @return string $current_society_id
+	 */
+	public function hcommons_get_blog_society_id( $blog_id = '' ) {
 
 		$fields = array();
 		if ( ! empty( $blog_id ) ) {
 			$fields['blog_id'] = $blog_id;
 		}
 		$blog_details = get_blog_details( $fields );
-                $current_society_id = get_network_option( $blog_details->site_id, 'society_id' );
+		$current_society_id = get_network_option( $blog_details->site_id, 'society_id' );
 
-                return $current_society_id;
-        }
+		return $current_society_id;
+	}
 
-        /**
-         * Filter the sites query by the society id for the current network except for HC.
-         *
-         * @since HCommons
-         *
-         * @param array $args
-         * @return array $args
-         */
+	/**
+	 * Filter the sites query by the society id for the current network except for HC.
+	 *
+	 * @since HCommons
+	 *
+	 * @param array $args
+	 * @return array $args
+	 */
 	public function hcommons_set_network_blogs_query( $args ) {
 
-                $current_society_id = get_network_option( '', 'society_id' );
-                if ( 'hc' !== $current_society_id ) {
+		$current_society_id = get_network_option( '', 'society_id' );
+		if ( 'hc' !== $current_society_id ) {
 			$current_network = get_current_site();
 			$current_blog_id = get_current_blog_id();
 			$network_sites = wp_get_sites( array( 'network_id' => $current_network->id, 'limit' => 9999 ) );
@@ -360,20 +360,20 @@ class Humanities_Commons {
 				}
 			}
 			$include_blogs = implode( ',', $blog_ids );
-                	$args['include_blog_ids'] = $include_blogs;
-        	}
+			$args['include_blog_ids'] = $include_blogs;
+		}
 
 		return $args;
 	}
 
-        /**
-         * Filter the activity query by the society id for the current network.
-         *
-         * @since HCommons
-         *
-         * @param array $args
-         * @return array $args
-         */
+	/**
+	 * Filter the activity query by the society id for the current network.
+	 *
+	 * @since HCommons
+	 *
+	 * @param array $args
+	 * @return array $args
+	 */
 	public function hcommons_set_network_activities_query( $args ) {
 
 		$current_society_id = get_network_option( '', 'society_id' );
@@ -391,28 +391,28 @@ class Humanities_Commons {
 		return $args;
 	}
 
-        /**
-         * Add the current society id to the current activity as an activity_meta record.
-         *
-         * @since HCommons
-         *
-         * @param array $activity
-         */
+	/**
+	 * Add the current society id to the current activity as an activity_meta record.
+	 *
+	 * @since HCommons
+	 *
+	 * @param array $activity
+	 */
 	public function hcommons_set_activity_society_meta( $activity ) {
 
 		$society_id = get_network_option( '', 'society_id' );
 		bp_activity_add_meta( $activity->id, 'society_id', $society_id, true );
 	}
 
-        /**
-         * Add the current society id to the current activity as an activity_meta record.
-         *
-         * @since HCommons
-         *
-         * @param string $link
-         * @param object $activity Passed by reference.
-         * @return string $link
-         */
+	/**
+	 * Add the current society id to the current activity as an activity_meta record.
+	 *
+	 * @since HCommons
+	 *
+	 * @param string $link
+	 * @param object $activity Passed by reference.
+	 * @return string $link
+	 */
 	public function hcommons_filter_activity_permalink( $link, $activity ) {
 
 		$society_id = get_network_option( '', 'society_id' );
@@ -424,125 +424,126 @@ class Humanities_Commons {
 		global $wpdb;
 		$row = $wpdb->get_row( $wpdb->prepare( "SELECT site_id FROM $wpdb->sitemeta WHERE meta_key = '%s' AND meta_value = '%s'", 'society_id', $activity_society_id ) );
 		if ( is_object( $row ) ) {
-	        	$society_network = wp_get_network( $row->site_id );
-        		$scheme = ( is_ssl() ) ? 'https://' : 'http://';
+			$society_network = wp_get_network( $row->site_id );
+			$scheme = ( is_ssl() ) ? 'https://' : 'http://';
 			$activity_root_domain = $scheme . $society_network->domain . $society_network->path;
 		}
 		$society_activity_link = str_replace( trailingslashit( bp_get_root_domain() ), $activity_root_domain, $link );
 		//hcommons_write_error_log( 'info', '****FILTER_ACTIVITY_PERMALINK***-'.$link.'-'.$society_activity_link.'-'.bp_get_root_domain().'-'.$society_id.'-'.var_export( $activity->id, true ) );
 
-                return $society_activity_link;
+		return $society_activity_link;
 
 	}
-        /**
-         * Add the current society id to the body classes.
-         *
-         * @since HCommons
-         *
-         * @param array $classes
-         * @return array $classes
-         */
+
+	/**
+	 * Add the current society id to the body classes.
+	 *
+	 * @since HCommons
+	 *
+	 * @param array $classes
+	 * @return array $classes
+	 */
 	public function hcommons_society_body_class_name( $classes ) {
 
 		$society_id = get_network_option( '', 'society_id' );
-        	$classes[] = 'society-' . $society_id;
-        	return $classes;
+		$classes[] = 'society-' . $society_id;
+		return $classes;
 	}
 
-        /**
-         * Check if user has a capability on a given site.
-         *
-         * @since HCommons
-         *
-         * @param string $retval
-         * @param string $capability
-         * @param string $blog_id
-         * @param array $args
-         * @return string|bool $retval or false
-         */
-        public function hcommons_check_site_member_can( $retval, $capability, $blog_id, $args ) {
+	/**
+	 * Check if user has a capability on a given site.
+	 *
+	 * @since HCommons
+	 *
+	 * @param string $retval
+	 * @param string $capability
+	 * @param string $blog_id
+	 * @param array $args
+	 * @return string|bool $retval or false
+	 */
+	public function hcommons_check_site_member_can( $retval, $capability, $blog_id, $args ) {
 
 		//hcommons_write_error_log( 'info', '****CHECK_USER_MEMBER_TYPE***-'.var_export( $retval, true ).'-'.var_export( $capability, true ).'-'.$blog_id.'-'.var_export( $args, true ) );
 		$user_id = get_current_user_id();
 		if ( 0 === $user_id) {
 			return $retval;
 		}
-                $society_id = get_network_option( '', 'society_id' );
+		$society_id = get_network_option( '', 'society_id' );
 		//TODO Why is taxonomy invalid here on HC?
 		$member_societies = (array) bp_get_member_type( $user_id, false );
 		if ( bp_has_member_type( $user_id, $society_id ) ) {
-		//hcommons_write_error_log( 'info', '****CHECK_USER_MEMBER_TYPE_TRUE***-'.var_export( $user_id, true ).'-'.var_export( $member_societies, true ).'-'.var_export( $society_id, true ) );
-                	return $retval;
+			//hcommons_write_error_log( 'info', '****CHECK_USER_MEMBER_TYPE_TRUE***-'.var_export( $user_id, true ).'-'.var_export( $member_societies, true ).'-'.var_export( $society_id, true ) );
+			return $retval;
 		} else {
-		//hcommons_write_error_log( 'info', '****CHECK_USER_MEMBER_TYPE_FALSE***-'.var_export( $user_id, true ).'-'.var_export( $member_societies, true ).'-'.var_export( $society_id, true ) );
+			//hcommons_write_error_log( 'info', '****CHECK_USER_MEMBER_TYPE_FALSE***-'.var_export( $user_id, true ).'-'.var_export( $member_societies, true ).'-'.var_export( $society_id, true ) );
 			return false;
 		}
-        }
+	}
 
-        /**
-         * Check the user's membership to this network prior to login and if valid return the role.
-         *
-         * @since HCommons
-         *
-         * @param string $user_role
-         * @return string $user_role Role or null.
-         */
-        public function hcommons_check_user_site_membership( $user_role ) {
+	/**
+	 * Check the user's membership to this network prior to login and if valid return the role.
+	 *
+	 * @since HCommons
+	 *
+	 * @param string $user_role
+	 * @return string $user_role Role or null.
+	 */
+	public function hcommons_check_user_site_membership( $user_role ) {
 
 		//TODO maybe get user role for site here and remove custom code from shibboleth
-                $user_login = $_SERVER['HTTP_EMPLOYEENUMBER'];
+		$user_login = $_SERVER['HTTP_EMPLOYEENUMBER'];
 		$user = get_user_by( 'login', $user_login );
 		$user_id = $user->ID;
 
-                $society_id = get_network_option( '', 'society_id' );
+		$society_id = get_network_option( '', 'society_id' );
 		$memberships = $this->hcommons_get_user_memberships();
 		if ( in_array( $society_id, $memberships['societies'] ) || is_super_admin( $user_id ) ) {
-                	return $user_role;
+			return $user_role;
 		} else {
 			return '';
 		}
-        }
+	}
 
-        /**
-         * Set the group permalink to contain the proper network.
-         *
-         * @since HCommons
-         *
-         * @param string $group_permalink
+	/**
+	 * Set the group permalink to contain the proper network.
+	 *
+	 * @since HCommons
+	 *
+	 * @param string $group_permalink
 	 * @return string $group_permalink Modified url.
-         */
-        public function hcommons_set_group_permalink( $group_permalink ) {
+	 */
+	public function hcommons_set_group_permalink( $group_permalink ) {
 
-                $current_society_id = get_network_option( '', 'society_id' );
-                if ( 'hc' !== $current_society_id ) {
+		$current_society_id = get_network_option( '', 'society_id' );
+		if ( 'hc' !== $current_society_id ) {
 			return $group_permalink;
 		}
 		global $wpdb;
 		$group_id = bp_get_group_id();
-                $society_id = bp_groups_get_group_type( $group_id );
+		$society_id = bp_groups_get_group_type( $group_id );
 		$row = $wpdb->get_row( $wpdb->prepare( "SELECT site_id FROM $wpdb->sitemeta WHERE meta_key = '%s' AND meta_value = '%s'", 'society_id', $society_id ) );
 		if ( is_object( $row ) ) {
-	        	$society_network = wp_get_network( $row->site_id );
-        		$scheme = ( is_ssl() ) ? 'https://' : 'http://';
+			$society_network = wp_get_network( $row->site_id );
+			$scheme = ( is_ssl() ) ? 'https://' : 'http://';
 			$group_permalink = trailingslashit( $scheme . $society_network->domain . $society_network->path . bp_get_groups_root_slug() );
 		}
 		return $group_permalink;
-        }
+	}
 
-        /**
-         * Filter out the user blogs that are not in the current network.
-         *
-         * @since HCommons
-         *
-         * @param array $blogs
-         * @param string $user_id
-         * @param bool $all
+	/**
+	 * Filter out the user blogs that are not in the current network.
+	 *
+	 * @since HCommons
+	 *
+	 * @param array $blogs
+	 * @param string $user_id
+	 * @param bool $all
 	 * @return array $network_blogs
-         */
+	 */
 	public function hcommons_filter_get_blogs_of_user( $blogs, $user_id, $all ) {
 
 		$network_blogs = $blogs;
-                $current_network = get_current_site();
+		$current_network = get_current_site();
 		$current_blog_id = get_current_blog_id();
 		foreach ($blogs as $blog) {
 			if ( $current_network->id != $blog->site_id || $current_blog_id == $blog->userblog_id ) {
@@ -552,14 +553,14 @@ class Humanities_Commons {
 		return $network_blogs;
 	}
 
-        /**
-         * Filter the BP Core avatar upload path to be global and not network specific.
-         *
-         * @since HCommons
-         *
-         * @param string $path
+	/**
+	 * Filter the BP Core avatar upload path to be global and not network specific.
+	 *
+	 * @since HCommons
+	 *
+	 * @param string $path
 	 * @return string $path Modified path.
-         */
+	 */
 	public function hcommons_set_bp_core_avatar_upload_path( $path  ) {
 
 		if ( ! empty( $path ) ) {
@@ -577,14 +578,14 @@ class Humanities_Commons {
 
 	}
 
-        /**
-         * Filter the BP Core avatar url to be global and not network specific.
-         *
-         * @since HCommons
-         *
-         * @param string $url
+	/**
+	 * Filter the BP Core avatar url to be global and not network specific.
+	 *
+	 * @since HCommons
+	 *
+	 * @param string $url
 	 * @return string $url Modified url.
-         */
+	 */
 	public function hcommons_set_bp_core_avatar_url( $url  ) {
 
 		if ( ! empty( $url ) ) {
@@ -602,13 +603,13 @@ class Humanities_Commons {
 
 	}
 
-        /**
-         * Filter the Invite Anyone user query by member type for this network.
-         *
-         * @since HCommons
-         *
+	/**
+	 * Filter the Invite Anyone user query by member type for this network.
+	 *
+	 * @since HCommons
+	 *
 	 * @param Invite_Anyone_User_Query $query Current instance of Invite_Anyone_User_Query. Passed by reference.
-         */
+	 */
 	public function hcommons_filter_site_users_only( $query ) {
 
 		global $wpdb;
@@ -617,7 +618,7 @@ class Humanities_Commons {
 		if ( 'Invite_Anyone_User_Query' === get_class( $context[1]['args'][1][0] ) ) {
 			//hcommons_write_error_log( 'info', '****FILTER_SITE_USERS_ONLY_QUERY****-'.var_export( $query, true ) );
 			//hcommons_write_error_log( 'info', '****FILTER_SITE_USERS_ONLY_TRACE****-'.var_export( get_class( $context[1]['args'][1][0] ), true ) );
-                	$current_society_id = get_network_option( '', 'society_id' );
+			$current_society_id = get_network_option( '', 'society_id' );
 			$tax_query = new WP_Tax_Query( array(
 				array(
 					'taxonomy' => 'bp_member_type',
@@ -641,7 +642,7 @@ class Humanities_Commons {
 
 			if ( false !== strpos( $sql_clauses['where'], '0 = 1' ) ) {
 				$clause = array( 'join' => '', 'where' => '0 = 1' );
-			// IN clauses must be converted to a subquery.
+				// IN clauses must be converted to a subquery.
 			} elseif ( preg_match( '/' . $wpdb->term_relationships . '\.term_taxonomy_id IN \([0-9, ]+\)/', $sql_clauses['where'], $matches ) ) {
 				$clause = "wp_users.ID IN ( SELECT object_id FROM $wpdb->term_relationships WHERE {$matches[0]} )";
 			}
@@ -650,27 +651,27 @@ class Humanities_Commons {
 				restore_current_blog();
 			}
 			//hcommons_write_error_log( 'info', '****FILTER_SITE_USERS_ONLY_CLAUSE****-'.var_export( $clause, true ) );
-	                $query->query_where .= ' AND ' . $clause;
+			$query->query_where .= ' AND ' . $clause;
 		}
 
 	}
 
-        /**
-         * Filter the group join button by network.
-         *
-         * @since HCommons
-         *
-         * @param array       $button Button settings.
-         * @param object      $group
-         * @return array|null Button attributes.
-         */
-        public function hcommons_check_bp_get_group_join_button( $button, $group ) {
+	/**
+	 * Filter the group join button by network.
+	 *
+	 * @since HCommons
+	 *
+	 * @param array       $button Button settings.
+	 * @param object      $group
+	 * @return array|null Button attributes.
+	 */
+	public function hcommons_check_bp_get_group_join_button( $button, $group ) {
 
-                $current_society_id = get_network_option( '', 'society_id' );
-                if ( 'hc' !== $current_society_id ) {
-                        return $button;
-                }
-                $society_id = bp_groups_get_group_type( $group->id );
+		$current_society_id = get_network_option( '', 'society_id' );
+		if ( 'hc' !== $current_society_id ) {
+			return $button;
+		}
+		$society_id = bp_groups_get_group_type( $group->id );
 		//hcommons_write_error_log( 'info', '****BP_GET_GROUP_JOIN_BUTTON****-'.var_export( $society_id, true ).'-'.var_export( $group, true ) );
 		if ( 'hc' !== $society_id ) {
 			return null;
@@ -678,7 +679,7 @@ class Humanities_Commons {
 			return $button;
 		}
 
-        }
+	}
 
 	/**
 	 * Syncs the HCommons managed WordPress profile data to HCommons XProfile Group fields.
@@ -689,9 +690,9 @@ class Humanities_Commons {
 	 */
 	function hcommons_sync_bp_profile( $user ) {
 
-	hcommons_write_error_log( 'info', '****SYNC_BP_PROFILE****-'.var_export( $user, true ) );
+		hcommons_write_error_log( 'info', '****SYNC_BP_PROFILE****-'.var_export( $user, true ) );
 
-	        xprofile_set_field_data( 2, $user->ID, $user->display_name );
+		xprofile_set_field_data( 2, $user->ID, $user->display_name );
 	}
 
 }
@@ -754,22 +755,22 @@ function hcommons_debug_secure_logged_in_cookie( $secure_logged_in_cookie, $user
 //add_filter( 'secure_logged_in_cookie', 'hcommons_debug_secure_logged_in_cookie', 10, 3 );
 
 function hcommons_debug_set_auth_cookie( $auth_cookie, $expire, $expiration, $user_id, $scheme ) {
-        hcommons_write_error_log( 'info', '****SET_AUTH_COOKIE****-'.var_export( $auth_cookie, true ).'-'.var_export( $expire, true).'-'.var_export( $expiration, true).'-'.var_export( $user_id, true ).'-'.var_export( $scheme, true ) );
+	hcommons_write_error_log( 'info', '****SET_AUTH_COOKIE****-'.var_export( $auth_cookie, true ).'-'.var_export( $expire, true).'-'.var_export( $expiration, true).'-'.var_export( $user_id, true ).'-'.var_export( $scheme, true ) );
 }
 //add_action( 'set_auth_cookie', 'hcommons_debug_set_auth_cookie', 10, 5 );
 
 function hcommons_debug_set_logged_in_cookie( $logged_in_cookie, $expire, $expiration, $user_id, $scheme ) {
-        hcommons_write_error_log( 'info', '****SET_LOGGED_IN_COOKIE****-'.var_export( $logged_in_cookie, true ).'-'.var_export( $expire, true).'-'.var_export( $expiration, true).'-'.var_export( $user_id, true ).'-'.var_export( $scheme, true ) );
+	hcommons_write_error_log( 'info', '****SET_LOGGED_IN_COOKIE****-'.var_export( $logged_in_cookie, true ).'-'.var_export( $expire, true).'-'.var_export( $expiration, true).'-'.var_export( $user_id, true ).'-'.var_export( $scheme, true ) );
 }
 //add_action( 'set_logged_in_cookie', 'hcommons_debug_set_logged_in_cookie', 10, 5 );
 
 function hcommons_debug_load_widgets() {
-        hcommons_write_error_log( 'info', '****LOAD_WIDGETS.PHP****' );
+	hcommons_write_error_log( 'info', '****LOAD_WIDGETS.PHP****' );
 }
 //add_action( 'load-widgets.php', 'hcommons_debug_load_widgets' );
 
 function hcommons_debug_sidebar_admin_page() {
-        hcommons_write_error_log( 'info', '****sidebar_admin_page****' );
+	hcommons_write_error_log( 'info', '****sidebar_admin_page****' );
 }
 //add_action( 'sidebar_admin_page', 'hcommons_debug_sidebar_admin_page' );
 
