@@ -358,16 +358,27 @@ class Humanities_Commons {
 	public function hcommons_set_network_blogs_query( $args ) {
 
 		$current_society_id = get_network_option( '', 'society_id' );
+		$blog_ids = array();
+
 		if ( 'hc' !== $current_society_id ) {
 			$current_network = get_current_site();
 			$current_blog_id = get_current_blog_id();
 			$network_sites = wp_get_sites( array( 'network_id' => $current_network->id, 'limit' => 9999 ) );
-			$blog_ids = array();
 			foreach( $network_sites as $site ) {
 				if ( $site['blog_id'] != $current_blog_id ) {
 					$blog_ids[] = $site['blog_id'];
 				}
 			}
+		} else {
+			$sites = wp_get_sites( array( 'network_id' => null, 'limit' => 9999 ) );
+			foreach( $sites as $site ) {
+				if ( $site['blog_id'] != self::$main_site->blog_id ) {
+					$blog_ids[] = $site['blog_id'];
+				}
+			}
+		}
+
+		if ( ! empty( $blog_ids ) ) {
 			$include_blogs = implode( ',', $blog_ids );
 			$args['include_blog_ids'] = $include_blogs;
 		}
