@@ -41,7 +41,7 @@ function hcommons_admin_bar_render() {
         }
 
 
-	hcommons_write_error_log( 'info', '****ADMIN_BAR_RENDER****-'.var_export($wp_admin_bar,true) );
+	//hcommons_write_error_log( 'info', '****ADMIN_BAR_RENDER****-'.var_export($wp_admin_bar,true) );
 
 }
 add_action( 'wp_before_admin_bar_render', 'hcommons_admin_bar_render' );

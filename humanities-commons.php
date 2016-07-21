@@ -62,6 +62,7 @@ class Humanities_Commons {
 		add_filter( 'bp_before_has_blogs_parse_args', array( $this, 'hcommons_set_network_blogs_query' ) );
 		add_filter( 'bp_before_has_activities_parse_args', array( $this, 'hcommons_set_network_activities_query' ) );
 		add_filter( 'bp_activity_after_save', array( $this, 'hcommons_set_activity_society_meta' ) );
+		add_filter( 'bp_activity_get_permalink', array( $this, 'hcommons_filter_activity_permalink' ), 10, 2 );
 		add_filter( 'body_class', array( $this, 'hcommons_society_body_class_name' ) );
                 add_filter( 'bp_current_user_can', array( $this, 'hcommons_check_site_member_can' ), 10, 4 );
                 add_filter( 'shibboleth_user_role', array( $this, 'hcommons_check_user_site_membership' ) );
@@ -375,15 +376,17 @@ class Humanities_Commons {
          */
 	public function hcommons_set_network_activities_query( $args ) {
 
-		$society_id = get_network_option( '', 'society_id' );
-		$args['meta_query'] = array(
-			array(
-				'key'     => 'society_id',
-				'value'   => $society_id,
-				'type'    => 'string',
-				'compare' => '='
-			),
-		);
+		$current_society_id = get_network_option( '', 'society_id' );
+                if ( 1 === 1 || 'hc' !== $current_society_id ) {
+			$args['meta_query'] = array(
+				array(
+					'key'     => 'society_id',
+					'value'   => $current_society_id,
+					'type'    => 'string',
+					'compare' => '='
+				),
+			);
+		}
 
 		return $args;
 	}
@@ -401,6 +404,36 @@ class Humanities_Commons {
 		bp_activity_add_meta( $activity->id, 'society_id', $society_id, true );
 	}
 
+        /**
+         * Add the current society id to the current activity as an activity_meta record.
+         *
+         * @since HCommons
+         *
+         * @param string $link
+         * @param object $activity Passed by reference.
+         * @return string $link
+         */
+	public function hcommons_filter_activity_permalink( $link, $activity ) {
+
+		$society_id = get_network_option( '', 'society_id' );
+		$activity_society_id = bp_activity_get_meta( $activity->id, 'society_id', true  );
+		if ( $society_id == $activity_society_id ) {
+			return $link;
+		}
+
+		global $wpdb;
+		$row = $wpdb->get_row( $wpdb->prepare( "SELECT site_id FROM $wpdb->sitemeta WHERE meta_key = '%s' AND meta_value = '%s'", 'society_id', $activity_society_id ) );
+		if ( is_object( $row ) ) {
+	        	$society_network = wp_get_network( $row->site_id );
+        		$scheme = ( is_ssl() ) ? 'https://' : 'http://';
+			$activity_root_domain = $scheme . $society_network->domain . $society_network->path;
+		}
+		$society_activity_link = str_replace( trailingslashit( bp_get_root_domain() ), $activity_root_domain, $link );
+		//hcommons_write_error_log( 'info', '****FILTER_ACTIVITY_PERMALINK***-'.$link.'-'.$society_activity_link.'-'.bp_get_root_domain().'-'.$society_id.'-'.var_export( $activity->id, true ) );
+
+                return $society_activity_link;
+
+	}
         /**
          * Add the current society id to the body classes.
          *
