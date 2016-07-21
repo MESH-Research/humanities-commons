@@ -48,7 +48,20 @@ require ( dirname( __FILE__ ) . '/admin-toolbar.php' );
 
 class Humanities_Commons {
 
+	/**
+	 * the network called "Humanities Commons" a.k.a. the hub
+	 */
+	public static $main_network;
+
+	/**
+	 * root blog of the main network
+	 */
+	public static $main_site;
+
 	public function __construct() {
+
+		self::$main_network = wp_get_network( get_main_network_id() );
+		self::$main_site = get_site_by_path( self::$main_network->domain, self::$main_network->path );
 
 		add_filter( 'bp_get_taxonomy_term_site_id', array( $this, 'hcommons_filter_bp_taxonomy_storage_site' ), 10, 2 );
 		add_filter( 'wpmn_get_taxonomy_term_site_id', array( $this, 'hcommons_filter_hc_taxonomy_storage_site' ), 10, 2 );
@@ -79,9 +92,7 @@ class Humanities_Commons {
 	public function hcommons_filter_bp_taxonomy_storage_site( $site_id, $taxonomy ) {
 
 		if ( in_array( $taxonomy, array( 'bp_group_type', 'bp_member_type' ) ) ) {
-			$main_network = wp_get_network( get_main_network_id() );
-			$site = get_site_by_path( $main_network->domain, $main_network->path );
-			return $site->site_id;
+			return self::$main_site->id;
 		} else {
 			return $site_id;
 		}
@@ -90,9 +101,7 @@ class Humanities_Commons {
 	public function hcommons_filter_hc_taxonomy_storage_site( $site_id, $taxonomy ) {
 
 		if ( in_array( $taxonomy, array( 'mla_academic_interests', 'humcore_deposit_subject', 'humcore_deposit_tag' ) ) ) {
-			$main_network = wp_get_network( get_main_network_id() );
-			$site = get_site_by_path( $main_network->domain, $main_network->path );
-			return $site->site_id;
+			return self::$main_site->id;
 		} else {
 			return $site_id;
 		}
