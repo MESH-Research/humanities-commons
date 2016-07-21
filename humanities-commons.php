@@ -485,7 +485,7 @@ class Humanities_Commons {
 
 		//hcommons_write_error_log( 'info', '****CHECK_USER_MEMBER_TYPE***-'.var_export( $retval, true ).'-'.var_export( $capability, true ).'-'.$blog_id.'-'.var_export( $args, true ) );
 		$user_id = get_current_user_id();
-		if ( 0 === $user_id) {
+		if ( $user_id < 2 ) {
 			return $retval;
 		}
 		$society_id = get_network_option( '', 'society_id' );
