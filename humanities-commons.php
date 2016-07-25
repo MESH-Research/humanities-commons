@@ -74,6 +74,7 @@ class Humanities_Commons {
 		add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_maybe_set_user_role_for_site' ) );
 		add_filter( 'bp_before_has_blogs_parse_args', array( $this, 'hcommons_set_network_blogs_query' ) );
 		add_filter( 'bp_get_total_blog_count', array( $this, 'hcommons_get_total_blog_count' ) );
+		add_filter( 'bp_get_total_blog_count_for_user', array( $this, 'hcommons_get_total_blog_count_for_user' ) );
 		add_filter( 'bp_before_has_activities_parse_args', array( $this, 'hcommons_set_network_activities_query' ) );
 		add_filter( 'bp_activity_after_save', array( $this, 'hcommons_set_activity_society_meta' ) );
 		add_filter( 'bp_activity_get_permalink', array( $this, 'hcommons_filter_activity_permalink' ), 10, 2 );
@@ -365,8 +366,31 @@ class Humanities_Commons {
 		$mpo_filtered_blogs = bp_blogs_get_blogs( $blogs_query_args );
 
 		if ( $mpo_filtered_blogs ) {
-			return $mpo_filtered_blogs['total'];
+			$count = $mpo_filtered_blogs['total'];
 		}
+
+		return $count;
+	}
+
+	/**
+	 * Like hcommons_get_total_blog_count() except for users.
+	 * Because the logged-in logic in BP_Blogs_Blog::get_blogs_for_user() doesn't check the 'public' column,
+	 * MPO doesn't need to be accommodated, which is different than in hcommons_get_total_blog_count().
+	 *
+	 * @since HCommons
+	 *
+	 * @param string $count
+	 * @return string $count
+	 */
+	public function hcommons_get_total_blog_count_for_user( $count ) {
+		$user_blogs = bp_blogs_get_blogs_for_user( get_current_user_id() );
+
+		if ( $user_blogs ) {
+			// $user_blogs['total'] is WRONG! that's why this filter is here, just count the actual blogs instead.
+			$count = count( $user_blogs['blogs'] );
+		}
+
+		return $count;
 	}
 
 	/**
