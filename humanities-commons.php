@@ -443,7 +443,7 @@ class Humanities_Commons {
 	public function hcommons_set_network_activities_query( $args ) {
 
 		$current_society_id = get_network_option( '', 'society_id' );
-                if ( 1 === 1 || 'hc' !== $current_society_id ) {
+                if ( 'hc' !== $current_society_id ) {
 			$args['meta_query'] = array(
 				array(
 					'key'     => 'society_id',
