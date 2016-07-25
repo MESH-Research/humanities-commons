@@ -73,6 +73,7 @@ class Humanities_Commons {
 		add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_set_user_member_types' ) );
 		add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_maybe_set_user_role_for_site' ) );
 		add_filter( 'bp_before_has_blogs_parse_args', array( $this, 'hcommons_set_network_blogs_query' ) );
+		add_filter( 'bp_get_total_blog_count', array( $this, 'hcommons_get_total_blog_count' ) );
 		add_filter( 'bp_before_has_activities_parse_args', array( $this, 'hcommons_set_network_activities_query' ) );
 		add_filter( 'bp_activity_after_save', array( $this, 'hcommons_set_activity_society_meta' ) );
 		add_filter( 'bp_activity_get_permalink', array( $this, 'hcommons_filter_activity_permalink' ), 10, 2 );
@@ -345,6 +346,27 @@ class Humanities_Commons {
 		$current_society_id = get_network_option( $blog_details->site_id, 'society_id' );
 
 		return $current_society_id;
+	}
+
+	/**
+	 * Filter the count returned by bp_get_total_blog_count() which ultimately depends on BP_Blogs_Blog::get_all().
+	 * We want to use the filtered results returned by BP_Blogs_Blog::get() instead, so that we accommodate MPO.
+	 *
+	 * @since HCommons
+	 *
+	 * @param string $count
+	 * @return string $count
+	 */
+	public function hcommons_get_total_blog_count( $count ) {
+		// let's see what the blogs query will actually include and use that for the count
+		$blogs_query_args = $this->hcommons_set_network_blogs_query( array() );
+
+		// now make sure the More Privacy Options filter removes any blogs it needs to
+		$mpo_filtered_blogs = bp_blogs_get_blogs( $blogs_query_args );
+
+		if ( $mpo_filtered_blogs ) {
+			return $mpo_filtered_blogs['total'];
+		}
 	}
 
 	/**
