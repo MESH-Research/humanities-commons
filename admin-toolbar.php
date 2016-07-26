@@ -53,6 +53,11 @@ function hcommons_admin_bar_render() {
 }
 add_action( 'wp_before_admin_bar_render', 'hcommons_admin_bar_render' );
 
+function hcommons_admin_bar_enqueue_style() {
+        wp_enqueue_style( 'humanities-commons', plugins_url( 'assets/css/main.css' , __FILE__ ) );
+}
+add_action( 'wp_enqueue_scripts', 'hcommons_admin_bar_enqueue_style' );
+
 /* PHP Fatal error:  Uncaught Error: Call to undefined function wp_get_current_user() in /srv/www/commons/current/web/wp/wp-includes/capabilities.php:428:w
 if ( ! current_user_can( 'manage_options' ) ) {
 	add_filter( 'show_admin_bar', '__return_false' );
