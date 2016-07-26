@@ -385,7 +385,15 @@ class Humanities_Commons {
 	public function hcommons_get_total_blog_count_for_user( $count ) {
 		$user_blogs = bp_blogs_get_blogs_for_user( get_current_user_id() );
 
+
 		if ( $user_blogs ) {
+			// do not include HC
+			foreach ( $user_blogs['blogs'] as $key => $user_blog ) {
+				if ( $user_blog->blog_id === self::$main_site->blog_id ) {
+					unset( $user_blogs['blogs'][$key] );
+				}
+			}
+
 			// $user_blogs['total'] is WRONG! that's why this filter is here, just count the actual blogs instead.
 			$count = count( $user_blogs['blogs'] );
 		}
