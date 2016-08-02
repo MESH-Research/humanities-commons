@@ -43,8 +43,8 @@ function hcommons_write_error_log( $error_type, $error_message, $info = null ) {
 	}
 }
 
-require ( dirname( __FILE__ ) . '/wpmn-taxonomy-functions.php' );
-require ( dirname( __FILE__ ) . '/admin-toolbar.php' );
+require_once ( dirname( __FILE__ ) . '/wpmn-taxonomy-functions.php' );
+require_once ( dirname( __FILE__ ) . '/admin-toolbar.php' );
 
 class Humanities_Commons {
 
@@ -93,6 +93,7 @@ class Humanities_Commons {
 
 	public function hcommons_filter_bp_taxonomy_storage_site( $site_id, $taxonomy ) {
 
+		//hcommons_write_error_log( 'info', '****TAXONOMY_STORAGE_SITE****-' . var_export( $site_id, true ) . '-' . var_export( self::$main_site->site_id, true ) . '-' . var_export( $taxonomy, true ) );
 		if ( in_array( $taxonomy, array( 'bp_group_type', 'bp_member_type' ) ) ) {
 			return self::$main_site->site_id;
 		} else {
@@ -307,6 +308,7 @@ class Humanities_Commons {
 		$is_site_member = in_array( $society_id, $memberships['societies'] );
 
 		if ( $is_site_member ) {
+			//TODO Copy role check logic from hcommons_check_user_site_membership().
 			$site_role_found = false;
 			foreach( $site_caps_array as $key=>$value ) {
 				if ( in_array( $key, array( 'subscriber', 'contributor', 'author', 'editor', 'administrator' ) ) ) {
@@ -537,19 +539,21 @@ class Humanities_Commons {
 	 */
 	public function hcommons_check_site_member_can( $retval, $capability, $blog_id, $args ) {
 
-		//hcommons_write_error_log( 'info', '****CHECK_USER_MEMBER_TYPE***-'.var_export( $retval, true ).'-'.var_export( $capability, true ).'-'.$blog_id.'-'.var_export( $args, true ) );
 		$user_id = get_current_user_id();
 		if ( $user_id < 2 ) {
 			return $retval;
 		}
 		$society_id = get_network_option( '', 'society_id' );
 		//TODO Why is taxonomy invalid here on HC?
+		if ( 'hc' === $society_id && ! get_taxonomy( 'bp_member_type' ) ) {
+			bp_register_taxonomies();
+		}
 		$member_societies = (array) bp_get_member_type( $user_id, false );
 		if ( bp_has_member_type( $user_id, $society_id ) ) {
-			//hcommons_write_error_log( 'info', '****CHECK_USER_MEMBER_TYPE_TRUE***-'.var_export( $user_id, true ).'-'.var_export( $member_societies, true ).'-'.var_export( $society_id, true ) );
+			hcommons_write_error_log( 'info', '****CHECK_USER_MEMBER_TYPE_TRUE***-'.var_export( $user_id, true ).'-'.var_export( $member_societies, true ).'-'.var_export( $society_id, true ) );
 			return $retval;
 		} else {
-			//hcommons_write_error_log( 'info', '****CHECK_USER_MEMBER_TYPE_FALSE***-'.var_export( $user_id, true ).'-'.var_export( $member_societies, true ).'-'.var_export( $society_id, true ) );
+			hcommons_write_error_log( 'info', '****CHECK_USER_MEMBER_TYPE_FALSE***-'.var_export( $user_id, true ).'-'.var_export( $member_societies, true ).'-'.var_export( $society_id, true ) );
 			return false;
 		}
 	}
@@ -564,18 +568,35 @@ class Humanities_Commons {
 	 */
 	public function hcommons_check_user_site_membership( $user_role ) {
 
-		//TODO maybe get user role for site here and remove custom code from shibboleth
-		$user_login = $_SERVER['HTTP_EMPLOYEENUMBER'];
-		$user = get_user_by( 'login', $user_login );
+		$shib_headers = shibboleth_get_option('shibboleth_headers');
+		$username = $_SERVER[$shib_headers['username']['name']];
+
+		$user = get_user_by( 'login', $username );
 		$user_id = $user->ID;
 
 		$society_id = get_network_option( '', 'society_id' );
 		$memberships = $this->hcommons_get_user_memberships();
-		if ( in_array( $society_id, $memberships['societies'] ) || is_super_admin( $user_id ) ) {
-			return $user_role;
-		} else {
+		if ( ! in_array( $society_id, $memberships['societies'] ) && ! is_super_admin( $user_id ) ) {
 			return '';
 		}
+
+		//Check for existing user role, we don't want to overwrite role assignments made in WP.
+		global $wp_roles;
+		$new_user_role = '';
+		$user_role_set = false;
+                foreach ( $wp_roles->roles as $role_key=>$role_name ) {
+                        if ( false === strpos( $role_key, 'bbp_' ) ) {
+                                $user_role_set = user_can( $user, $role_key );
+                        }
+                        if ( $user_role_set ) {
+				$new_user_role = $role_key;
+                                break;
+                        }
+                }
+                hcommons_write_error_log( 'info', '****CHECK_USER_SITE_MEMBERSHIP****-' . var_export( $user_role, true ) . var_export( $new_user_role, true ) . var_export( $user_role_set, true ) . var_export( $user, true ) );
+
+		return ( empty( $new_user_role ) ) ? $user_role : $new_user_role;
+
 	}
 
 	/**
