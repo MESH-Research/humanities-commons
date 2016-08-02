@@ -17,7 +17,7 @@ defined( 'ABSPATH' ) || exit;
  */
 function hcommons_admin_bar_render() {
 
-        global $wp_admin_bar;
+        global $wp_admin_bar, $humanities_commons;
 
         $wp_admin_bar->remove_menu( 'wp-logo' );
         $wp_admin_bar->remove_menu( 'about' );
@@ -39,12 +39,20 @@ function hcommons_admin_bar_render() {
 
         if ( ! is_user_logged_in() ) {
                 $wp_admin_bar->remove_menu( 'bp-login' );
-                $wp_admin_bar->add_menu( array(
-                        'id' => 'bp-login',
-                        'parent' => false,
-                        'title' => __( 'Log in' ),
-                        'href' => get_site_url() . '/Shibboleth.sso/Login',
-                ) );
+		if ( hcommons_check_non_member_active_session() ) {
+			$wp_admin_bar->add_menu( array(
+				'id' => 'bp-login',
+				'parent' => false,
+				'title' => __( strtoupper( get_network_option( '', 'society_id' ) ) . ' Visitor' ),
+			) );
+		} else {
+			$wp_admin_bar->add_menu( array(
+				'id' => 'bp-login',
+				'parent' => false,
+				'title' => __( 'Log in' ),
+				'href' => get_site_url() . '/Shibboleth.sso/Login',
+			) );
+		}
         }
 
 
