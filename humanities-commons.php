@@ -46,10 +46,6 @@ function hcommons_write_error_log( $error_type, $error_message, $info = null ) {
 require_once ( dirname( __FILE__ ) . '/wpmn-taxonomy-functions.php' );
 require_once ( dirname( __FILE__ ) . '/admin-toolbar.php' );
 
-if ( file_exists( dirname( __FILE__ ) . '/debug_functions.php' ) ) {
-	require_once ( dirname( __FILE__ ) . '/debug_functions.php' );
-}
-
 class Humanities_Commons {
 
 	/**
@@ -525,11 +521,13 @@ class Humanities_Commons {
 	 */
 	public function hcommons_society_body_class_name( $classes ) {
 
-		if ( shibboleth_session_active() ) {
-			$classes[] = 'active-session';
-			$user_memberships = self::hcommons_get_user_memberships();
-			if ( ! in_array( self::$society_id, $user_memberships['societies'] ) ) {
-				$classes[] = 'non-member';
+		if ( function_exists( 'shibboleth_session_active' ) ) {
+			if ( shibboleth_session_active() ) {
+				$classes[] = 'active-session';
+				$user_memberships = self::hcommons_get_user_memberships();
+				if ( ! in_array( self::$society_id, $user_memberships['societies'] ) ) {
+					$classes[] = 'non-member';
+				}
 			}
 		}
 		$classes[] = 'society-' . self::$society_id;
@@ -577,8 +575,7 @@ class Humanities_Commons {
 	 */
 	public function hcommons_check_user_site_membership( $user_role ) {
 
-		$shib_headers = shibboleth_get_option('shibboleth_headers');
-		$username = $_SERVER[$shib_headers['username']['name']];
+		$username = $_SERVER['HTTP_EMPLOYEENUMBER'];
 
 		$user = get_user_by( 'login', $username );
 		$user_id = $user->ID;
