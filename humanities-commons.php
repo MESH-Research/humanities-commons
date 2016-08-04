@@ -45,6 +45,7 @@ function hcommons_write_error_log( $error_type, $error_message, $info = null ) {
 
 require_once ( dirname( __FILE__ ) . '/wpmn-taxonomy-functions.php' );
 require_once ( dirname( __FILE__ ) . '/admin-toolbar.php' );
+require_once ( dirname( __FILE__ ) . '/debug_functions.php' );
 
 class Humanities_Commons {
 
@@ -94,6 +95,7 @@ class Humanities_Commons {
 		add_filter( 'bp_get_group_join_button', array( $this, 'hcommons_check_bp_get_group_join_button' ), 10, 2 );
 		add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_sync_bp_profile' ), 10, 3 );
 		add_action( 'pre_user_query', array( &$this, 'hcommons_filter_site_users_only' ) );
+		add_action( 'wp_login_failed', array( &$this, 'hcommons_login_failed' ) );
 
 	}
 
@@ -554,10 +556,10 @@ class Humanities_Commons {
 		}
 		$member_societies = (array) bp_get_member_type( $user_id, false );
 		if ( bp_has_member_type( $user_id, self::$society_id ) ) {
-			hcommons_write_error_log( 'info', '****CHECK_USER_MEMBER_TYPE_TRUE***-' . var_export( $user_id, true ) . '-' . var_export( $member_societies, true ) . '-' . var_export( self::$society_id, true ) . var_export( $retval, true ) );
+			//hcommons_write_error_log( 'info', '****CHECK_USER_MEMBER_TYPE_TRUE***-' . var_export( $user_id, true ) . '-' . var_export( $member_societies, true ) . '-' . var_export( self::$society_id, true ) . var_export( $capability, true ) );
 			return $retval;
 		} else {
-			hcommons_write_error_log( 'info', '****CHECK_USER_MEMBER_TYPE_FALSE***-' . var_export( $user_id, true ) . '-' . var_export( $member_societies, true ) . '-' . var_export( self::$society_id, true ) . var_export( $retval, true ) );
+			//hcommons_write_error_log( 'info', '****CHECK_USER_MEMBER_TYPE_FALSE***-' . var_export( $user_id, true ) . '-' . var_export( $member_societies, true ) . '-' . var_export( self::$society_id, true ) . var_export( $capability, true ) );
 			return false;
 		}
 	}
@@ -580,6 +582,7 @@ class Humanities_Commons {
 
 		$memberships = $this->hcommons_get_user_memberships();
 		if ( ! in_array( self::$society_id, $memberships['societies'] ) && ! is_super_admin( $user_id ) ) {
+                hcommons_write_error_log( 'info', '****CHECK_USER_SITE_MEMBERSHIP_FAIL****-' . var_export( $memberships['societies'], true ) . var_export( self::$society_id, true ) . var_export( $user, true ) );
 			return '';
 		}
 
@@ -785,8 +788,19 @@ class Humanities_Commons {
 	function hcommons_sync_bp_profile( $user ) {
 
 		hcommons_write_error_log( 'info', '****SYNC_BP_PROFILE****-'.var_export( $user, true ) );
-
 		xprofile_set_field_data( 2, $user->ID, $user->display_name );
+	}
+
+	public function hcommons_login_failed( $username ) {
+
+		$referrer = $_SERVER['HTTP_REFERER'];
+		hcommons_write_error_log( 'info', '****LOGIN_FAILED****-' . var_export( $_SERVER, true ) );
+		if ( ! empty( $referrer ) && strstr( $referrer, 'idp/profile/SAML2/Redirect/SSO?' ) ) {
+			if ( ! strstr( $_SERVER['REQUEST_URI'], '/not-a-member' ) ) { // make sure we don’t redirect twice
+				wp_redirect( 'https://' . $_SERVER['HTTP_X_FORWARDED_HOST'] . '/not-a-member' );
+				exit();
+			}
+		}
 	}
 
 	/**
