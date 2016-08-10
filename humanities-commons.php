@@ -74,7 +74,7 @@ class Humanities_Commons {
 		add_action( 'bp_register_member_types', array( $this, 'hcommons_register_member_types' ) );
 		add_action( 'bp_groups_register_group_types', array( $this, 'hcommons_register_group_types' ) );
 		add_action( 'bp_after_has_members_parse_args', array( $this, 'hcommons_set_members_query' ) );
-		add_filter( 'bp_after_has_groups_parse_args', array( $this, 'hcommons_set_groups_query_args' ) );
+		add_filter( 'bp_before_has_groups_parse_args', array( $this, 'hcommons_set_groups_query_args' ) );
 		add_action( 'groups_create_group_step_save_group-details', array( $this, 'hcommons_set_group_type' ) );
 		add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_set_user_member_types' ) );
 		add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_maybe_set_user_role_for_site' ) );
@@ -230,15 +230,7 @@ class Humanities_Commons {
 
 	public function hcommons_set_groups_query_args( $args ) {
 
-		$member_types = bp_get_member_types();
-		hcommons_write_error_log( 'info', '****GROUP_QUERY_MEMBER_TYPES****-'.var_export($member_types,true) );
-		$user_id = get_current_user_id();
-		if ( 0 !== $user_id) {
-			$society_id = get_network_option( '', 'society_id' );
-			$member_societies = (array) bp_get_member_type( $user_id, false );
-			hcommons_write_error_log( 'info', '****GROUP_QUERY_USER_MEMBER_TYPES****-'.var_export($member_societies,true) );
-		}
-		if ( 'hc' !== self::$society_id ) {
+		if ( 'hc' !== self::$society_id && ! bp_is_user_profile() ) {
 			$args['group_type'] = self::$society_id;
 		}
 		return $args;
@@ -418,10 +410,10 @@ class Humanities_Commons {
 	public function hcommons_set_network_blogs_query( $args ) {
 
 		$blog_ids = array();
+		$current_blog_id = get_current_blog_id();
 
-		if ( 'hc' !== self::$society_id ) {
+		if ( 'hc' !== self::$society_id && ! bp_is_user_profile() ) {
 			$current_network = get_current_site();
-			$current_blog_id = get_current_blog_id();
 			$network_sites = wp_get_sites( array( 'network_id' => $current_network->id, 'limit' => 9999 ) );
 			foreach( $network_sites as $site ) {
 				if ( $site['blog_id'] != $current_blog_id ) {
@@ -429,9 +421,10 @@ class Humanities_Commons {
 				}
 			}
 		} else {
+			//TODO Find a better way, this won't scale to all of HC.
 			$sites = wp_get_sites( array( 'network_id' => null, 'limit' => 9999 ) );
 			foreach( $sites as $site ) {
-				if ( $site['blog_id'] != self::$main_site->blog_id ) {
+				if ( $site['blog_id'] != $current_blog_id ) {
 					$blog_ids[] = $site['blog_id'];
 				}
 			}
@@ -442,6 +435,7 @@ class Humanities_Commons {
 			$args['include_blog_ids'] = $include_blogs;
 		}
 
+		hcommons_write_error_log( 'info', '****SET_NETWORK_BLOGS_QUERY***-'.var_export( $args, true ) );
 		return $args;
 	}
 
@@ -455,7 +449,7 @@ class Humanities_Commons {
 	 */
 	public function hcommons_set_network_activities_query( $args ) {
 
-                if ( 'hc' !== self::$society_id ) {
+                if ( 'hc' !== self::$society_id && ! bp_is_user_profile() ) {
 			$args['meta_query'] = array(
 				array(
 					'key'     => 'society_id',
@@ -482,7 +476,7 @@ class Humanities_Commons {
 	}
 
 	/**
-	 * Add the current society id to the current activity as an activity_meta record.
+	 * Set the activity permalink to contain the proper network.
 	 *
 	 * @since HCommons
 	 *
@@ -614,12 +608,14 @@ class Humanities_Commons {
 	 */
 	public function hcommons_set_group_permalink( $group_permalink ) {
 
-		if ( 'hc' !== self::$society_id ) {
-			return $group_permalink;
-		}
-		global $wpdb;
 		$group_id = bp_get_group_id();
 		$group_society_id = bp_groups_get_group_type( $group_id );
+
+                if ( $group_society_id === self::$society_id ) {
+                        return $group_permalink;
+                }
+
+		global $wpdb;
 		$row = $wpdb->get_row( $wpdb->prepare( "SELECT site_id FROM $wpdb->sitemeta WHERE meta_key = '%s' AND meta_value = '%s'", 'society_id', $group_society_id ) );
 		if ( is_object( $row ) ) {
 			$society_network = wp_get_network( $row->site_id );
@@ -641,15 +637,20 @@ class Humanities_Commons {
 	 */
 	public function hcommons_filter_get_blogs_of_user( $blogs, $user_id, $all ) {
 
-		$network_blogs = $blogs;
-		$current_network = get_current_site();
-		$current_blog_id = get_current_blog_id();
-		foreach ($blogs as $blog) {
-			if ( $current_network->id != $blog->site_id || $current_blog_id == $blog->userblog_id ) {
-				unset ( $network_blogs[$blog->userblog_id] );
+                if ( 'hc' !== self::$society_id && ! bp_is_user_profile() ) {
+			$network_blogs = $blogs;
+			$current_network = get_current_site();
+			$current_blog_id = get_current_blog_id();
+			foreach ($blogs as $blog) {
+				if ( $current_network->id != $blog->site_id || $current_blog_id == $blog->userblog_id ) {
+					unset ( $network_blogs[$blog->userblog_id] );
+				}
 			}
+			hcommons_write_error_log( 'info', '****GET_BLOGS_OF_USER****-'.var_export( $user_id, true ) );
+			return $network_blogs;
+		} else {
+			return $blogs;
 		}
-		return $network_blogs;
 	}
 
 	/**
@@ -793,14 +794,28 @@ class Humanities_Commons {
 
 	public function hcommons_login_failed( $username ) {
 
+                global $wpdb;
+                $prefix = $wpdb->get_blog_prefix();
 		$referrer = $_SERVER['HTTP_REFERER'];
-		hcommons_write_error_log( 'info', '****LOGIN_FAILED****-' . var_export( $_SERVER, true ) );
+		hcommons_write_error_log( 'info', '****LOGIN_FAILED****-' . var_export( $referrer, true ) );
 		if ( ! empty( $referrer ) && strstr( $referrer, 'idp/profile/SAML2/Redirect/SSO?' ) ) {
 			if ( ! strstr( $_SERVER['REQUEST_URI'], '/not-a-member' ) ) { // make sure we don’t redirect twice
 				wp_redirect( 'https://' . $_SERVER['HTTP_X_FORWARDED_HOST'] . '/not-a-member' );
 				exit();
 			}
 		}
+		// Otherwise, we assume we have an active session coming in as a visitor.
+		$username = $_SERVER['HTTP_EMPLOYEENUMBER']; //TODO Why is the username parameter empty?
+		$user = get_user_by( 'login', $username );
+		$user_id = $user->ID;
+		$visitor_notice = get_user_meta( $user_id, $prefix . 'commons_visitor', true );
+		if ( empty( $visitor_notice ) && ! strstr( $_SERVER['REQUEST_URI'], '/not-a-member' ) ) {
+			hcommons_write_error_log( 'info', '****LOGIN_FAILED_FIRST_TIME_NOTICE****-' . var_export( $username, true ) . '-' . var_export( $prefix, true ) );
+			update_user_meta( $user_id, $prefix . 'commons_visitor', 'Y' );
+			wp_redirect( 'https://' . $_SERVER['HTTP_X_FORWARDED_HOST'] . '/not-a-member' );
+			exit();
+		}
+
 	}
 
 	/**
