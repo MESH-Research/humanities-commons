@@ -831,7 +831,7 @@ class Humanities_Commons {
          */
         public function hcommons_non_member_active_session() {
 
-                if ( shibboleth_session_active() ) {
+                if ( function_exists( 'shibboleth_session_active' ) && shibboleth_session_active() ) {
                         $user_memberships = self::hcommons_get_user_memberships();
                         if ( ! in_array( self::$society_id, $user_memberships['societies'] ) ) {
                                 return true;
