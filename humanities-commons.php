@@ -95,6 +95,7 @@ class Humanities_Commons {
 		add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_sync_bp_profile' ), 10, 3 );
 		add_action( 'pre_user_query', array( &$this, 'hcommons_filter_site_users_only' ) );
 		add_action( 'wp_login_failed', array( &$this, 'hcommons_login_failed' ) );
+		add_filter( 'bp_get_signup_page', array( &$this, 'hcommons_register_url' ) );
 
 	}
 
@@ -816,6 +817,38 @@ class Humanities_Commons {
 			exit();
 		}
 
+	}
+
+	/**
+	 * Filter the register url to be society specific
+	 *
+	 * @since HCommons
+	 *
+	 * @param string $register_url
+	 * @return string $register_url Modified url.
+	 */
+	function hcommons_register_url( $register_url ) {
+
+		switch ( self::$society_id ) {
+			case 'hc':
+				return 'https://registry-dev.commons.mla.org/registry/co_petitions/start/coef:72';
+				break;
+			case 'ajs':
+				return 'https://registry-dev.commons.mla.org/registry/co_petitions/start/coef:66';
+				break;
+			case 'aseees':
+				return 'https://registry-dev.commons.mla.org/registry/co_petitions/start/coef:68';
+				break;
+			case 'mla':
+				return 'https://registry-dev.commons.mla.org/registry/co_petitions/start/coef:64';
+				break;
+			case 'caa':
+				return 'https://registry-dev.commons.mla.org/registry/co_petitions/start/coef:74';
+				break;
+			default:
+				return $register_url;
+				break;
+		}
 	}
 
 	/**

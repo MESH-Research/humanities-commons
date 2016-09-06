@@ -66,6 +66,12 @@ function hcommons_admin_bar_enqueue_style() {
 }
 add_action( 'wp_enqueue_scripts', 'hcommons_admin_bar_enqueue_style' );
 
+function debug_admin_bar_init() {
+        global $wp_admin_bar, $humanities_commons;
+	hcommons_write_error_log( 'info', '****ADMIN_BAR_INIT****-'.var_export($wp_admin_bar,true) );
+}
+add_action( 'admin_bar_init', 'debug_admin_bar_init' );
+
 /* PHP Fatal error:  Uncaught Error: Call to undefined function wp_get_current_user() in /srv/www/commons/current/web/wp/wp-includes/capabilities.php:428:w
 if ( ! current_user_can( 'manage_options' ) ) {
 	add_filter( 'show_admin_bar', '__return_false' );
