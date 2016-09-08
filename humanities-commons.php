@@ -235,10 +235,12 @@ class Humanities_Commons {
 
 	public function hcommons_set_groups_query_args( $args ) {
 
-		if ( 'hc' !== self::$society_id && ! bp_is_user_profile() ) {
+		if ( ( !empty( $_REQUEST['page'] ) && is_admin() && 'bp-groups' == $_REQUEST['page'] ) || ( 'hc' !== self::$society_id && ! bp_is_user_profile() ) ) {
 			$args['group_type'] = self::$society_id;
 		}
+
 		return $args;
+
 	}
 
 	public function hcommons_set_group_type( $group_id ) {
