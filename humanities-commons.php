@@ -65,7 +65,11 @@ class Humanities_Commons {
 
 	public function __construct() {
 
-		self::$main_network = wp_get_network( get_main_network_id() );
+                if ( defined( 'HC_SITE_ID' ) ) {
+                        self::$main_network = wp_get_network( (int) HC_SITE_ID );
+                } else {
+                        self::$main_network = wp_get_network( (int) '1' );
+                }
 		self::$main_site = get_site_by_path( self::$main_network->domain, self::$main_network->path );
 		self::$society_id = get_network_option( '', 'society_id' );
 
@@ -279,8 +283,6 @@ class Humanities_Commons {
 		$user_id = $user->ID;
 		$memberships = $this->hcommons_get_user_memberships();
 		hcommons_write_error_log( 'info', '****RETURNED_MEMBERSHIPS****-'.$_SERVER['HTTP_HOST'].'-'.var_export($user,true).'-'.var_export($memberships,true) );
-		$main_network = wp_get_network( get_main_network_id() );
-
 		$member_societies = (array) bp_get_member_type( $user_id, false );
 		hcommons_write_error_log( 'info', '****PRE_SET_USER_MEMBER_TYPES****-'.var_export($member_societies,true) );
 		$result = bp_set_member_type( $user_id, '' ); // Clear existing types, if any.
