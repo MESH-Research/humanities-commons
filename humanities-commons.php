@@ -418,6 +418,7 @@ class Humanities_Commons {
 		$current_blog_id = get_current_blog_id();
 
 		if ( 'hc' !== self::$society_id && ! bp_is_user_profile() ) {
+
 			$current_network = get_current_site();
 			$network_sites = wp_get_sites( array( 'network_id' => $current_network->id, 'limit' => 9999 ) );
 			foreach( $network_sites as $site ) {
@@ -833,26 +834,12 @@ class Humanities_Commons {
 	 */
 	function hcommons_register_url( $register_url ) {
 
-		switch ( self::$society_id ) {
-			case 'hc':
-				return 'https://registry-dev.commons.mla.org/registry/co_petitions/start/coef:72';
-				break;
-			case 'ajs':
-				return 'https://registry-dev.commons.mla.org/registry/co_petitions/start/coef:66';
-				break;
-			case 'aseees':
-				return 'https://registry-dev.commons.mla.org/registry/co_petitions/start/coef:68';
-				break;
-			case 'mla':
-				return 'https://registry-dev.commons.mla.org/registry/co_petitions/start/coef:64';
-				break;
-			case 'caa':
-				return 'https://registry-dev.commons.mla.org/registry/co_petitions/start/coef:74';
-				break;
-			default:
-				return $register_url;
-				break;
+		if ( ! empty( self::$society_id ) && defined( strtoupper( self::$society_id ) . '_ENROLLMENT_URL' ) ) {
+			return constant( strtoupper( self::$society_id ) . '_ENROLLMENT_URL' );
+		} else {
+			return $register_url;
 		}
+
 	}
 
 	/**
