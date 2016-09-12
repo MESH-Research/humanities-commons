@@ -100,6 +100,7 @@ class Humanities_Commons {
 		add_action( 'pre_user_query', array( &$this, 'hcommons_filter_site_users_only' ) );
 		add_action( 'wp_login_failed', array( &$this, 'hcommons_login_failed' ) );
 		add_filter( 'bp_get_signup_page', array( &$this, 'hcommons_register_url' ) );
+		add_filter( 'invite_anyone_is_large_network', '__return_true' ); //hide invite anyone member list on create/edit group screen
 
 	}
 
