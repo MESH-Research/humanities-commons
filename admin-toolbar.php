@@ -24,6 +24,7 @@ function hcommons_admin_bar_render() {
         $wp_admin_bar->remove_menu( 'documentation' );
         $wp_admin_bar->remove_menu( 'support-forums' );
         $wp_admin_bar->remove_menu( 'feedback' );
+        $wp_admin_bar->remove_menu( 'updates' );
 
         $wp_admin_bar->remove_menu( 'my-account-buddydrive' );
         $wp_admin_bar->remove_menu( 'my-account-buddydrive-files' );
@@ -55,8 +56,8 @@ function hcommons_admin_bar_render() {
 		}
         }
 
-
-	//hcommons_write_error_log( 'info', '****ADMIN_BAR_RENDER****-'.var_export($wp_admin_bar,true) );
+	$nodes = $wp_admin_bar->get_nodes();
+	hcommons_write_error_log( 'info', '****ADMIN_BAR_RENDER****-'.var_export($nodes,true) );
 
 }
 add_action( 'wp_before_admin_bar_render', 'hcommons_admin_bar_render' );
@@ -68,7 +69,7 @@ add_action( 'wp_enqueue_scripts', 'hcommons_admin_bar_enqueue_style' );
 
 function debug_admin_bar_init() {
         global $wp_admin_bar, $humanities_commons;
-	hcommons_write_error_log( 'info', '****ADMIN_BAR_INIT****-'.var_export($wp_admin_bar,true) );
+	//hcommons_write_error_log( 'info', '****ADMIN_BAR_INIT****-'.var_export($wp_admin_bar,true) );
 }
 add_action( 'admin_bar_init', 'debug_admin_bar_init' );
 
