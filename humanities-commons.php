@@ -104,6 +104,7 @@ class Humanities_Commons {
 
 	}
 
+
 	public function hcommons_filter_bp_taxonomy_storage_site( $site_id, $taxonomy ) {
 
 		if ( in_array( $taxonomy, array( 'bp_group_type', 'bp_member_type' ) ) ) {
@@ -111,6 +112,7 @@ class Humanities_Commons {
 		} else {
 			return $site_id;
 		}
+
 	}
 
 	public function hcommons_filter_hc_taxonomy_storage_site( $site_id, $taxonomy ) {
@@ -120,6 +122,7 @@ class Humanities_Commons {
 		} else {
 			return $site_id;
 		}
+
 	}
 
 	public function hcommons_register_member_types() {
@@ -418,7 +421,7 @@ class Humanities_Commons {
 		$blog_ids = array();
 		$current_blog_id = get_current_blog_id();
 
-		if ( 'hc' !== self::$society_id && ! bp_is_user_profile() ) {
+		if ( 'hc' !== self::$society_id && empty( $args['user_id'] ) && ! bp_is_current_action('my-sites') ) {
 
 			$current_network = get_current_site();
 			$network_sites = wp_get_sites( array( 'network_id' => $current_network->id, 'limit' => 9999 ) );
@@ -644,20 +647,27 @@ class Humanities_Commons {
 	 */
 	public function hcommons_filter_get_blogs_of_user( $blogs, $user_id, $all ) {
 
-                if ( 'hc' !== self::$society_id && ! bp_is_user_profile() ) {
+    if ( 'hc' !== self::$society_id && ! bp_is_current_action('my-sites') ) {
+
 			$network_blogs = $blogs;
 			$current_network = get_current_site();
 			$current_blog_id = get_current_blog_id();
+
 			foreach ($blogs as $blog) {
+
 				if ( $current_network->id != $blog->site_id || $current_blog_id == $blog->userblog_id ) {
 					unset ( $network_blogs[$blog->userblog_id] );
 				}
+
 			}
+
 			hcommons_write_error_log( 'info', '****GET_BLOGS_OF_USER****-'.var_export( $user_id, true ) );
 			return $network_blogs;
+
 		} else {
 			return $blogs;
 		}
+
 	}
 
 	/**
