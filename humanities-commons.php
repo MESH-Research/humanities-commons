@@ -89,7 +89,10 @@ class Humanities_Commons {
 		add_filter( 'bp_activity_after_save', array( $this, 'hcommons_set_activity_society_meta' ) );
 		add_filter( 'bp_activity_get_permalink', array( $this, 'hcommons_filter_activity_permalink' ), 10, 2 );
 		add_filter( 'body_class', array( $this, 'hcommons_society_body_class_name' ) );
-		add_filter( 'bp_current_user_can', array( $this, 'hcommons_check_site_member_can' ), 10, 4 );
+		// this filter makes 'bp_xprofile_change_field_visibility' false which is required for profile plugin visibility controls
+		// doesn't work with local users without a member type, but also doesn't work when member type & blog_id don't match?
+		// should always return true for any logged-in user, since visibility controls on xprofile fields are not restricted
+		//add_filter( 'bp_current_user_can', array( $this, 'hcommons_check_site_member_can' ), 10, 4 );
 		add_filter( 'shibboleth_user_role', array( $this, 'hcommons_check_user_site_membership' ) );
 		add_filter( 'bp_get_groups_directory_permalink', array( $this, 'hcommons_set_group_permalink' ) );
 		add_filter( 'get_blogs_of_user', array( $this, 'hcommons_filter_get_blogs_of_user'), 10, 3 );
