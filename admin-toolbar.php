@@ -26,9 +26,15 @@ function hcommons_admin_bar_render() {
         $wp_admin_bar->remove_menu( 'feedback' );
         $wp_admin_bar->remove_menu( 'updates' );
 
+        $wp_admin_bar->remove_menu( 'my-account-blogs' );
+        $wp_admin_bar->remove_menu( 'my-account-forums' );
+        $wp_admin_bar->remove_menu( 'my-account-groups' );
+        $wp_admin_bar->remove_menu( 'my-account-notifications' );
+        $wp_admin_bar->remove_menu( 'my-account-xprofile' );
+
         $wp_admin_bar->remove_menu( 'my-account-buddydrive' );
-        $wp_admin_bar->remove_menu( 'my-account-buddydrive-files' );
-        $wp_admin_bar->remove_menu( 'my-account-buddydrive-members' );
+//        $wp_admin_bar->remove_menu( 'my-account-buddydrive-files' );
+//        $wp_admin_bar->remove_menu( 'my-account-buddydrive-members' );
 
         if ( ! is_admin() ) {
                 $site_name_clone = $wp_admin_bar->get_node( 'site-name' );
