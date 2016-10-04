@@ -104,6 +104,10 @@ class Humanities_Commons {
 		add_action( 'wp_login_failed', array( &$this, 'hcommons_login_failed' ) );
 		add_filter( 'bp_get_signup_page', array( &$this, 'hcommons_register_url' ) );
 		add_filter( 'invite_anyone_is_large_network', '__return_true' ); //hide invite anyone member list on create/edit group screen
+
+		// remove the default shib filter which changes login url to /wp-login.php?action=shibboleth
+		remove_filter( 'login_url', 'shibboleth_login_url' );
+		// and add our own which uses /Shibboleth.sso/Login instead. this prevents redirect to /wp-admin after logging in
 		add_filter( 'login_url', array( $this, 'hcommons_login_url' ) );
 
 	}
