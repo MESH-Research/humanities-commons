@@ -104,6 +104,7 @@ class Humanities_Commons {
 		add_action( 'wp_login_failed', array( &$this, 'hcommons_login_failed' ) );
 		add_filter( 'bp_get_signup_page', array( &$this, 'hcommons_register_url' ) );
 		add_filter( 'invite_anyone_is_large_network', '__return_true' ); //hide invite anyone member list on create/edit group screen
+		add_filter( 'login_url', array( $this, 'hcommons_login_url' ) );
 
 	}
 
@@ -834,6 +835,25 @@ class Humanities_Commons {
 			update_user_meta( $user_id, $prefix . 'commons_visitor', 'Y' );
 			wp_redirect( 'https://' . $_SERVER['HTTP_X_FORWARDED_HOST'] . '/not-a-member' );
 			exit();
+		}
+
+	}
+
+	/**
+	 * Filter the login url to be society specific
+	 * This prevents redirect to /wp-admin after logging in
+	 *
+	 * @since HCommons
+	 *
+	 * @param string $login_url
+	 * @return string $login_url Modified url.
+	 */
+	function hcommons_login_url( $login_url ) {
+
+		if ( ! empty( self::$society_id ) && defined( strtoupper( self::$society_id ) . '_LOGIN_URL' ) ) {
+			return constant( strtoupper( self::$society_id ) . '_LOGIN_URL' );
+		} else {
+			return $login_url;
 		}
 
 	}
