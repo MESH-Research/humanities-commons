@@ -100,11 +100,12 @@ class Humanities_Commons {
 		add_filter( 'bp_core_avatar_url', array( $this, 'hcommons_set_bp_core_avatar_url' ) );
 		add_filter( 'bp_get_group_join_button', array( $this, 'hcommons_check_bp_get_group_join_button' ), 10, 2 );
 		add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_sync_bp_profile' ), 10, 3 );
-		add_action( 'pre_user_query', array( &$this, 'hcommons_filter_site_users_only' ) );
-		add_action( 'wp_login_failed', array( &$this, 'hcommons_login_failed' ) );
-		add_filter( 'bp_get_signup_page', array( &$this, 'hcommons_register_url' ) );
+		add_action( 'pre_user_query', array( &$this, 'hcommons_filter_site_users_only' ) ); // do_action_ref_array() is used for pre_user_query 
+		add_action( 'wp_login_failed', array( $this, 'hcommons_login_failed' ) );
+		add_filter( 'bp_get_signup_page', array( $this, 'hcommons_register_url' ) );
 		add_filter( 'invite_anyone_is_large_network', '__return_true' ); //hide invite anyone member list on create/edit group screen
 		add_filter( 'login_url', array( $this, 'hcommons_login_url' ) );
+		add_action( 'bp_init',  array( $this, 'hcommons_remove_nav_items' ) );
 
 	}
 
@@ -840,6 +841,24 @@ class Humanities_Commons {
 	}
 
 	/**
+	 * Filter the register url to be society specific
+	 *
+	 * @since HCommons
+	 *
+	 * @param string $register_url
+	 * @return string $register_url Modified url.
+	 */
+	public function hcommons_register_url( $register_url ) {
+
+		if ( ! empty( self::$society_id ) && defined( strtoupper( self::$society_id ) . '_ENROLLMENT_URL' ) ) {
+			return constant( strtoupper( self::$society_id ) . '_ENROLLMENT_URL' );
+		} else {
+			return $register_url;
+		}
+
+	}
+
+	/**
 	 * Filter the login url to be society specific
 	 * This prevents redirect to /wp-admin after logging in
 	 *
@@ -848,7 +867,7 @@ class Humanities_Commons {
 	 * @param string $login_url
 	 * @return string $login_url Modified url.
 	 */
-	function hcommons_login_url( $login_url ) {
+	public function hcommons_login_url( $login_url ) {
 		remove_filter( 'login_url', 'shibboleth_login_url' );
 
 		if ( ! empty( self::$society_id ) && defined( 'LOGIN_PATH' ) ) {
@@ -860,20 +879,17 @@ class Humanities_Commons {
 	}
 
 	/**
-	 * Filter the register url to be society specific
+	 * Action to modify nav and sub nav items
 	 *
 	 * @since HCommons
 	 *
-	 * @param string $register_url
-	 * @return string $register_url Modified url.
 	 */
-	function hcommons_register_url( $register_url ) {
+	public function hcommons_remove_nav_items() {
 
-		if ( ! empty( self::$society_id ) && defined( strtoupper( self::$society_id ) . '_ENROLLMENT_URL' ) ) {
-			return constant( strtoupper( self::$society_id ) . '_ENROLLMENT_URL' );
-		} else {
-			return $register_url;
-		}
+		global $bp;
+		bp_core_remove_subnav_item( 'settings', 'general' );
+		bp_core_remove_subnav_item( 'settings', 'profile' );
+		bp_core_new_nav_default( array( 'parent_slug' => 'settings', 'screen_function' =>'bp_settings_screen_notification', 'subnav_slug' => 'notifications' ) );
 
 	}
 

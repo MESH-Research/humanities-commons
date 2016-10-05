@@ -35,6 +35,8 @@ function hcommons_admin_bar_render() {
         $wp_admin_bar->remove_menu( 'my-account-buddydrive' );
 //        $wp_admin_bar->remove_menu( 'my-account-buddydrive-files' );
 //        $wp_admin_bar->remove_menu( 'my-account-buddydrive-members' );
+        $wp_admin_bar->remove_menu( 'my-account-settings-general' );
+        $wp_admin_bar->remove_menu( 'my-account-settings-profile' );
 
         if ( ! is_admin() ) {
                 $site_name_clone = $wp_admin_bar->get_node( 'site-name' );
@@ -63,7 +65,7 @@ function hcommons_admin_bar_render() {
         }
 
 	$nodes = $wp_admin_bar->get_nodes();
-	hcommons_write_error_log( 'info', '****ADMIN_BAR_RENDER****-'.var_export($nodes,true) );
+	//hcommons_write_error_log( 'info', '****ADMIN_BAR_RENDER****-'.var_export($nodes,true) );
 
 }
 add_action( 'wp_before_admin_bar_render', 'hcommons_admin_bar_render' );
