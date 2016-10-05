@@ -851,8 +851,8 @@ class Humanities_Commons {
 	function hcommons_login_url( $login_url ) {
 		remove_filter( 'login_url', 'shibboleth_login_url' );
 
-		if ( ! empty( self::$society_id ) && defined( strtoupper( self::$society_id ) . '_LOGIN_URL' ) ) {
-			return constant( strtoupper( self::$society_id ) . '_LOGIN_URL' );
+		if ( ! empty( self::$society_id ) && defined( 'LOGIN_PATH' ) ) {
+			return bp_get_root_domain() . LOGIN_PATH;
 		} else {
 			return $login_url;
 		}
