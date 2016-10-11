@@ -913,15 +913,18 @@ class Humanities_Commons {
          */
 	public function hcommons_get_user_login_method() {
 
+		$methods = array (
+			'dev.mla.org' => 'Legacy <em>MLA Commons</em>',
+			'commons.mla.org' => 'Google Gateway',
+			'twitter-gateway.hcommons-dev.org' => 'Twitter Gateway',
+			'hcommons-test.mla.org' => 'Humanities Commons',
+		);
 		$login_method = '';
 		$login_method_header = $_SERVER['HTTP_EPPN'] . ';';
-		$pattern = sprintf( '/.*?\@(.*?)/' );
-		if ( preg_match( $pattern, $login_method_header, $matches ) ) {
-			$login_method = $matches[1];
-		}
-		hcommons_write_error_log( 'info', '**********************GET_LOGIN_METHOD********************-' . var_export( $login_method_header, true ) . '-' . $login_method );
+		$login_method = explode( '@', $login_method_header );
+		hcommons_write_error_log( 'info', '**********************GET_LOGIN_METHOD********************-' . var_export( $login_method_header, true ) . '-' . $login_method[1] );
 
-		return $login_method;
+		return $methods[rtrim( $login_method[1], ';' )];
 	}
 
         /**
