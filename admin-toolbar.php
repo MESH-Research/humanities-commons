@@ -35,7 +35,6 @@ function hcommons_admin_bar_render() {
         $wp_admin_bar->remove_menu( 'my-account-buddydrive' );
 //        $wp_admin_bar->remove_menu( 'my-account-buddydrive-files' );
 //        $wp_admin_bar->remove_menu( 'my-account-buddydrive-members' );
-        $wp_admin_bar->remove_menu( 'my-account-settings-general' );
         $wp_admin_bar->remove_menu( 'my-account-settings-profile' );
 
         if ( ! is_admin() ) {

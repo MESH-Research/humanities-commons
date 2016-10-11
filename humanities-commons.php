@@ -264,31 +264,6 @@ class Humanities_Commons {
 		bp_groups_set_group_type( $id, self::$society_id );
 	}
 
-	public function hcommons_get_user_memberships() {
-
-		$memberships = array();
-		$member_types = bp_get_member_types();
-		$membership_header = $_SERVER['HTTP_ISMEMBEROF'] . ';';
-		hcommons_write_error_log( 'info', '**********************GET_MEMBERSHIPS********************-'.var_export( $membership_header, true ).'-'.var_export($member_types,true) );
-
-		foreach ( $member_types as $key=>$value ) {
-
-			$pattern = sprintf( '/Humanities Commons:%1$s:members_%1$s;/', strtoupper( $key ) );
-			if ( preg_match( $pattern, $membership_header, $matches ) ) {
-				$memberships['societies'][] = $key;
-			}
-
-			$pattern = sprintf( '/Humanities Commons:%1$s_(.*?);/', strtoupper( $key ) );
-			if ( preg_match_all( $pattern, $membership_header, $matches ) ) {
-				hcommons_write_error_log( 'info', '****GET_MATCHES****-'.$key.'-'.var_export( $matches, true ) );
-				$memberships['groups'][$key] = $matches[1];
-			}
-
-		}
-
-		return $memberships;
-	}
-
 	public function hcommons_set_user_member_types( $user ) {
 
 		$user_id = $user->ID;
@@ -887,15 +862,67 @@ class Humanities_Commons {
 	public function hcommons_remove_nav_items() {
 
 		global $bp;
-		bp_core_remove_subnav_item( 'settings', 'general' );
+		//bp_core_remove_subnav_item( 'settings', 'general' );
 		bp_core_remove_subnav_item( 'settings', 'profile' );
-		bp_core_new_nav_default( array( 'parent_slug' => 'settings', 'screen_function' =>'bp_settings_screen_notification', 'subnav_slug' => 'notifications' ) );
+		//bp_core_new_nav_default( array( 'parent_slug' => 'settings', 'screen_function' =>'bp_settings_screen_notification', 'subnav_slug' => 'notifications' ) );
 
 	}
 
 	/**
 	 * Functions not tied to any filter or action.
 	 */
+
+        /**
+         * Return user memberships from session
+         *
+         * @since HCommons
+         *
+         * @return array $memberships
+         */
+	public function hcommons_get_user_memberships() {
+
+		$memberships = array();
+		$member_types = bp_get_member_types();
+		$membership_header = $_SERVER['HTTP_ISMEMBEROF'] . ';';
+		hcommons_write_error_log( 'info', '**********************GET_MEMBERSHIPS********************-'.var_export( $membership_header, true ).'-'.var_export($member_types,true) );
+
+		foreach ( $member_types as $key=>$value ) {
+
+			$pattern = sprintf( '/Humanities Commons:%1$s:members_%1$s;/', strtoupper( $key ) );
+			if ( preg_match( $pattern, $membership_header, $matches ) ) {
+				$memberships['societies'][] = $key;
+			}
+
+			$pattern = sprintf( '/Humanities Commons:%1$s_(.*?);/', strtoupper( $key ) );
+			if ( preg_match_all( $pattern, $membership_header, $matches ) ) {
+				hcommons_write_error_log( 'info', '****GET_MATCHES****-'.$key.'-'.var_export( $matches, true ) );
+				$memberships['groups'][$key] = $matches[1];
+			}
+
+		}
+
+		return $memberships;
+	}
+
+        /**
+         * Return user login method from session
+         *
+         * @since HCommons
+         *
+         * @return string $login_method
+         */
+	public function hcommons_get_user_login_method() {
+
+		$login_method = '';
+		$login_method_header = $_SERVER['HTTP_EPPN'] . ';';
+		$pattern = sprintf( '/.*?\@(.*?)/' );
+		if ( preg_match( $pattern, $login_method_header, $matches ) ) {
+			$login_method = $matches[1];
+		}
+		hcommons_write_error_log( 'info', '**********************GET_LOGIN_METHOD********************-' . var_export( $login_method_header, true ) . '-' . $login_method );
+
+		return $login_method;
+	}
 
         /**
          * Check for non-member active session
