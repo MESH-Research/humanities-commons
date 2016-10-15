@@ -106,6 +106,7 @@ class Humanities_Commons {
 		add_filter( 'invite_anyone_is_large_network', '__return_true' ); //hide invite anyone member list on create/edit group screen
 		add_filter( 'login_url', array( $this, 'hcommons_login_url' ) );
 		add_action( 'bp_init',  array( $this, 'hcommons_remove_nav_items' ) );
+		add_action( 'bp_init', array( $this, 'hcommons_remove_bpges_actions' ) );
 
 	}
 
@@ -789,6 +790,13 @@ class Humanities_Commons {
 		xprofile_set_field_data( 2, $user->ID, $user->display_name );
 	}
 
+	/**
+	 * Handle a failed login attempt. Determine if the user has visitor status.
+	 *
+	 * @since HCommons
+	 *
+	 * @param string $username   User who is attempting to log in.
+	 */
 	public function hcommons_login_failed( $username ) {
 
                 global $wpdb;
@@ -806,7 +814,7 @@ class Humanities_Commons {
 		$user = get_user_by( 'login', $username );
 		$user_id = $user->ID;
 		$visitor_notice = get_user_meta( $user_id, $prefix . 'commons_visitor', true );
-		if ( empty( $visitor_notice ) && ! strstr( $_SERVER['REQUEST_URI'], '/not-a-member' ) ) {
+		if ( ( empty( $visitor_notice ) || 1===1 ) && ! strstr( $_SERVER['REQUEST_URI'], '/not-a-member' ) ) { //TODO remove 1===1 clause after testing
 			hcommons_write_error_log( 'info', '****LOGIN_FAILED_FIRST_TIME_NOTICE****-' . var_export( $username, true ) . '-' . var_export( $prefix, true ) );
 			update_user_meta( $user_id, $prefix . 'commons_visitor', 'Y' );
 			wp_redirect( 'https://' . $_SERVER['HTTP_X_FORWARDED_HOST'] . '/not-a-member' );
@@ -864,7 +872,24 @@ class Humanities_Commons {
 		global $bp;
 		//bp_core_remove_subnav_item( 'settings', 'general' );
 		bp_core_remove_subnav_item( 'settings', 'profile' );
+		// Example of how you change the default tab.
 		//bp_core_new_nav_default( array( 'parent_slug' => 'settings', 'screen_function' =>'bp_settings_screen_notification', 'subnav_slug' => 'notifications' ) );
+
+	}
+
+	/**
+	 * Action to remove BPGES digest actions from all networks except HC
+	 *
+	 * @since HCommons
+	 *
+	 */
+	public function hcommons_remove_bpges_actions() {
+
+		// BPGES is not multi-network aware, Let's run BPGES digests from HC only.
+		if ( 'hc' !== self::$society_id ) {
+			remove_action( 'ass_digest_event', 'ass_daily_digest_fire' );
+			remove_action( 'ass_digest_event_weekly', 'ass_weekly_digest_fire' );
+		}
 
 	}
 
@@ -920,11 +945,33 @@ class Humanities_Commons {
 			'hcommons-test.mla.org' => 'Humanities Commons',
 		);
 		$login_method = '';
-		$login_method_header = $_SERVER['HTTP_EPPN'] . ';';
+		$login_method_header = $_SERVER['HTTP_EPPN'];
 		$login_method = explode( '@', $login_method_header );
 		hcommons_write_error_log( 'info', '**********************GET_LOGIN_METHOD********************-' . var_export( $login_method_header, true ) . '-' . $login_method[1] );
 
-		return $methods[rtrim( $login_method[1], ';' )];
+		return $methods[$login_method];
+	}
+
+        /**
+         * Return identity provider from session
+         *
+         * @since HCommons
+         *
+         * @return string $identity_provider
+         */
+	public function hcommons_get_identity_provider() {
+
+		$providers = array (
+			'https://mla-idp-dev.mla.org/idp/shibboleth' => 'Legacy <em>MLA Commons</em>',
+			'https://login-dev.commons.mla.org/idp/shibboleth' => 'Google Gateway',
+			'https://twitter-gateway.hcommons-dev.org/idp/shibboleth' => 'Twitter Gateway',
+			'https://hcommons-test.commons.mla.org/idp/shibboleth' => 'Humanities Commons',
+		);
+		$identity_provider = '';
+		$identity_provider = $_SERVER['HTTP_SHIB_IDENTITY_PROVIDER'];
+		//hcommons_write_error_log( 'info', '**********************GET_IDENTITY_PROVIDER********************-' . var_export( $identity_provider, true ) );
+
+		return $providers[$identity_provider];
 	}
 
         /**
