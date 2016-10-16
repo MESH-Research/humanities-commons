@@ -961,12 +961,19 @@ class Humanities_Commons {
          */
 	public function hcommons_get_identity_provider() {
 
-		$providers = array (
-			'https://mla-idp-dev.mla.org/idp/shibboleth' => 'Legacy <em>MLA Commons</em>',
-			'https://login-dev.commons.mla.org/idp/shibboleth' => 'Google Gateway',
-			'https://twitter-gateway.hcommons-dev.org/idp/shibboleth' => 'Twitter Gateway',
-			'https://hcommons-test.commons.mla.org/idp/shibboleth' => 'Humanities Commons',
-		);
+		$providers = array ();
+                if ( defined( 'GOOGLE_IDENTITY_PROVIDER' ) ) {
+			$providers[GOOGLE_IDENTITY_PROVIDER] = 'Google Gateway';
+		}
+                if ( defined( 'TWITTER_IDENTITY_PROVIDER' ) ) {
+			$providers[TWITTER_IDENTITY_PROVIDER] = 'Twitter Gateway';
+		}
+                if ( defined( 'HC_IDENTITY_PROVIDER' ) ) {
+			$providers[HC_IDENTITY_PROVIDER] = 'Humanities Commons';
+		}
+                if ( defined( 'MLA_IDENTITY_PROVIDER' ) ) {
+			$providers[MLA_IDENTITY_PROVIDER] = 'Legacy <em>MLA Commons</em>';
+		}
 		$identity_provider = '';
 		$identity_provider = $_SERVER['HTTP_SHIB_IDENTITY_PROVIDER'];
 		//hcommons_write_error_log( 'info', '**********************GET_IDENTITY_PROVIDER********************-' . var_export( $identity_provider, true ) );
