@@ -963,13 +963,13 @@ class Humanities_Commons {
 
 		$providers = array ();
                 if ( defined( 'GOOGLE_IDENTITY_PROVIDER' ) ) {
-			$providers[GOOGLE_IDENTITY_PROVIDER] = 'Google Gateway';
+			$providers[GOOGLE_IDENTITY_PROVIDER] = 'Google';
 		}
                 if ( defined( 'TWITTER_IDENTITY_PROVIDER' ) ) {
-			$providers[TWITTER_IDENTITY_PROVIDER] = 'Twitter Gateway';
+			$providers[TWITTER_IDENTITY_PROVIDER] = 'Twitter';
 		}
                 if ( defined( 'HC_IDENTITY_PROVIDER' ) ) {
-			$providers[HC_IDENTITY_PROVIDER] = 'Humanities Commons';
+			$providers[HC_IDENTITY_PROVIDER] = 'HC ID';
 		}
                 if ( defined( 'MLA_IDENTITY_PROVIDER' ) ) {
 			$providers[MLA_IDENTITY_PROVIDER] = 'Legacy <em>MLA Commons</em>';
