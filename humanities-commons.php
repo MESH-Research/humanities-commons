@@ -114,7 +114,7 @@ class Humanities_Commons {
 	public function hcommons_filter_bp_taxonomy_storage_site( $site_id, $taxonomy ) {
 
 		if ( in_array( $taxonomy, array( 'bp_group_type', 'bp_member_type' ) ) ) {
-			return self::$main_site->site_id;
+			return self::$main_site->blog_id;
 		} else {
 			return $site_id;
 		}
@@ -124,7 +124,7 @@ class Humanities_Commons {
 	public function hcommons_filter_hc_taxonomy_storage_site( $site_id, $taxonomy ) {
 
 		if ( in_array( $taxonomy, array( 'mla_academic_interests', 'humcore_deposit_subject', 'humcore_deposit_tag' ) ) ) {
-			return self::$main_site->site_id;
+			return (int) '1'; // Go legacy during beta.
 		} else {
 			return $site_id;
 		}
