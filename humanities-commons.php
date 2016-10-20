@@ -107,6 +107,9 @@ class Humanities_Commons {
 		add_filter( 'login_url', array( $this, 'hcommons_login_url' ) );
 		add_action( 'bp_init',  array( $this, 'hcommons_remove_nav_items' ) );
 		add_action( 'bp_init', array( $this, 'hcommons_remove_bpges_actions' ) );
+		add_filter( 'password_protected_login_headertitle', array( $this, 'hcommons_password_protect_title' ) );
+		add_filter( 'password_protected_login_headerurl', array( $this, 'hcommons_password_protect_url' ) );
+		add_action( 'password_protected_login_messages', array( $this, 'hcommons_password_protect_message' ) );
 
 	}
 
@@ -890,6 +893,48 @@ class Humanities_Commons {
 			remove_action( 'ass_digest_event', 'ass_daily_digest_fire' );
 			remove_action( 'ass_digest_event_weekly', 'ass_weekly_digest_fire' );
 		}
+
+	}
+
+	/**
+	 * Filter password protect page url
+	 *
+	 * @since HCommons
+	 *
+	 */
+	public function hcommons_password_protect_url( $url ) {
+
+		return 'https://news.hcommons.org';
+
+	}
+
+	/**
+	 * Filter password protect page title
+	 *
+	 * @since HCommons
+	 *
+	 */
+	public function hcommons_password_protect_title( $title ) {
+
+		return $title;
+
+	}
+
+	/**
+	 * Filter password protect page message
+	 *
+	 * @since HCommons
+	 *
+	 */
+	public function hcommons_password_protect_message( $title ) {
+
+		echo '<style type="text/css">body.login { background-color: #ffffff !important; } ' .
+			' body.login h1 a { color: #000000 !important; ' .
+			'   font-family: lexia,serif; font-weight: 300; text-transform: unset !important; line-height: 1.2;} ' .
+			' #entry-content p { line-height: 1.5; margin-top: 12px !important; } ' .
+			' #login form p.submit input { background-color: #0085ba !important; } ' .
+			' .login form { margin-top: 0px; !important; }</style>';
+		echo '<div class="entry-content entry-summary"><p>Welcome to the future home of Humanities Commons. Please forgive our appearance while we get ready for our big debut in November 2016. For information about the project, and to sign up for e-mail updates, please visit <a href="https://news.hcommons.org">news.hcommons.org.</a></p></div>';
 
 	}
 
