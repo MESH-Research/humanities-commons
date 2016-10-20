@@ -817,7 +817,7 @@ class Humanities_Commons {
 		$user = get_user_by( 'login', $username );
 		$user_id = $user->ID;
 		$visitor_notice = get_user_meta( $user_id, $prefix . 'commons_visitor', true );
-		if ( ( empty( $visitor_notice ) || 1===1 ) && ! strstr( $_SERVER['REQUEST_URI'], '/not-a-member' ) ) { //TODO remove 1===1 clause after testing
+		if ( ( empty( $visitor_notice ) ) && ! strstr( $_SERVER['REQUEST_URI'], '/not-a-member' ) ) {
 			hcommons_write_error_log( 'info', '****LOGIN_FAILED_FIRST_TIME_NOTICE****-' . var_export( $username, true ) . '-' . var_export( $prefix, true ) );
 			update_user_meta( $user_id, $prefix . 'commons_visitor', 'Y' );
 			wp_redirect( 'https://' . $_SERVER['HTTP_X_FORWARDED_HOST'] . '/not-a-member' );
