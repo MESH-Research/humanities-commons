@@ -86,6 +86,7 @@ class Humanities_Commons {
 		add_filter( 'bp_get_total_blog_count', array( $this, 'hcommons_get_total_blog_count' ) );
 		add_filter( 'bp_get_total_blog_count_for_user', array( $this, 'hcommons_get_total_blog_count_for_user' ) );
 		add_filter( 'bp_before_has_activities_parse_args', array( $this, 'hcommons_set_network_activities_query' ) );
+		add_filter( 'bp_activity_get_where_conditions', array( $this, 'hcommons_filter_activity_where_conditions' ) );
 		add_filter( 'bp_activity_after_save', array( $this, 'hcommons_set_activity_society_meta' ) );
 		add_filter( 'bp_activity_get_permalink', array( $this, 'hcommons_filter_activity_permalink' ), 10, 2 );
 		add_filter( 'body_class', array( $this, 'hcommons_society_body_class_name' ) );
@@ -443,7 +444,7 @@ class Humanities_Commons {
 	 */
 	public function hcommons_set_network_activities_query( $args ) {
 
-                if ( 'hc' !== self::$society_id && ! bp_is_user_profile() ) {
+		if ( 'hc' !== self::$society_id && ! bp_is_user_profile() ) {
 			$args['meta_query'] = array(
 				array(
 					'key'     => 'society_id',
@@ -453,6 +454,23 @@ class Humanities_Commons {
 				),
 			);
 		}
+
+		return $args;
+	}
+
+	/**
+	 * Filter the activity query "WHERE" conditions to exclude 'joined_group' (etc.?) types
+	 *
+	 * @since HCommons
+	 *
+	 * @param array $args
+	 * @return array $args
+	 */
+	public function hcommons_filter_activity_where_conditions( $args ) {
+		//$default_excluded_types = "a.type NOT IN ('activity_comment', 'last_activity')";
+		$our_excluded_types = "a.type NOT IN ('activity_comment', 'last_activity', 'joined_group')";
+
+		$args['excluded_types'] = $our_excluded_types;
 
 		return $args;
 	}
