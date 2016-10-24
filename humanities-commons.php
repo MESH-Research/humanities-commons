@@ -272,14 +272,14 @@ class Humanities_Commons {
 
 		$user_id = $user->ID;
 		$memberships = $this->hcommons_get_user_memberships();
-		hcommons_write_error_log( 'info', '****RETURNED_MEMBERSHIPS****-'.$_SERVER['HTTP_HOST'].'-'.var_export($user,true).'-'.var_export($memberships,true) );
+		hcommons_write_error_log( 'info', '****RETURNED_MEMBERSHIPS****-' . $_SERVER['HTTP_HOST'] . '-' . var_export( $user->user_login, true ) . '-' . var_export( $memberships, true ) );
 		$member_societies = (array) bp_get_member_type( $user_id, false );
-		hcommons_write_error_log( 'info', '****PRE_SET_USER_MEMBER_TYPES****-'.var_export($member_societies,true) );
+		hcommons_write_error_log( 'info', '****PRE_SET_USER_MEMBER_TYPES****-' . var_export( $member_societies, true ) );
 		$result = bp_set_member_type( $user_id, '' ); // Clear existing types, if any.
 		$append = true;
 		foreach( $memberships['societies'] as $member_type ) {
 			$result = bp_set_member_type( $user_id, $member_type, $append );
-			hcommons_write_error_log( 'info', '****SET_EACH_MEMBER_TYPE****-'.$user_id.'-'.$member_type.'-'.var_export( $result, true ) );
+			hcommons_write_error_log( 'info', '****SET_EACH_MEMBER_TYPE****-' . $user_id . '-' . $member_type . '-' . var_export( $result, true ) );
 		}
 	}
 
@@ -586,7 +586,7 @@ class Humanities_Commons {
                                 break;
                         }
                 }
-                hcommons_write_error_log( 'info', '****CHECK_USER_SITE_MEMBERSHIP****-' . var_export( $user_role, true ) . var_export( $user_role_set, true ) . var_export( $user, true ) );
+                hcommons_write_error_log( 'info', '****CHECK_USER_SITE_MEMBERSHIP****-' . var_export( $user_role, true ) . var_export( $user_role_set, true ) . var_export( $user->user_login, true ) );
 
 		return $user_role;
 
@@ -645,7 +645,7 @@ class Humanities_Commons {
 
 			}
 
-			hcommons_write_error_log( 'info', '****GET_BLOGS_OF_USER****-'.var_export( $user_id, true ) );
+			//hcommons_write_error_log( 'info', '****GET_BLOGS_OF_USER****-'.var_export( $user_id, true ) );
 			return $network_blogs;
 
 		} else {
@@ -789,7 +789,7 @@ class Humanities_Commons {
 	 */
 	function hcommons_sync_bp_profile( $user ) {
 
-		hcommons_write_error_log( 'info', '****SYNC_BP_PROFILE****-'.var_export( $user, true ) );
+		hcommons_write_error_log( 'info', '****SYNC_BP_PROFILE****-'.var_export( $user->user_login, true ) );
 		xprofile_set_field_data( 2, $user->ID, $user->display_name );
 	}
 
@@ -979,22 +979,26 @@ class Humanities_Commons {
          *
          * @since HCommons
          *
-         * @return string $login_method
+         * @return string|bool $login_method
          */
 	public function hcommons_get_user_login_method() {
 
-		$methods = array (
-			'dev.mla.org' => 'Legacy <em>MLA Commons</em>',
-			'commons.mla.org' => 'Google Gateway',
-			'twitter-gateway.hcommons-dev.org' => 'Twitter Gateway',
-			'hcommons-test.mla.org' => 'Humanities Commons',
-		);
-		$login_method = '';
-		$login_method_header = $_SERVER['HTTP_EPPN'];
-		$login_method = explode( '@', $login_method_header );
-		hcommons_write_error_log( 'info', '**********************GET_LOGIN_METHOD********************-' . var_export( $login_method_header, true ) . '-' . $login_method[1] );
+                if ( function_exists( 'shibboleth_session_active' ) && shibboleth_session_active() ) {
+			$methods = array (
+				'dev.mla.org' => 'Legacy <em>MLA Commons</em>',
+				'commons.mla.org' => 'Google Gateway',
+				'twitter-gateway.hcommons-dev.org' => 'Twitter Gateway',
+				'hcommons-test.mla.org' => 'Humanities Commons',
+			);
+			$login_method = '';
+			$login_method_header = $_SERVER['HTTP_EPPN'];
+			$login_method = explode( '@', $login_method_header );
+			//hcommons_write_error_log( 'info', '**********************GET_LOGIN_METHOD********************-' . var_export( $login_method_header, true ) . '-' . $login_method[1] );
 
-		return $methods[$login_method];
+			return $methods[$login_method];
+                }
+                return false;
+
 	}
 
         /**
@@ -1002,28 +1006,31 @@ class Humanities_Commons {
          *
          * @since HCommons
          *
-         * @return string $identity_provider
+         * @return string|bool $identity_provider
          */
 	public function hcommons_get_identity_provider() {
 
-		$providers = array ();
-                if ( defined( 'GOOGLE_IDENTITY_PROVIDER' ) ) {
-			$providers[GOOGLE_IDENTITY_PROVIDER] = 'Google';
-		}
-                if ( defined( 'TWITTER_IDENTITY_PROVIDER' ) ) {
-			$providers[TWITTER_IDENTITY_PROVIDER] = 'Twitter';
-		}
-                if ( defined( 'HC_IDENTITY_PROVIDER' ) ) {
-			$providers[HC_IDENTITY_PROVIDER] = 'HC ID';
-		}
-                if ( defined( 'MLA_IDENTITY_PROVIDER' ) ) {
-			$providers[MLA_IDENTITY_PROVIDER] = 'Legacy <em>MLA Commons</em>';
-		}
-		$identity_provider = '';
-		$identity_provider = $_SERVER['HTTP_SHIB_IDENTITY_PROVIDER'];
-		//hcommons_write_error_log( 'info', '**********************GET_IDENTITY_PROVIDER********************-' . var_export( $identity_provider, true ) );
+                if ( function_exists( 'shibboleth_session_active' ) && shibboleth_session_active() ) {
+			$providers = array ();
+                	if ( defined( 'GOOGLE_IDENTITY_PROVIDER' ) ) {
+				$providers[GOOGLE_IDENTITY_PROVIDER] = 'Google';
+			}
+                	if ( defined( 'TWITTER_IDENTITY_PROVIDER' ) ) {
+				$providers[TWITTER_IDENTITY_PROVIDER] = 'Twitter';
+			}
+                	if ( defined( 'HC_IDENTITY_PROVIDER' ) ) {
+				$providers[HC_IDENTITY_PROVIDER] = 'HC ID';
+			}
+                	if ( defined( 'MLA_IDENTITY_PROVIDER' ) ) {
+				$providers[MLA_IDENTITY_PROVIDER] = 'Legacy <em>MLA Commons</em>';
+			}
+			$identity_provider = '';
+			$identity_provider = $_SERVER['HTTP_SHIB_IDENTITY_PROVIDER'];
+			//hcommons_write_error_log( 'info', '**********************GET_IDENTITY_PROVIDER********************-' . var_export( $identity_provider, true ) );
 
-		return $providers[$identity_provider];
+			return $providers[$identity_provider];
+                }
+                return false;
 	}
 
         /**
@@ -1040,6 +1047,23 @@ class Humanities_Commons {
                         if ( ! in_array( self::$society_id, $user_memberships['societies'] ) ) {
                                 return true;
                         }
+                	return false;
+                }
+                return false;
+        }
+
+        /**
+         * Return user login name from session
+         *
+         * @since HCommons
+         *
+         * @return string|bool $username
+         */
+        public function hcommons_get_session_username() {
+
+                if ( function_exists( 'shibboleth_session_active' ) && shibboleth_session_active() ) {
+			$username = $_SERVER['HTTP_EMPLOYEENUMBER'];
+			return $username;
                 }
                 return false;
         }
