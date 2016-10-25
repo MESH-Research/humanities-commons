@@ -101,17 +101,20 @@ class Humanities_Commons {
 		add_filter( 'bp_core_avatar_url', array( $this, 'hcommons_set_bp_core_avatar_url' ) );
 		add_filter( 'bp_get_group_join_button', array( $this, 'hcommons_check_bp_get_group_join_button' ), 10, 2 );
 		add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_sync_bp_profile' ), 10, 3 );
-		add_action( 'pre_user_query', array( &$this, 'hcommons_filter_site_users_only' ) ); // do_action_ref_array() is used for pre_user_query 
-		add_action( 'wp_login_failed', array( $this, 'hcommons_login_failed' ) );
+		add_action( 'pre_user_query', array( &$this, 'hcommons_filter_site_users_only' ) ); // do_action_ref_array() is used for pre_user_query
 		add_filter( 'bp_get_signup_page', array( $this, 'hcommons_register_url' ) );
 		add_filter( 'invite_anyone_is_large_network', '__return_true' ); //hide invite anyone member list on create/edit group screen
-		add_filter( 'login_url', array( $this, 'hcommons_login_url' ) );
 		add_action( 'bp_init',  array( $this, 'hcommons_remove_nav_items' ) );
 		add_action( 'bp_init', array( $this, 'hcommons_remove_bpges_actions' ) );
 		add_filter( 'password_protected_login_headertitle', array( $this, 'hcommons_password_protect_title' ) );
 		add_filter( 'password_protected_login_headerurl', array( $this, 'hcommons_password_protect_url' ) );
 		add_action( 'password_protected_login_messages', array( $this, 'hcommons_password_protect_message' ) );
 
+		// these break login if the shibboleth plugin is not installed/active
+		if ( function_exists( 'shibboleth_session_active' ) ) {
+			add_action( 'wp_login_failed', array( $this, 'hcommons_login_failed' ) );
+			add_filter( 'login_url', array( $this, 'hcommons_login_url' ) );
+		}
 	}
 
 
