@@ -110,11 +110,13 @@ class Humanities_Commons {
 		add_filter( 'password_protected_login_headerurl', array( $this, 'hcommons_password_protect_url' ) );
 		add_action( 'password_protected_login_messages', array( $this, 'hcommons_password_protect_message' ) );
 
+		// TODO the shibboleth plugin is not yet initialized when this code runs, so we cannot rely on checking if functions exist
+		// need to find a way to determine if shib is active, or wait somehow, or make shib an mu-plugin to make this work
 		// these break login if the shibboleth plugin is not installed/active
-		if ( function_exists( 'shibboleth_session_active' ) ) {
+		//if ( function_exists( 'shibboleth_session_active' ) ) {
 			add_action( 'wp_login_failed', array( $this, 'hcommons_login_failed' ) );
 			add_filter( 'login_url', array( $this, 'hcommons_login_url' ) );
-		}
+		//}
 	}
 
 
