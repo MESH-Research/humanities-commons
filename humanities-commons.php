@@ -109,16 +109,24 @@ class Humanities_Commons {
 		add_filter( 'password_protected_login_headertitle', array( $this, 'hcommons_password_protect_title' ) );
 		add_filter( 'password_protected_login_headerurl', array( $this, 'hcommons_password_protect_url' ) );
 		add_action( 'password_protected_login_messages', array( $this, 'hcommons_password_protect_message' ) );
+		add_filter( 'feed_links', array( $this, 'hcommons_feed_links' ) );
 
 		// TODO the shibboleth plugin is not yet initialized when this code runs, so we cannot rely on checking if functions exist
 		// need to find a way to determine if shib is active, or wait somehow, or make shib an mu-plugin to make this work
 		// these break login if the shibboleth plugin is not installed/active
 		//if ( function_exists( 'shibboleth_session_active' ) ) {
-			add_action( 'wp_login_failed', array( $this, 'hcommons_login_failed' ) );
-			add_filter( 'login_url', array( $this, 'hcommons_login_url' ) );
+			//add_action( 'wp_login_failed', array( $this, 'hcommons_login_failed' ) );
+			//add_filter( 'login_url', array( $this, 'hcommons_login_url' ) );
 		//}
 	}
 
+
+	public function hcommons_feed_links( $args ) {
+
+		var_dump( $args );
+		die();
+
+	}
 
 	public function hcommons_filter_bp_taxonomy_storage_site( $site_id, $taxonomy ) {
 
@@ -462,7 +470,7 @@ class Humanities_Commons {
 	 */
 	public function hcommons_set_network_activities_query( $args ) {
 
-		if ( 'hc' !== self::$society_id && ! bp_is_user_profile() ) {
+		if ( 'hc' !== self::$society_id && ! bp_is_user_profile() && ! bp_is_user_activity() ) {
 			$args['meta_query'] = array(
 				array(
 					'key'     => 'society_id',
