@@ -538,16 +538,6 @@ class Humanities_Commons {
 	 */
 	public function hcommons_set_network_activities_query( $args ) {
 		if ( isset( $args['type'] ) && 'sitewide' === $args['type'] ) {
-			$filter_query = [
-				// exclude profile updates (for now)
-				// TODO instead of excluding, filter these to use more specific text than "profile was updated"
-				[
-					'column' => 'type',
-					'value' => 'updated_profile',
-					'compare' => '!=',
-				],
-			];
-
 			if ( is_user_logged_in() ) {
 				$current_user_id = get_current_user_id();
 				$current_user_blog_ids = BP_Blogs_Blog::get_blog_ids_for_user( $current_user_id );
