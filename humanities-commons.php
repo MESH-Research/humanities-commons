@@ -460,80 +460,82 @@ class Humanities_Commons {
 	 * @return array $args
 	 */
 	public function hcommons_set_network_activities_query( $args ) {
-		$filter_query = [
-			// exclude profile updates (for now)
-			// TODO instead of excluding, filter these to use more specific text than "profile was updated"
-			[
-				'column' => 'type',
-				'value' => 'updated_profile',
-				'compare' => '!=',
-			],
-		];
-
-		if ( is_user_logged_in() ) {
-			$current_user_id = get_current_user_id();
-			$current_user_blog_ids = BP_Blogs_Blog::get_blog_ids_for_user( $current_user_id );
-			$current_user_following_ids = bp_follow_get_following( [ 'user_id' => $current_user_id ] );
-			$current_user_groups = groups_get_user_groups( $current_user_id );
-			$current_user_group_ids = $current_user_groups['groups'];
-
-			$filter_query = array_merge( $filter_query, [
-				// exclude self
+		if ( isset( $args['type'] ) && 'sitewide' === $args['type'] ) {
+			$filter_query = [
+				// exclude profile updates (for now)
+				// TODO instead of excluding, filter these to use more specific text than "profile was updated"
 				[
-					'column' => 'user_id',
-					'value' => $current_user_id,
+					'column' => 'type',
+					'value' => 'updated_profile',
 					'compare' => '!=',
 				],
+			];
 
-				// otherwise, any of these relevant activities
-				[
-					'relation' => 'OR',
+			if ( is_user_logged_in() ) {
+				$current_user_id = get_current_user_id();
+				$current_user_blog_ids = BP_Blogs_Blog::get_blog_ids_for_user( $current_user_id );
+				$current_user_following_ids = bp_follow_get_following( [ 'user_id' => $current_user_id ] );
+				$current_user_groups = groups_get_user_groups( $current_user_id );
+				$current_user_group_ids = $current_user_groups['groups'];
 
-					// any new deposits, groups, or blogs
-					[
-						'column' => 'type',
-						'value' => [ 'new_deposit', 'new_group_deposit', 'created_group', 'new_blog' ],
-						'compare' => 'IN',
-					],
-
-					// any activity by my followers
+				$filter_query = array_merge( $filter_query, [
+					// exclude self
 					[
 						'column' => 'user_id',
-						'value' => $current_user_following_ids,
-						'compare' => 'IN',
+						'value' => $current_user_id,
+						'compare' => '!=',
 					],
 
-					// any activity on my blogs
+					// otherwise, any of these relevant activities
 					[
+						'relation' => 'OR',
+
+						// any new deposits, groups, or blogs
 						[
-							'column' => 'component',
-							'value' => 'blogs',
-						],
-						[
-							'column' => 'item_id',
-							'value' => $current_user_blog_ids,
+							'column' => 'type',
+							'value' => [ 'new_deposit', 'new_group_deposit', 'created_group', 'new_blog' ],
 							'compare' => 'IN',
 						],
-					],
 
-					// any activity on my groups
-					[
+						// any activity by my followers
 						[
-							'column' => 'component',
-							'value' => 'groups',
-						],
-						[
-							'column' => 'item_id',
-							'value' => $current_user_group_ids,
+							'column' => 'user_id',
+							'value' => $current_user_following_ids,
 							'compare' => 'IN',
 						],
-					],
-				],
 
-			] );
+						// any activity on my blogs
+						[
+							[
+								'column' => 'component',
+								'value' => 'blogs',
+							],
+							[
+								'column' => 'item_id',
+								'value' => $current_user_blog_ids,
+								'compare' => 'IN',
+							],
+						],
+
+						// any activity on my groups
+						[
+							[
+								'column' => 'component',
+								'value' => 'groups',
+							],
+							[
+								'column' => 'item_id',
+								'value' => $current_user_group_ids,
+								'compare' => 'IN',
+							],
+						],
+					],
+
+				] );
+			}
+
+			$args['filter_query'] = $filter_query;
 		}
-
-		$args['filter_query'] = $filter_query;
 
 		if ( 'hc' !== self::$society_id && ! bp_is_user_profile() && ! bp_is_user_activity() ) {
 			$args['meta_query'] = array(
