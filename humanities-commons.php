@@ -65,11 +65,12 @@ class Humanities_Commons {
 
 	public function __construct() {
 
-                if ( defined( 'HC_SITE_ID' ) ) {
-                        self::$main_network = wp_get_network( (int) HC_SITE_ID );
-                } else {
-                        self::$main_network = wp_get_network( (int) '1' );
-                }
+        if ( defined( 'HC_SITE_ID' ) ) {
+                self::$main_network = wp_get_network( (int) HC_SITE_ID );
+        } else {
+                self::$main_network = wp_get_network( (int) '1' );
+        }
+
 		self::$main_site = get_site_by_path( self::$main_network->domain, self::$main_network->path );
 		self::$society_id = get_network_option( '', 'society_id' );
 
@@ -111,6 +112,7 @@ class Humanities_Commons {
 		add_filter( 'password_protected_login_headertitle', array( $this, 'hcommons_password_protect_title' ) );
 		add_filter( 'password_protected_login_headerurl', array( $this, 'hcommons_password_protect_url' ) );
 		add_action( 'password_protected_login_messages', array( $this, 'hcommons_password_protect_message' ) );
+		add_filter( 'bbp_topic_admin_links', array( $this, 'hcommons_topic_admin_links' ) );
 
 		// TODO the shibboleth plugin is not yet initialized when this code runs, so we cannot rely on checking if functions exist
 		// need to find a way to determine if shib is active, or wait somehow, or make shib an mu-plugin to make this work
@@ -119,6 +121,22 @@ class Humanities_Commons {
 			add_action( 'wp_login_failed', array( $this, 'hcommons_login_failed' ) );
 			add_filter( 'login_url', array( $this, 'hcommons_login_url' ) );
 		//}
+	}
+
+	/**
+	 * Lets modify the admin links for a forum topic so admins cannot modify other users posts
+	 * and only their own on the front-end
+	 * 
+	 * @param  array $array  array of the links to modify	
+	 * @param  int 	 $id     id for admin links on the front-end 
+	 * @return array $array  modified array of items
+	 */
+	public function hcommons_topic_admin_links( $array, $id ) {
+
+		if( current_user_can('administrator') && bbp_get_current_user_id() !== bbp_get_topic_author_id( bbp_get_topic_id() ) )
+			unset( $array['edit'] );
+		return $array;	
+
 	}
 
 	public function hcommons_filter_bp_taxonomy_storage_site( $site_id, $taxonomy ) {
