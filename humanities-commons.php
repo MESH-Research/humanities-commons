@@ -1144,7 +1144,7 @@ class Humanities_Commons {
 	public function hcommons_filter_activity_time_since( $time_markup, $activity ) {
 
 		$society_id = bp_activity_get_meta( $activity->id, 'society_id', true );
-		$society_time_markup = sprintf( ' on %1$s Commons %2$s', strtoupper( $society_id ), $time_markup );
+		$society_time_markup = sprintf( '<span class="time-since"> on %1$s Commons </span>%2$s', strtoupper( $society_id ), $time_markup );
 		return $society_time_markup;
 	}
 
