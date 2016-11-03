@@ -113,6 +113,7 @@ class Humanities_Commons {
 		add_filter( 'password_protected_login_headerurl', array( $this, 'hcommons_password_protect_url' ) );
 		add_action( 'password_protected_login_messages', array( $this, 'hcommons_password_protect_message' ) );
 		add_filter( 'bbp_topic_admin_links', array( $this, 'hcommons_topic_admin_links' ) );
+		add_filter( 'bp_activity_time_since', array( $this, 'hcommons_filter_activity_time_since' ), 10, 2 );
 
 		// TODO the shibboleth plugin is not yet initialized when this code runs, so we cannot rely on checking if functions exist
 		// need to find a way to determine if shib is active, or wait somehow, or make shib an mu-plugin to make this work
@@ -121,22 +122,6 @@ class Humanities_Commons {
 			add_action( 'wp_login_failed', array( $this, 'hcommons_login_failed' ) );
 			add_filter( 'login_url', array( $this, 'hcommons_login_url' ) );
 		//}
-	}
-
-	/**
-	 * Lets modify the admin links for a forum topic so admins cannot modify other users posts
-	 * and only their own on the front-end
-	 * 
-	 * @param  array $array  array of the links to modify	
-	 * @param  int 	 $id     id for admin links on the front-end 
-	 * @return array $array  modified array of items
-	 */
-	public function hcommons_topic_admin_links( $array, $id ) {
-
-		if( current_user_can('administrator') && bbp_get_current_user_id() !== bbp_get_topic_author_id( bbp_get_topic_id() ) )
-			unset( $array['edit'] );
-		return $array;	
-
 	}
 
 	public function hcommons_filter_bp_taxonomy_storage_site( $site_id, $taxonomy ) {
@@ -1132,6 +1117,35 @@ class Humanities_Commons {
 			' .login form { margin-top: 0px; !important; }</style>';
 		echo '<div class="entry-content entry-summary"><p>Welcome to the future home of Humanities Commons. Please forgive our appearance while we get ready for our big debut in November 2016. For information about the project, and to sign up for e-mail updates, please visit <a href="https://news.hcommons.org">news.hcommons.org.</a></p></div>';
 
+	}
+
+	/**
+	 * Lets modify the admin links for a forum topic so admins cannot modify other users posts
+	 * and only their own on the front-end
+	 *
+	 * @param  array $array  array of the links to modify
+	 * @param  int 	 $id     id for admin links on the front-end 
+	 * @return array $array  modified array of items
+	 */
+	public function hcommons_topic_admin_links( $array, $id ) {
+
+		if( current_user_can('administrator') && bbp_get_current_user_id() !== bbp_get_topic_author_id( bbp_get_topic_id() ) )
+			unset( $array['edit'] );
+		return $array;	
+	}
+
+	/**
+	 * Lets modify the admin links for a forum topic so admins cannot modify other users posts
+	 *
+	 * @param  string $time_markup          preformatted time string
+	 * @param  object $activity             the activity
+	 * @return string $society_time_markup society prepended to the time string
+	 */
+	public function hcommons_filter_activity_time_since( $time_markup, $activity ) {
+
+		$society_id = bp_activity_get_meta( $activity->id, 'society_id', true );
+		$society_time_markup = sprintf( ' on %1$s Commons %2$s', strtoupper( $society_id ), $time_markup );
+		return $society_time_markup;
 	}
 
 	/**
