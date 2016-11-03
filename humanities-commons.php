@@ -355,8 +355,17 @@ class Humanities_Commons {
 		$shib_org = $_SERVER['HTTP_O'];
 		if ( false === strpos( $shib_org, ';' ) ) {
 			$shib_org_updated = $shib_org;
+			if ( 'Humanities Commons' === $shib_org_updated ) {
+				$shib_org_updated = '';
+			}
 		} else {
-			$shib_org_updated = explode( ';', $shib_org );
+			$shib_org_updated = array();
+			$shib_orgs = explode( ';', $shib_org );
+			foreach( $shib_orgs as $shib_org ) {
+				if ( 'Humanities Commons' !== $shib_org && ! empty( $shib_org ) ) {
+					$shib_org_updated[] = $shib_org;
+				}
+			}
 		}
                 $result = update_user_meta( $user_id, 'shib_org', maybe_serialize( $shib_org_updated ) );
 
@@ -971,7 +980,37 @@ class Humanities_Commons {
 	function hcommons_sync_bp_profile( $user ) {
 
 		hcommons_write_error_log( 'info', '****SYNC_BP_PROFILE****-'.var_export( $user->user_login, true ) );
-		xprofile_set_field_data( 2, $user->ID, $user->display_name );
+		$name = $user->display_name;
+		xprofile_set_field_data( 1, $user->ID, $name );
+		$x=xprofile_set_field_data( 'Name', $user->ID, $name );
+		hcommons_write_error_log( 'info', '****SYNC_BP_PROFILE_X****-'.var_export( $x, true ) );
+
+		$current_title = xprofile_get_field_data( 'Title', $user->ID );
+		if ( empty( $current_title ) ) {
+			$titles = maybe_unserialize( get_user_meta( $user->ID, 'shib_title', true ) );
+			if ( is_array( $titles ) ) {
+				$title = $titles[0];
+			} else {
+				$title = $titles;
+			}
+			if ( ! empty( $title ) ) {
+				xprofile_set_field_data( 'Title', $user->ID, $title );
+			}
+		}
+
+		$current_org = xprofile_get_field_data( 'Institutional or Other Affiliation', $user->ID );
+		if ( empty( $current_org ) ) {
+			$orgs = maybe_unserialize( get_user_meta( $user->ID, 'shib_org', true ) );
+			if ( is_array( $orgs ) ) {
+				$org = $orgs[0];
+			} else {
+				$org = $orgs;
+			}
+			if ( ! empty( $org ) ) {
+				xprofile_set_field_data( 'Institutional or Other Affiliation', $user->ID, str_replace( 'Mla', 'MLA', $org ) );
+			}
+		}
+
 	}
 
 	/**
