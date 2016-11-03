@@ -104,8 +104,15 @@ class Humanities_Commons {
 		add_filter( 'bp_core_avatar_url', array( $this, 'hcommons_set_bp_core_avatar_url' ) );
 		add_filter( 'bp_get_group_join_button', array( $this, 'hcommons_check_bp_get_group_join_button' ), 10, 2 );
 		add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_sync_bp_profile' ), 10, 3 );
-		add_action( 'pre_user_query', array( &$this, 'hcommons_filter_site_users_only' ) ); // do_action_ref_array() is used for pre_user_query
+		// TODO the shibboleth plugin is not yet initialized when this code runs, so we cannot rely on checking if functions exist
+		// need to find a way to determine if shib is active, or wait somehow, or make shib an mu-plugin to make this work
+		// these break login if the shibboleth plugin is not installed/active
+		//if ( function_exists( 'shibboleth_session_active' ) ) {
+			add_action( 'wp_login_failed', array( $this, 'hcommons_login_failed' ) );
+			add_filter( 'login_url', array( $this, 'hcommons_login_url' ) );
+		//}
 		add_filter( 'bp_get_signup_page', array( $this, 'hcommons_register_url' ) );
+		add_action( 'pre_user_query', array( &$this, 'hcommons_filter_site_users_only' ) ); // do_action_ref_array() is used for pre_user_query
 		add_filter( 'invite_anyone_is_large_network', '__return_true' ); //hide invite anyone member list on create/edit group screen
 		add_action( 'bp_init',  array( $this, 'hcommons_remove_nav_items' ) );
 		add_action( 'bp_init', array( $this, 'hcommons_remove_bpges_actions' ) );
@@ -114,14 +121,11 @@ class Humanities_Commons {
 		add_action( 'password_protected_login_messages', array( $this, 'hcommons_password_protect_message' ) );
 		add_filter( 'bbp_topic_admin_links', array( $this, 'hcommons_topic_admin_links' ) );
 		add_filter( 'bp_activity_time_since', array( $this, 'hcommons_filter_activity_time_since' ), 10, 2 );
-
-		// TODO the shibboleth plugin is not yet initialized when this code runs, so we cannot rely on checking if functions exist
-		// need to find a way to determine if shib is active, or wait somehow, or make shib an mu-plugin to make this work
-		// these break login if the shibboleth plugin is not installed/active
-		//if ( function_exists( 'shibboleth_session_active' ) ) {
-			add_action( 'wp_login_failed', array( $this, 'hcommons_login_failed' ) );
-			add_filter( 'login_url', array( $this, 'hcommons_login_url' ) );
-		//}
+		add_filter( 'bp_attachments_cover_image_upload_dir', array( $this, 'hcommons_cover_image_upload_dir' ) );
+		//add_filter( 'bp_attachments_pre_cover_image_ajax_upload', array( $this, 'hcommons_cover_image_ajax_upload' ), 10, 4 );
+		add_filter( 'bp_attachments_uploads_dir_get', array( $this, 'hcommons_attachments_uploads_dir_get' ), 10, 2 );
+		add_filter( 'bp_attachment_upload_dir', array( $this, 'hcommons_attachment_upload_dir' ), 10, 2 );
+		add_filter( 'bp_attachments_cover_image_object_dir', array( $this, 'hcommons_cover_image_object_dir' ), 10, 2 );
 	}
 
 	public function hcommons_filter_bp_taxonomy_storage_site( $site_id, $taxonomy ) {
@@ -979,11 +983,9 @@ class Humanities_Commons {
 	 */
 	function hcommons_sync_bp_profile( $user ) {
 
-		hcommons_write_error_log( 'info', '****SYNC_BP_PROFILE****-'.var_export( $user->user_login, true ) );
-		$name = $user->display_name;
-		xprofile_set_field_data( 1, $user->ID, $name );
-		$x=xprofile_set_field_data( 'Name', $user->ID, $name );
-		hcommons_write_error_log( 'info', '****SYNC_BP_PROFILE_X****-'.var_export( $x, true ) );
+		hcommons_write_error_log( 'info', '****SYNC_BP_PROFILE****-'.var_export( $user, true ) );
+		$name = $_SERVER['HTTP_DISPLAYNAME']; // user record maybe not fully populated for first time users.
+		xprofile_set_field_data( 'Name', $user->ID, $name );
 
 		$current_title = xprofile_get_field_data( 'Title', $user->ID );
 		if ( empty( $current_title ) ) {
@@ -1047,24 +1049,6 @@ class Humanities_Commons {
 	}
 
 	/**
-	 * Filter the register url to be society specific
-	 *
-	 * @since HCommons
-	 *
-	 * @param string $register_url
-	 * @return string $register_url Modified url.
-	 */
-	public function hcommons_register_url( $register_url ) {
-
-		if ( ! empty( self::$society_id ) && defined( strtoupper( self::$society_id ) . '_ENROLLMENT_URL' ) ) {
-			return constant( strtoupper( self::$society_id ) . '_ENROLLMENT_URL' );
-		} else {
-			return $register_url;
-		}
-
-	}
-
-	/**
 	 * Filter the login url to be society specific
 	 * This prevents redirect to /wp-admin after logging in
 	 *
@@ -1080,6 +1064,24 @@ class Humanities_Commons {
 			return bp_get_root_domain() . LOGIN_PATH;
 		} else {
 			return $login_url;
+		}
+
+	}
+
+	/**
+	 * Filter the register url to be society specific
+	 *
+	 * @since HCommons
+	 *
+	 * @param string $register_url
+	 * @return string $register_url Modified url.
+	 */
+	public function hcommons_register_url( $register_url ) {
+
+		if ( ! empty( self::$society_id ) && defined( strtoupper( self::$society_id ) . '_ENROLLMENT_URL' ) ) {
+			return constant( strtoupper( self::$society_id ) . '_ENROLLMENT_URL' );
+		} else {
+			return $register_url;
 		}
 
 	}
@@ -1183,8 +1185,125 @@ class Humanities_Commons {
 	public function hcommons_filter_activity_time_since( $time_markup, $activity ) {
 
 		$society_id = bp_activity_get_meta( $activity->id, 'society_id', true );
-		$society_time_markup = sprintf( '<span class="time-since"> on %1$s Commons </span>%2$s', strtoupper( $society_id ), $time_markup );
+		if ( 'hc' === $society_id ) {
+			$commons_name = 'Humanities Commons';
+		} else {
+			$commons_name = strtoupper( $society_id ) . ' Commons';
+		}
+		$society_time_markup = sprintf( '<span class="time-since"> on %1$s </span>%2$s', $commons_name, $time_markup );
 		return $society_time_markup;
+	}
+
+	/**
+	 * Filter the BP cover image upload dir to be global and not network specific.
+	 *
+	 * @since HCommons
+	 *
+	 * @param array $upload_dir
+	 * @return array $upload_dir Modified dir.
+	 */
+	public function hcommons_cover_image_upload_dir( $upload_dir  ) {
+
+/*
+[2016-11-02 02:01:21] hcommons_error.INFO: ****BP_CORE_COVER_IMAGE_UPLOAD_DIR****-array (   'path' => '/srv/www/commons/current/web/app/uploads/sites/1000360/buddypress/members/1/cover-image',   'url' => 'https://hcommons-dev.org/app/uploads/sites/1000360/buddypress/members/1/cover-image',   'subdir' => '/members/1/cover-image',   'basedir' => '/srv/www/commons/current/web/app/uploads/sites/1000360/buddypress',   'baseurl' => 'https://hcommons-dev.org/app/uploads/sites/1000360/buddypress',   'error' => false, ) [] []
+*/
+
+		hcommons_write_error_log( 'info', '****BP_CORE_COVER_IMAGE_UPLOAD_DIR_BEFORE****-'.var_export( $upload_dir, true ) );
+		$path = preg_replace( '~/sites/\d+/~', '/', $upload_dir['path'] );
+		if ( ! empty( $path ) ) {
+			$upload_dir['path'] = $path;
+		}
+		$url = preg_replace( '~/sites/\d+/~', '/', $upload_dir['url'] );
+		if ( ! empty( $url ) ) {
+			$upload_dir['url'] = $url;
+		}
+		$basedir = preg_replace( '~/sites/\d+/~', '/', $upload_dir['basedir'] );
+		if ( ! empty( $basedir ) ) {
+			$upload_dir['basedir'] = $basedir;
+		}
+		$baseurl = preg_replace( '~/sites/\d+/~', '/', $upload_dir['baseurl'] );
+		if ( ! empty( $baseurl ) ) {
+			$upload_dir['baseurl'] = $baseurl;
+		}
+		hcommons_write_error_log( 'info', '****BP_CORE_COVER_IMAGE_UPLOAD_DIR_AFTER****-'.var_export( $upload_dir, true ) );
+
+		return $upload_dir;
+	}
+
+	/**
+	 * Filter the BP attachments upload dir to be global and not network specific.
+	 *
+	 * @since HCommons
+	 *
+	 * @param string|array $retval
+	 * @param string $data
+	 * @return string|array $retval
+	 */
+	public function hcommons_attachments_uploads_dir_get( $retval, $data  ) {
+
+		hcommons_write_error_log( 'info', '****BP_CORE_ATTACHMENTS_UPLOADS_DIR_GET_BEFORE****-'.var_export( $retval, true ).'-'.var_export( $data, true ) );
+
+		if ( empty( $data ) ) {
+	                $basedir = preg_replace( '~/sites/\d+/~', '/', $retval['basedir'] );
+	                if ( ! empty( $basedir ) ) {
+	                        $retval['basedir'] = $basedir;
+	                }
+	                $baseurl = preg_replace( '~/sites/\d+/~', '/', $retval['baseurl'] );
+	                if ( ! empty( $baseurl ) ) {
+	                        $retval['baseurl'] = $baseurl;
+	                }
+		}
+		hcommons_write_error_log( 'info', '****BP_CORE_ATTACHMENTS_UPLOADS_DIR_GET_AFTER****-'.var_export( $retval, true ).'-'.var_export( $data, true ) );
+
+		return $retval;
+	}
+
+	/**
+	 * Filter the BP attachments upload dir to be global and not network specific.
+	 *
+	 * @since HCommons
+	 *
+	 * @param string|array $data
+	 * @param string $dir
+	 * @return string|array $data
+	 */
+	public function hcommons_attachment_upload_dir( $data, $dir  ) {
+
+		hcommons_write_error_log( 'info', '****BP_CORE_ATTACHMENTS_UPLOAD_DIR_BEFORE****-'.var_export( $data, true ).'-'.var_export( $dir, true ) );
+/*
+[2016-11-02 15:17:05] hcommons_error.INFO: ****BP_CORE_COVER_IMAGE_UPLOAD_DIR_BEFORE****-array (   'path' => '/srv/www/commons/current/web/app/uploads/sites/1000360/buddypress/members/1006573/cover-image',   'url' => 'https://hcommons-dev.org/app/uploads/sites/1000360/buddypress/members/1006573/cover-image',   'subdir' => '/members/1006573/cover-image',   'basedir' => '/srv/www/commons/current/web/app/uploads/sites/1000360/buddypress',   'baseurl' => 'https://hcommons-dev.org/app/uploads/sites/1000360/buddypress',   'error' => false, ) [] []
+[2016-11-02 15:17:05] hcommons_error.INFO: ****BP_CORE_COVER_IMAGE_UPLOAD_DIR_AFTER****-array (   'path' => '/srv/www/commons/current/web/app/uploads/buddypress/members/1006573/cover-image',   'url' => 'https://hcommons-dev.org/app/uploads/buddypress/members/1006573/cover-image',   'subdir' => '/members/1006573/cover-image',   'basedir' => '/srv/www/commons/current/web/app/uploads/buddypress',   'baseurl' => 'https://hcommons-dev.org/app/uploads/buddypress',   'error' => false, ) [] []
+*/
+
+	        $basedir = preg_replace( '~/sites/\d+/~', '/', $data['basedir'] );
+	        if ( ! empty( $basedir ) ) {
+	                $data['basedir'] = $basedir;
+	        }
+	        $baseurl = preg_replace( '~/sites/\d+/~', '/', $data['baseurl'] );
+	        if ( ! empty( $baseurl ) ) {
+	                $data['baseurl'] = $baseurl;
+	        }
+		hcommons_write_error_log( 'info', '****BP_CORE_ATTACHMENTS_UPLOAD_DIR_AFTER****-'.var_export( $data, true ).'-'.var_export( $dir, true ) );
+
+		return $data;
+	}
+
+	/**
+	/**
+	 * Filter the BP cover image object dir to be global and not network specific.
+	 *
+	 * @since HCommons
+	 *
+	 * @param string|array $data
+	 * @param string $object_name
+	 * @return string|array $data
+	 */
+	public function hcommons_cover_image_object_dir( $data, $object_name ) {
+
+		hcommons_write_error_log( 'info', '****BP_ATTACHMENTS_COVER_IMAGE_OBJECT_DIR_BEFORE****-'.var_export( $data, true ).'-'.var_export( $object_name, true ) );
+		hcommons_write_error_log( 'info', '****BP_ATTACHMENTS_COVER_IMAGE_OBJECT_DIR_AFTER****-'.var_export( $data, true ).'-'.var_export( $object_name, true ) );
+
+		return $data;
 	}
 
 	/**
