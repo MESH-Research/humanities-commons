@@ -98,7 +98,8 @@ class Humanities_Commons {
 		// should always return true for any logged-in user, since visibility controls on xprofile fields are not restricted
 		//add_filter( 'bp_current_user_can', array( $this, 'hcommons_check_site_member_can' ), 10, 4 );
 		add_filter( 'shibboleth_user_role', array( $this, 'hcommons_check_user_site_membership' ) );
-		add_filter( 'bp_get_groups_directory_permalink', array( $this, 'hcommons_set_group_permalink' ) );
+		add_filter( 'bp_get_group_permalink', array( $this, 'hcommons_set_group_permalink' ),10 ,2 );
+		add_filter( 'bp_get_groups_directory_permalink', array( $this, 'hcommons_set_groups_directory_permalink' ) );
 		add_filter( 'get_blogs_of_user', array( $this, 'hcommons_filter_get_blogs_of_user'), 10, 3 );
 		add_filter( 'bp_core_avatar_upload_path', array( $this, 'hcommons_set_bp_core_avatar_upload_path' ) );
 		add_filter( 'bp_core_avatar_url', array( $this, 'hcommons_set_bp_core_avatar_url' ) );
@@ -794,7 +795,7 @@ class Humanities_Commons {
 	 * @param string $group_permalink
 	 * @return string $group_permalink Modified url.
 	 */
-	public function hcommons_set_group_permalink( $group_permalink ) {
+	public function hcommons_set_groups_directory_permalink( $group_permalink ) {
 
 		$group_id = bp_get_group_id();
 		$group_society_id = bp_groups_get_group_type( $group_id );
@@ -809,6 +810,34 @@ class Humanities_Commons {
 			$society_network = wp_get_network( $row->site_id );
 			$scheme = ( is_ssl() ) ? 'https://' : 'http://';
 			$group_permalink = trailingslashit( $scheme . $society_network->domain . $society_network->path . bp_get_groups_root_slug() );
+		}
+		return $group_permalink;
+	}
+
+	/**
+	 * Set a given group permalink to contain the proper network.
+	 *
+	 * @since HCommons
+	 *
+	 * @param string $group_permalink
+	 * @param object $group
+	 * @return string $group_permalink Modified url.
+	 */
+	public function hcommons_set_group_permalink( $group_permalink, $group ) {
+
+		$group_id = $group->id;
+		$group_society_id = bp_groups_get_group_type( $group_id );
+
+                if ( $group_society_id === self::$society_id ) {
+                        return $group_permalink;
+                }
+
+		global $wpdb;
+		$row = $wpdb->get_row( $wpdb->prepare( "SELECT site_id FROM $wpdb->sitemeta WHERE meta_key = '%s' AND meta_value = '%s'", 'society_id', $group_society_id ) );
+		if ( is_object( $row ) ) {
+			$society_network = wp_get_network( $row->site_id );
+			$scheme = ( is_ssl() ) ? 'https://' : 'http://';
+			$group_permalink = trailingslashit( $scheme . $society_network->domain . $society_network->path . $group->slug );
 		}
 		return $group_permalink;
 	}
