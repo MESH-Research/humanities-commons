@@ -127,7 +127,6 @@ class Humanities_Commons {
 		//add_filter( 'bp_attachments_pre_cover_image_ajax_upload', array( $this, 'hcommons_cover_image_ajax_upload' ), 10, 4 );
 		add_filter( 'bp_attachments_uploads_dir_get', array( $this, 'hcommons_attachments_uploads_dir_get' ), 10, 2 );
 		add_filter( 'bp_attachment_upload_dir', array( $this, 'hcommons_attachment_upload_dir' ), 10, 2 );
-		add_filter( 'bp_attachments_cover_image_object_dir', array( $this, 'hcommons_cover_image_object_dir' ), 10, 2 );
 	}
 
 	public function hcommons_filter_bp_taxonomy_storage_site( $site_id, $taxonomy ) {
@@ -1279,10 +1278,6 @@ class Humanities_Commons {
 	 */
 	public function hcommons_cover_image_upload_dir( $upload_dir  ) {
 
-/*
-[2016-11-02 02:01:21] hcommons_error.INFO: ****BP_CORE_COVER_IMAGE_UPLOAD_DIR****-array (   'path' => '/srv/www/commons/current/web/app/uploads/sites/1000360/buddypress/members/1/cover-image',   'url' => 'https://hcommons-dev.org/app/uploads/sites/1000360/buddypress/members/1/cover-image',   'subdir' => '/members/1/cover-image',   'basedir' => '/srv/www/commons/current/web/app/uploads/sites/1000360/buddypress',   'baseurl' => 'https://hcommons-dev.org/app/uploads/sites/1000360/buddypress',   'error' => false, ) [] []
-*/
-
 		hcommons_write_error_log( 'info', '****BP_CORE_COVER_IMAGE_UPLOAD_DIR_BEFORE****-'.var_export( $upload_dir, true ) );
 		$path = preg_replace( '~/sites/\d+/~', '/', $upload_dir['path'] );
 		if ( ! empty( $path ) ) {
@@ -1345,10 +1340,6 @@ class Humanities_Commons {
 	public function hcommons_attachment_upload_dir( $data, $dir  ) {
 
 		hcommons_write_error_log( 'info', '****BP_CORE_ATTACHMENTS_UPLOAD_DIR_BEFORE****-'.var_export( $data, true ).'-'.var_export( $dir, true ) );
-/*
-[2016-11-02 15:17:05] hcommons_error.INFO: ****BP_CORE_COVER_IMAGE_UPLOAD_DIR_BEFORE****-array (   'path' => '/srv/www/commons/current/web/app/uploads/sites/1000360/buddypress/members/1006573/cover-image',   'url' => 'https://hcommons-dev.org/app/uploads/sites/1000360/buddypress/members/1006573/cover-image',   'subdir' => '/members/1006573/cover-image',   'basedir' => '/srv/www/commons/current/web/app/uploads/sites/1000360/buddypress',   'baseurl' => 'https://hcommons-dev.org/app/uploads/sites/1000360/buddypress',   'error' => false, ) [] []
-[2016-11-02 15:17:05] hcommons_error.INFO: ****BP_CORE_COVER_IMAGE_UPLOAD_DIR_AFTER****-array (   'path' => '/srv/www/commons/current/web/app/uploads/buddypress/members/1006573/cover-image',   'url' => 'https://hcommons-dev.org/app/uploads/buddypress/members/1006573/cover-image',   'subdir' => '/members/1006573/cover-image',   'basedir' => '/srv/www/commons/current/web/app/uploads/buddypress',   'baseurl' => 'https://hcommons-dev.org/app/uploads/buddypress',   'error' => false, ) [] []
-*/
 
 		$basedir = preg_replace( '~/sites/\d+/~', '/', $data['basedir'] );
 		if ( ! empty( $basedir ) ) {
@@ -1359,24 +1350,6 @@ class Humanities_Commons {
 			$data['baseurl'] = $baseurl;
 		}
 		hcommons_write_error_log( 'info', '****BP_CORE_ATTACHMENTS_UPLOAD_DIR_AFTER****-'.var_export( $data, true ).'-'.var_export( $dir, true ) );
-
-		return $data;
-	}
-
-	/**
-	/**
-	 * Filter the BP cover image object dir to be global and not network specific.
-	 *
-	 * @since HCommons
-	 *
-	 * @param string|array $data
-	 * @param string $object_name
-	 * @return string|array $data
-	 */
-	public function hcommons_cover_image_object_dir( $data, $object_name ) {
-
-		hcommons_write_error_log( 'info', '****BP_ATTACHMENTS_COVER_IMAGE_OBJECT_DIR_BEFORE****-'.var_export( $data, true ).'-'.var_export( $object_name, true ) );
-		hcommons_write_error_log( 'info', '****BP_ATTACHMENTS_COVER_IMAGE_OBJECT_DIR_AFTER****-'.var_export( $data, true ).'-'.var_export( $object_name, true ) );
 
 		return $data;
 	}
