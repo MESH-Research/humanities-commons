@@ -266,8 +266,9 @@ class Humanities_Commons {
 	}
 
 	public function hcommons_set_members_query( $args ) {
-
-		$args['member_type'] = self::$society_id;
+		if ( ! bp_is_members_directory() || ( isset( $args['scope'] ) && 'society' === $args['scope'] ) ) {
+			$args['member_type'] = self::$society_id;
+		}
 		return $args;
 	}
 
