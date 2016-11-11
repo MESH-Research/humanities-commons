@@ -690,8 +690,10 @@ class Humanities_Commons {
 	 * @return array $args
 	 */
 	public function hcommons_filter_activity_where_conditions( $args ) {
-		if ( ! bp_is_activity_component() ) {
-			//$default_excluded_types = "a.type NOT IN ('activity_comment', 'last_activity')";
+		if ( bp_is_activity_component() ) {
+			$our_excluded_types = "a.type NOT IN ('joined_group', 'friendship_created')";
+			$args['excluded_types'] = $our_excluded_types;
+		} else {
 			$our_excluded_types = "a.type NOT IN ('activity_comment', 'last_activity', 'joined_group', 'friendship_created')";
 			$args['excluded_types'] = $our_excluded_types;
 		}
