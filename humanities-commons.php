@@ -266,6 +266,7 @@ class Humanities_Commons {
 	}
 
 	public function hcommons_set_members_query( $args ) {
+
 		if ( ! bp_is_members_directory() || ( isset( $args['scope'] ) && 'society' === $args['scope'] ) ) {
 			$args['member_type'] = self::$society_id;
 		}
@@ -274,12 +275,24 @@ class Humanities_Commons {
 
 	public function hcommons_set_groups_query_args( $args ) {
 
-		if ( ( !empty( $_REQUEST['page'] ) && is_admin() && 'bp-groups' == $_REQUEST['page'] ) || ( 'hc' !== self::$society_id && ! bp_is_user_profile() ) && ! bp_is_current_action( 'my-groups' ) ) {
+		//hcommons_write_error_log( 'info', '****GROUPS_QUERY_ARGS****-' . var_export( $args, true ) );
+		if ( bp_is_user_profile() || bp_is_current_action( 'my-groups' ) ) {
+			$args['group_type'] = '';
+			return $args;
+		} 
+
+		if ( is_admin() && ! empty( $_REQUEST['page'] ) && 'bp-groups' == $_REQUEST['page'] ) {
+			$args['group_type'] = self::$society_id;
+			return $args;
+		}
+
+		if ( 'hc' === self::$society_id && empty( $args['scope'] ) ) {
+			$args['group_type'] = '';
+		} else {
 			$args['group_type'] = self::$society_id;
 		}
 
 		return $args;
-
 	}
 
 	/**
@@ -295,7 +308,7 @@ class Humanities_Commons {
 
 		$context = debug_backtrace(); //TODO get a proper filter in BuddyPress_Event_Organiser_EO Anyone and get rid of backtrace.
 		//hcommons_write_error_log( 'info', '****PRE_GROUPS_GET_GROUPS0****-' . var_export( $data, true ) );
-		hcommons_write_error_log( 'info', '****PRE_GROUPS_GET_GROUPS1****-' . var_export( $r, true ) );
+		//hcommons_write_error_log( 'info', '****PRE_GROUPS_GET_GROUPS1****-' . var_export( $r, true ) );
 		//hcommons_write_error_log( 'info', '****FILTER_GROUPS_GET_GROUPS_QUERY****-'.var_export( $context, true ) );
 
 		if ( 'BuddyPress_Event_Organiser_EO' == $context[3]['class'] ) {
