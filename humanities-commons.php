@@ -63,6 +63,11 @@ class Humanities_Commons {
 	 */
 	public static $society_id;
 
+	/**
+	 * current shib session id
+	 */
+	public static $shib_session_id;
+
 	public function __construct() {
 
 		if ( defined( 'HC_SITE_ID' ) ) {
@@ -112,6 +117,7 @@ class Humanities_Commons {
 		//if ( function_exists( 'shibboleth_session_active' ) ) {
 			add_action( 'wp_login_failed', array( $this, 'hcommons_login_failed' ) );
 			add_filter( 'login_url', array( $this, 'hcommons_login_url' ) );
+			add_filter( 'shibboleth_session_active', array( $this, 'hcommons_shibboleth_session_active' ) );
 		//}
 		add_filter( 'bp_get_signup_page', array( $this, 'hcommons_register_url' ) );
 		add_action( 'pre_user_query', array( &$this, 'hcommons_filter_site_users_only' ) ); // do_action_ref_array() is used for pre_user_query
@@ -406,7 +412,7 @@ class Humanities_Commons {
 	}
 
 	/**
-	 * Capture shibboleth data in user meta
+	 * Capture shibboleth data in user meta once per shibboleth session
 	 *
 	 * @since HCommons
 	 *
@@ -415,6 +421,16 @@ class Humanities_Commons {
 	public function hcommons_set_shibboleth_based_user_meta( $user ) {
 
 		$user_id = $user->ID;
+		$shib_session_id = get_user_meta( $user_id, 'shib_session_id', true );
+
+		if ( $shib_session_id == self::$shib_session_id ) {
+			return;
+		}
+
+		//hcommons_write_error_log( 'info', '****SHIB_BASED_USER_META****-' . var_export( self::$shib_session_id, true ) );
+		$login_host = $_SERVER['HTTP_X_FORWARDED_HOST'];
+		$result = update_user_meta( $user_id, 'shib_session_id', self::$shib_session_id );
+		$result = update_user_meta( $user_id, 'shib_login_host', $login_host );
 
 		$shib_org = $_SERVER['HTTP_O'];
 		if ( false === strpos( $shib_org, ';' ) ) {
@@ -1156,6 +1172,22 @@ class Humanities_Commons {
 			return $login_url;
 		}
 
+	}
+
+	/**
+	 * Filter shibboleth_session_active to set class variable
+	 *
+	 * @since HCommons
+	 *
+	 * @param bool $active
+	 * @return bool $active
+	 */
+	public function hcommons_shibboleth_session_active( $active ) {
+
+		if ( $active ) {
+			self::$shib_session_id = $_SERVER['HTTP_SHIB_SESSION_ID'];
+		}
+		return $active;
 	}
 
 	/**
