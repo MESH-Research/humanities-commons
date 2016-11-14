@@ -124,6 +124,7 @@ class Humanities_Commons {
 		add_filter( 'invite_anyone_is_large_network', '__return_true' ); //hide invite anyone member list on create/edit group screen
 		add_action( 'bp_init',  array( $this, 'hcommons_remove_nav_items' ) );
 		add_action( 'bp_init', array( $this, 'hcommons_remove_bpges_actions' ) );
+		add_action( 'bp_init', array( $this, 'hcommons_set_default_scope_society' ) );
 		add_filter( 'password_protected_login_headertitle', array( $this, 'hcommons_password_protect_title' ) );
 		add_filter( 'password_protected_login_headerurl', array( $this, 'hcommons_password_protect_url' ) );
 		add_action( 'password_protected_login_messages', array( $this, 'hcommons_password_protect_message' ) );
@@ -299,6 +300,23 @@ class Humanities_Commons {
 		}
 
 		return $args;
+	}
+
+	/**
+	 * on members/groups directories, set default scope to society
+	 */
+	function hcommons_set_default_scope_society() {
+		if ( bp_is_groups_directory() || ( bp_is_members_directory() && 'hc' !== self::$society_id ) ) {
+			$object_name = bp_current_component();
+			$cookie_name = 'bp-' . $object_name . '-scope';
+
+			if ( ! isset( $_COOKIE[ $cookie_name ] ) ) {
+				setcookie( $cookie_name, 'society', null, '/' );
+				// unless the $_COOKIE global is updated in addition to the actual cookie above,
+				// bp will not use the value for the first pageload.
+				$_COOKIE[ $cookie_name ] = 'society';
+			}
+		}
 	}
 
 	/**
