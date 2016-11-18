@@ -129,6 +129,7 @@ class Humanities_Commons {
 		add_filter( 'password_protected_login_headerurl', array( $this, 'hcommons_password_protect_url' ) );
 		add_action( 'password_protected_login_messages', array( $this, 'hcommons_password_protect_message' ) );
 		add_filter( 'bbp_topic_admin_links', array( $this, 'hcommons_topic_admin_links' ) );
+		add_filter( 'bbp_reply_admin_links', array( $this, 'hcommons_reply_admin_links' ) );
 		add_filter( 'bp_activity_time_since', array( $this, 'hcommons_filter_activity_time_since' ), 10, 2 );
 		add_filter( 'bp_attachments_cover_image_upload_dir', array( $this, 'hcommons_cover_image_upload_dir' ) );
 		//add_filter( 'bp_attachments_pre_cover_image_ajax_upload', array( $this, 'hcommons_cover_image_ajax_upload' ), 10, 4 );
@@ -286,7 +287,7 @@ class Humanities_Commons {
 		if ( bp_is_user_profile() || bp_is_current_action( 'my-groups' ) ) {
 			$args['group_type'] = '';
 			return $args;
-		} 
+		}
 
 		if ( is_admin() && ! empty( $_REQUEST['page'] ) && 'bp-groups' == $_REQUEST['page'] ) {
 			$args['group_type'] = self::$society_id;
@@ -647,6 +648,8 @@ class Humanities_Commons {
 	 * @return array $args
 	 */
 	public function hcommons_set_network_activities_query( $args ) {
+
+
 		if ( isset( $args['type'] ) && 'sitewide' === $args['type'] ) {
 			if ( is_user_logged_in() ) {
 				$current_user_id = get_current_user_id();
@@ -1309,6 +1312,21 @@ class Humanities_Commons {
 	 * @return array $array  modified array of items
 	 */
 	public function hcommons_topic_admin_links( $array, $id ) {
+
+		if( current_user_can('administrator') && bbp_get_current_user_id() !== bbp_get_topic_author_id( bbp_get_topic_id() ) )
+			unset( $array['edit'] );
+		return $array;	
+	}
+
+	/**
+	 * Lets modify the admin links for a forum reply so admins cannot modify other users posts
+	 * and only their own on the front-end
+	 *
+	 * @param  array $array  array of the links to modify
+	 * @param  int 	 $id     id for admin links on the front-end 
+	 * @return array $array  modified array of items
+	 */
+	public function hcommons_reply_admin_links( $array, $id ) {
 
 		if( current_user_can('administrator') && bbp_get_current_user_id() !== bbp_get_topic_author_id( bbp_get_topic_id() ) )
 			unset( $array['edit'] );
