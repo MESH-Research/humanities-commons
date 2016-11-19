@@ -287,7 +287,7 @@ class Humanities_Commons {
 		if ( bp_is_user_profile() || bp_is_current_action( 'my-groups' ) ) {
 			$args['group_type'] = '';
 			return $args;
-		}
+		} 
 
 		if ( is_admin() && ! empty( $_REQUEST['page'] ) && 'bp-groups' == $_REQUEST['page'] ) {
 			$args['group_type'] = self::$society_id;
@@ -380,6 +380,13 @@ class Humanities_Commons {
 	public function hcommons_set_user_member_types( $user ) {
 
 		$user_id = $user->ID;
+
+		$shib_session_id = get_user_meta( $user_id, 'shib_session_id', true );
+
+		if ( $shib_session_id == self::$shib_session_id ) {
+			return;
+		}
+
 		$memberships = $this->hcommons_get_user_memberships();
 		hcommons_write_error_log( 'info', '****RETURNED_MEMBERSHIPS****-' . $_SERVER['HTTP_HOST'] . '-' . var_export( $user->user_login, true ) . '-' . var_export( $memberships, true ) );
 		$member_societies = (array) bp_get_member_type( $user_id, false );
@@ -648,8 +655,6 @@ class Humanities_Commons {
 	 * @return array $args
 	 */
 	public function hcommons_set_network_activities_query( $args ) {
-
-
 		if ( isset( $args['type'] ) && 'sitewide' === $args['type'] ) {
 			if ( is_user_logged_in() ) {
 				$current_user_id = get_current_user_id();
@@ -1110,6 +1115,14 @@ class Humanities_Commons {
 	 */
 	function hcommons_sync_bp_profile( $user ) {
 
+		$user_id = $user->ID;
+
+		$shib_session_id = get_user_meta( $user_id, 'shib_session_id', true );
+
+		if ( $shib_session_id == self::$shib_session_id ) {
+			return;
+		}
+
 		hcommons_write_error_log( 'info', '****SYNC_BP_PROFILE****-'.var_export( $user, true ) );
 		$name = $_SERVER['HTTP_DISPLAYNAME']; // user record maybe not fully populated for first time users.
 		xprofile_set_field_data( 'Name', $user->ID, $name );
@@ -1315,7 +1328,7 @@ class Humanities_Commons {
 
 		if( current_user_can('administrator') && bbp_get_current_user_id() !== bbp_get_topic_author_id( bbp_get_topic_id() ) )
 			unset( $array['edit'] );
-		return $array;	
+		return $array;
 	}
 
 	/**
@@ -1323,14 +1336,14 @@ class Humanities_Commons {
 	 * and only their own on the front-end
 	 *
 	 * @param  array $array  array of the links to modify
-	 * @param  int 	 $id     id for admin links on the front-end 
+	 * @param  int   $id     id for admin links on the front-end 
 	 * @return array $array  modified array of items
 	 */
 	public function hcommons_reply_admin_links( $array, $id ) {
 
 		if( current_user_can('administrator') && bbp_get_current_user_id() !== bbp_get_topic_author_id( bbp_get_topic_id() ) )
 			unset( $array['edit'] );
-		return $array;	
+		return $array;  
 	}
 
 	/**
@@ -1475,29 +1488,45 @@ class Humanities_Commons {
 	}
 
 	/**
-	 * Return user login method from session
+	 * Return user login methods from user meta
 	 *
 	 * @since HCommons
 	 *
-	 * @return string|bool $login_method
+	 * @param string $data
+	 * @return string|array $login_methods
 	 */
-	public function hcommons_get_user_login_method() {
+	public function hcommons_get_user_login_methods( $user_id ) {
 
-		if ( function_exists( 'shibboleth_session_active' ) && shibboleth_session_active() ) {
-			$methods = array (
-				'dev.mla.org' => 'Legacy <em>MLA Commons</em>',
-				'commons.mla.org' => 'Google Gateway',
-				'twitter-gateway.hcommons-dev.org' => 'Twitter Gateway',
-				'hcommons-test.mla.org' => 'Humanities Commons',
-			);
-			$login_method = '';
-			$login_method_header = $_SERVER['HTTP_EPPN'];
-			$login_method = explode( '@', $login_method_header );
-			//hcommons_write_error_log( 'info', '**********************GET_LOGIN_METHOD********************-' . var_export( $login_method_header, true ) . '-' . $login_method[1] );
-
-			return $methods[$login_method];
+		$methods = array ();
+		if ( defined( 'GOOGLE_LOGIN_METHOD_SCOPE' ) ) {
+			$methods[GOOGLE_LOGIN_METHOD_SCOPE] = 'Google';
 		}
-		return false;
+		if ( defined( 'TWITTER_LOGIN_METHOD_SCOPE' ) ) {
+			$methods[TWITTER_LOGIN_METHOD_SCOPE] = 'Twitter';
+		}
+		if ( defined( 'HC_LOGIN_METHOD_SCOPE' ) ) {
+			$methods[HC_LOGIN_METHOD_SCOPE] = 'HC ID';
+		}
+		if ( defined( 'MLA_LOGIN_METHOD_SCOPE' ) ) {
+			$methods[MLA_LOGIN_METHOD_SCOPE] = 'Legacy <em>MLA Commons</em>';
+		}
+		/* $methods = array (
+			'dev.mla.org' => 'Legacy <em>MLA Commons</em>',
+			'commons.mla.org' => 'Google',
+			'twitter-gateway.hcommons-dev.org' => 'Twitter',
+			'hcommons-test.mla.org' => 'HC ID',
+		); */
+		$user_login_methods = (array) maybe_unserialize( get_usermeta( $user_id, 'shib_uid', true ) );
+		$login_methods = array();
+		foreach( $user_login_methods as $user_login_method ) {
+			$user_method = explode( '@', $user_login_method );
+			if ( ! empty( $user_method[1] ) ) {
+				$login_methods[] = $methods[$user_method[1]];
+			}
+		}
+		//hcommons_write_error_log( 'info', '**********************GET_USER_LOGIN_METHODS********************-' . $user_id . '-' . var_export( $user_login_methods, true ) );
+
+		return $login_methods;
 
 	}
 
@@ -1508,9 +1537,13 @@ class Humanities_Commons {
 	 *
 	 * @return string|bool $identity_provider
 	 */
-	public function hcommons_get_identity_provider() {
+	public function hcommons_get_identity_provider( $formatted = true ) {
 
 		if ( function_exists( 'shibboleth_session_active' ) && shibboleth_session_active() ) {
+			//hcommons_write_error_log( 'info', '**********************GET_IDENTITY_PROVIDER********************-' . var_export( $identity_provider, true ) );
+			if ( ! $formatted ) {
+				return $_SERVER['HTTP_SHIB_IDENTITY_PROVIDER'];
+			}
 			$providers = array ();
 			if ( defined( 'GOOGLE_IDENTITY_PROVIDER' ) ) {
 				$providers[GOOGLE_IDENTITY_PROVIDER] = 'Google';
@@ -1526,7 +1559,6 @@ class Humanities_Commons {
 			}
 			$identity_provider = '';
 			$identity_provider = $_SERVER['HTTP_SHIB_IDENTITY_PROVIDER'];
-			//hcommons_write_error_log( 'info', '**********************GET_IDENTITY_PROVIDER********************-' . var_export( $identity_provider, true ) );
 
 			return $providers[$identity_provider];
 		}
