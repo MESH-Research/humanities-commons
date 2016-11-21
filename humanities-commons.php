@@ -68,6 +68,8 @@ class Humanities_Commons {
 	 */
 	public static $shib_session_id;
 
+	public $user;
+
 	public function __construct() {
 
 		if ( defined( 'HC_SITE_ID' ) ) {
@@ -75,6 +77,8 @@ class Humanities_Commons {
 		} else {
 			self::$main_network = wp_get_network( (int) '1' );
 		}
+
+		$this->user = wp_get_current_user();
 
 		self::$main_site = get_site_by_path( self::$main_network->domain, self::$main_network->path );
 		self::$society_id = get_network_option( '', 'society_id' );
@@ -1326,7 +1330,7 @@ class Humanities_Commons {
 	 */
 	public function hcommons_topic_admin_links( $array, $id ) {
 
-		if( current_user_can('administrator') && bbp_get_current_user_id() !== bbp_get_topic_author_id( bbp_get_topic_id() ) )
+		if( in_array( 'bbp_keymaster', $this->user->roles ) || in_array( 'bbp_participant', $this->user->roles ) || in_array( 'bbp_moderator', $this->user->roles ) && bbp_get_current_user_id() !== bbp_get_topic_author_id( bbp_get_topic_id() ) )
 			unset( $array['edit'] );
 		return $array;
 	}
@@ -1341,7 +1345,7 @@ class Humanities_Commons {
 	 */
 	public function hcommons_reply_admin_links( $array, $id ) {
 
-		if( current_user_can('administrator') && bbp_get_current_user_id() !== bbp_get_topic_author_id( bbp_get_topic_id() ) )
+		if( in_array( 'bbp_keymaster', $this->user->roles ) || in_array( 'bbp_participant', $this->user->roles ) || in_array( 'bbp_moderator', $this->user->roles ) && bbp_get_current_user_id() !== bbp_get_topic_author_id( bbp_get_topic_id() ) )
 			unset( $array['edit'] );
 		return $array;  
 	}
