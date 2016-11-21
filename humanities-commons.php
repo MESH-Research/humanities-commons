@@ -745,13 +745,20 @@ class Humanities_Commons {
 	 * @return array $args
 	 */
 	public function hcommons_filter_activity_where_conditions( $args ) {
-		if ( bp_is_activity_component() ) {
-			$our_excluded_types = "a.type NOT IN ('last_activity', 'joined_group', 'friendship_created')";
-			$args['excluded_types'] = $our_excluded_types;
-		} else {
-			$our_excluded_types = "a.type NOT IN ('activity_comment', 'last_activity', 'joined_group', 'friendship_created')";
-			$args['excluded_types'] = $our_excluded_types;
+		// BP_Activity_Activity::get() hardcodes this sql string only if $excluded_types is non-empty,
+		// so we can assume a non-empty value here means there is at least one type in the sql array
+		if ( ! empty( $args['excluded_types'] ) ) {
+			// these are the types we intend to filter out in addition to whatever is passed to this filter
+			$not_in = [ 'joined_group', 'friendship_created' ];
+
+			// parse the existing excluded types and merge with our own
+			preg_match_all( "/a.type NOT IN \('(.*)'\)/", $args['excluded_types'], $matches );
+			$not_in = array_merge( $not_in, explode( "', '", $matches[1][0] ) );
+
+			// build new sql using combined types
+			$args['excluded_types'] = "a.type NOT IN ('" . implode( "', '", $not_in) . "')";
 		}
+
 		return $args;
 	}
 
