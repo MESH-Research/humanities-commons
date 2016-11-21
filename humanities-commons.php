@@ -115,9 +115,9 @@ class Humanities_Commons {
 		// need to find a way to determine if shib is active, or wait somehow, or make shib an mu-plugin to make this work
 		// these break login if the shibboleth plugin is not installed/active
 		//if ( function_exists( 'shibboleth_session_active' ) ) {
-			//add_action( 'wp_login_failed', array( $this, 'hcommons_login_failed' ) );
-			//add_filter( 'login_url', array( $this, 'hcommons_login_url' ) );
-			//add_filter( 'shibboleth_session_active', array( $this, 'hcommons_shibboleth_session_active' ) );
+			add_action( 'wp_login_failed', array( $this, 'hcommons_login_failed' ) );
+			add_filter( 'login_url', array( $this, 'hcommons_login_url' ) );
+			add_filter( 'shibboleth_session_active', array( $this, 'hcommons_shibboleth_session_active' ) );
 		//}
 		add_filter( 'bp_get_signup_page', array( $this, 'hcommons_register_url' ) );
 		add_action( 'pre_user_query', array( &$this, 'hcommons_filter_site_users_only' ) ); // do_action_ref_array() is used for pre_user_query
