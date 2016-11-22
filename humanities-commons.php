@@ -396,9 +396,6 @@ class Humanities_Commons {
 		foreach( $memberships['societies'] as $member_type ) {
 			$result = bp_set_member_type( $user_id, $member_type, $append );
 			hcommons_write_error_log( 'info', '****SET_EACH_MEMBER_TYPE****-' . $user_id . '-' . $member_type . '-' . var_export( $result, true ) );
-			if ( 'hc' === $member_type ) {
-			$result = bp_set_member_type( $user_id, 'beta', $append );
-			}
 		}
 	}
 
