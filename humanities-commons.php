@@ -131,7 +131,7 @@ class Humanities_Commons {
 		add_filter( 'bbp_topic_admin_links', array( $this, 'hcommons_topic_admin_links' ) );
 		add_filter( 'bbp_reply_admin_links', array( $this, 'hcommons_reply_admin_links' ) );
 		add_filter( 'bp_activity_time_since', array( $this, 'hcommons_filter_activity_time_since' ), 10, 2 );
-		add_filter( 'bp_attachments_cover_image_upload_dir', array( $this, 'hcommons_cover_image_upload_dir' ) );
+		add_filter( 'bp_attachments_cover_image_upload_dir', array( $this, 'hcommons_cover_image_upload_dir' ), 10, 2 );
 		//add_filter( 'bp_attachments_pre_cover_image_ajax_upload', array( $this, 'hcommons_cover_image_ajax_upload' ), 10, 4 );
 		add_filter( 'bp_attachments_uploads_dir_get', array( $this, 'hcommons_attachments_uploads_dir_get' ), 10, 2 );
 		add_filter( 'bp_attachment_upload_dir', array( $this, 'hcommons_attachment_upload_dir' ), 10, 2 );
@@ -197,16 +197,6 @@ class Humanities_Commons {
 					'singular_name' => 'HC',
 				),
 				'has_directory' => 'hc'
-			) );
-
-		bp_register_member_type(
-			'beta',
-			array(
-				'labels' => array(
-					'name' => 'BETA',
-					'singular_name' => 'BETA',
-				),
-				'has_directory' => 'beta'
 			) );
 
 		bp_register_member_type(
@@ -1373,6 +1363,7 @@ class Humanities_Commons {
 
 	/**
 	 * Filter the BP cover image upload dir to be global and not network specific.
+	 * Really hacked to handle new group cover images. TODO get this fixed in BP.
 	 *
 	 * @since HCommons
 	 *
@@ -1381,14 +1372,30 @@ class Humanities_Commons {
 	 */
 	public function hcommons_cover_image_upload_dir( $upload_dir  ) {
 
-		hcommons_write_error_log( 'info', '****BP_CORE_COVER_IMAGE_UPLOAD_DIR_BEFORE****-'.var_export( $upload_dir, true ) );
+		//hcommons_write_error_log( 'info', '****BP_CORE_COVER_IMAGE_UPLOAD_DIR_BEFORE****-' . var_export( $upload_dir, true ) );
+
+		$bp_params = $_POST['bp_params'];
+
 		$path = preg_replace( '~/sites/\d+/~', '/', $upload_dir['path'] );
+		if ( 'group' === $bp_params['object'] && ! empty( $bp_params['item_id'] ) && false !== strpos( $path, '/groups/0/cover-image' ) ) {
+			$path = str_replace( '/groups/0/cover-image', '/groups/' . $bp_params['item_id'] . '/cover-image', $path );
+		}
 		if ( ! empty( $path ) ) {
 			$upload_dir['path'] = $path;
 		}
 		$url = preg_replace( '~/sites/\d+/~', '/', $upload_dir['url'] );
+		if ( 'group' === $bp_params['object'] && ! empty( $bp_params['item_id'] ) && false !== strpos( $url, '/groups/0/cover-image' ) ) {
+			$url = str_replace( '/groups/0/cover-image', '/groups/' . $bp_params['item_id'] . '/cover-image', $url );
+		}
 		if ( ! empty( $url ) ) {
 			$upload_dir['url'] = $url;
+		}
+		$subdir = $upload_dir['subdir'];
+		if ( 'group' === $bp_params['object'] && ! empty( $bp_params['item_id'] ) && false !== strpos( $subdir, '/groups/0/cover-image' ) ) {
+			$subdir = str_replace( '/groups/0/cover-image', '/groups/' . $bp_params['item_id'] . '/cover-image', $subdir );
+		}
+		if ( ! empty( $subdir ) ) {
+			$upload_dir['subdir'] = $subdir;
 		}
 		$basedir = preg_replace( '~/sites/\d+/~', '/', $upload_dir['basedir'] );
 		if ( ! empty( $basedir ) ) {
@@ -1398,7 +1405,7 @@ class Humanities_Commons {
 		if ( ! empty( $baseurl ) ) {
 			$upload_dir['baseurl'] = $baseurl;
 		}
-		hcommons_write_error_log( 'info', '****BP_CORE_COVER_IMAGE_UPLOAD_DIR_AFTER****-'.var_export( $upload_dir, true ) );
+		//hcommons_write_error_log( 'info', '****BP_CORE_COVER_IMAGE_UPLOAD_DIR_AFTER****-' . '-' . var_export( $upload_dir, true ) );
 
 		return $upload_dir;
 	}
