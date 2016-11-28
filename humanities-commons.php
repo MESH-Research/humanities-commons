@@ -1357,6 +1357,9 @@ class Humanities_Commons {
 		} else {
 			$commons_name = strtoupper( $society_id ) . ' Commons';
 		}
+		if ( false !== strpos( $time_markup, ' on ' . $commons_name ) ) { // Deja vu
+			return $time_markup;
+		} 
 		$society_time_markup = sprintf( '<span class="time-since"> on %1$s </span>%2$s', $commons_name, $time_markup );
 		return $society_time_markup;
 	}
