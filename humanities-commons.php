@@ -311,7 +311,7 @@ class Humanities_Commons {
 	}
 
 	/**
-	 * Target specific occurance of groups_get_groups filter to restrict groups to society and don't show hidden groups.
+	 * Target specific occurances of groups_get_groups filter to restrict groups to society and don't show hidden groups.
 	 *
 	 * @since HCommons
 	 *
@@ -321,14 +321,14 @@ class Humanities_Commons {
 	 */
 	public function hcommons_groups_get_groups( $data, $r ) {
 
-		$context = debug_backtrace(); //TODO get a proper filter in BuddyPress_Event_Organiser_EO Anyone and get rid of backtrace.
-		//hcommons_write_error_log( 'info', '****PRE_GROUPS_GET_GROUPS0****-' . var_export( $data, true ) );
-		//hcommons_write_error_log( 'info', '****PRE_GROUPS_GET_GROUPS1****-' . var_export( $r, true ) );
+		$context = debug_backtrace(); //TODO get proper filters in BuddyPress_Event_Organiser_EO, bpmfp_get_other_groups_for_user and get rid of backtrace.
 		//hcommons_write_error_log( 'info', '****FILTER_GROUPS_GET_GROUPS_QUERY****-'.var_export( $context, true ) );
 
-		if ( 'BuddyPress_Event_Organiser_EO' == $context[3]['class'] ) {
+		if ( 'BuddyPress_Event_Organiser_EO' == $context[3]['class'] || 'bpmfp_get_other_groups_for_user' == $context[3]['function'] ) {
 
-			//hcommons_write_error_log( 'info', '****FILTER_GROUPS_GET_GROUPS_TRACE****-'.var_export( $context[3]['class'], true ) );
+			//hcommons_write_error_log( 'info', '****FILTER_GROUPS_GET_GROUPS_TRACE****-'.var_export( $context[3], true ) );
+			//hcommons_write_error_log( 'info', '****PRE_GROUPS_GET_GROUPS1****-' . var_export( $r, true ) );
+			//hcommons_write_error_log( 'info', '****PRE_GROUPS_GET_GROUPS0****-' . var_export( $data, true ) );
 
 			$new_groups = BP_Groups_Group::get( array(
 				'type'               => $r['type'],
