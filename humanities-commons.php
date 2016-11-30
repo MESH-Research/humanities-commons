@@ -372,11 +372,12 @@ class Humanities_Commons {
 		$user_id = $user->ID;
 
 		$shib_session_id = get_user_meta( $user_id, 'shib_session_id', true );
-
+/*
 		if ( $shib_session_id == self::$shib_session_id ) {
+			hcommons_write_error_log( 'info', '****SET_USER_MEMBER_TYPES_OUT****-' . var_export( $shib_session_id, true ) );
 			return;
 		}
-
+*/
 		$memberships = $this->hcommons_get_user_memberships();
 		hcommons_write_error_log( 'info', '****RETURNED_MEMBERSHIPS****-' . $_SERVER['HTTP_HOST'] . '-' . var_export( $user->user_login, true ) . '-' . var_export( $memberships, true ) );
 		$member_societies = (array) bp_get_member_type( $user_id, false );
@@ -440,7 +441,7 @@ class Humanities_Commons {
 			return;
 		}
 
-		//hcommons_write_error_log( 'info', '****SHIB_BASED_USER_META****-' . var_export( self::$shib_session_id, true ) );
+		hcommons_write_error_log( 'info', '****SHIB_BASED_USER_META****-' . var_export( self::$shib_session_id, true ) );
 		$login_host = $_SERVER['HTTP_X_FORWARDED_HOST'];
 		$result = update_user_meta( $user_id, 'shib_session_id', self::$shib_session_id );
 		$result = update_user_meta( $user_id, 'shib_login_host', $login_host );
@@ -1112,11 +1113,12 @@ class Humanities_Commons {
 		$user_id = $user->ID;
 
 		$shib_session_id = get_user_meta( $user_id, 'shib_session_id', true );
-
+/*
 		if ( $shib_session_id == self::$shib_session_id ) {
+			hcommons_write_error_log( 'info', '****SYNC_BP_PROFILE_OUT****-' . var_export( $shib_session_id, true ) );
 			return;
 		}
-
+*/
 		hcommons_write_error_log( 'info', '****SYNC_BP_PROFILE****-'.var_export( $user, true ) );
 		$name = $_SERVER['HTTP_DISPLAYNAME']; // user record maybe not fully populated for first time users.
 		xprofile_set_field_data( 'Name', $user->ID, $name );
