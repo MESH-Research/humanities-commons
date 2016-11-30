@@ -1174,7 +1174,9 @@ class Humanities_Commons {
 		$user_id = $user->ID;
 		$visitor_notice = get_user_meta( $user_id, $prefix . 'commons_visitor', true );
 		if ( ( empty( $visitor_notice ) ) && ! strstr( $_SERVER['REQUEST_URI'], '/not-a-member' ) ) {
-			hcommons_write_error_log( 'info', '****LOGIN_FAILED_FIRST_TIME_NOTICE****-' . var_export( $_SERVER, true ) . '-' . var_export( $prefix, true ) );
+			hcommons_write_error_log( 'info', '****LOGIN_FAILED_FIRST_TIME_NOTICE****-' . $username . '-' . $_SERVER['HTTP_EPPN'] . '-' .
+				$_SERVER['HTTP_X_FORWARDED_HOST'] . '-' . var_export( $prefix, true ) );
+
 			update_user_meta( $user_id, $prefix . 'commons_visitor', 'Y' );
 			wp_redirect( 'https://' . $_SERVER['HTTP_X_FORWARDED_HOST'] . '/not-a-member' );
 			exit();
@@ -1494,7 +1496,7 @@ class Humanities_Commons {
 
 			$pattern = sprintf( '/Humanities Commons:%1$s_(.*?);/', strtoupper( $key ) );
 			if ( preg_match_all( $pattern, $membership_header, $matches ) ) {
-				hcommons_write_error_log( 'info', '****GET_MATCHES****-'.$key.'-'.var_export( $matches, true ) );
+				//hcommons_write_error_log( 'info', '****GET_MATCHES****-'.$key.'-'.var_export( $matches, true ) );
 				$memberships['groups'][$key] = $matches[1];
 			}
 
