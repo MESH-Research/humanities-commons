@@ -629,7 +629,7 @@ class Humanities_Commons {
 			$args['include_blog_ids'] = $include_blogs;
 		}
 
-		hcommons_write_error_log( 'info', '****SET_NETWORK_BLOGS_QUERY***-'.var_export( $args, true ) );
+		//hcommons_write_error_log( 'info', '****SET_NETWORK_BLOGS_QUERY***-'.var_export( $args, true ) );
 		return $args;
 	}
 
@@ -1174,7 +1174,7 @@ class Humanities_Commons {
 		$user_id = $user->ID;
 		$visitor_notice = get_user_meta( $user_id, $prefix . 'commons_visitor', true );
 		if ( ( empty( $visitor_notice ) ) && ! strstr( $_SERVER['REQUEST_URI'], '/not-a-member' ) ) {
-			hcommons_write_error_log( 'info', '****LOGIN_FAILED_FIRST_TIME_NOTICE****-' . var_export( $username, true ) . '-' . var_export( $prefix, true ) );
+			hcommons_write_error_log( 'info', '****LOGIN_FAILED_FIRST_TIME_NOTICE****-' . var_export( $_SERVER, true ) . '-' . var_export( $prefix, true ) );
 			update_user_meta( $user_id, $prefix . 'commons_visitor', 'Y' );
 			wp_redirect( 'https://' . $_SERVER['HTTP_X_FORWARDED_HOST'] . '/not-a-member' );
 			exit();
@@ -1424,7 +1424,7 @@ class Humanities_Commons {
 	 */
 	public function hcommons_attachments_uploads_dir_get( $retval, $data  ) {
 
-		hcommons_write_error_log( 'info', '****BP_CORE_ATTACHMENTS_UPLOADS_DIR_GET_BEFORE****-'.var_export( $retval, true ).'-'.var_export( $data, true ) );
+		//hcommons_write_error_log( 'info', '****BP_CORE_ATTACHMENTS_UPLOADS_DIR_GET_BEFORE****-'.var_export( $retval, true ).'-'.var_export( $data, true ) );
 
 		if ( empty( $data ) ) {
 			$basedir = preg_replace( '~/sites/\d+/~', '/', $retval['basedir'] );
@@ -1436,7 +1436,7 @@ class Humanities_Commons {
 				$retval['baseurl'] = $baseurl;
 			}
 		}
-		hcommons_write_error_log( 'info', '****BP_CORE_ATTACHMENTS_UPLOADS_DIR_GET_AFTER****-'.var_export( $retval, true ).'-'.var_export( $data, true ) );
+		//hcommons_write_error_log( 'info', '****BP_CORE_ATTACHMENTS_UPLOADS_DIR_GET_AFTER****-'.var_export( $retval, true ).'-'.var_export( $data, true ) );
 
 		return $retval;
 	}
@@ -1452,7 +1452,7 @@ class Humanities_Commons {
 	 */
 	public function hcommons_attachment_upload_dir( $data, $dir  ) {
 
-		hcommons_write_error_log( 'info', '****BP_CORE_ATTACHMENTS_UPLOAD_DIR_BEFORE****-'.var_export( $data, true ).'-'.var_export( $dir, true ) );
+		//hcommons_write_error_log( 'info', '****BP_CORE_ATTACHMENTS_UPLOAD_DIR_BEFORE****-'.var_export( $data, true ).'-'.var_export( $dir, true ) );
 
 		$basedir = preg_replace( '~/sites/\d+/~', '/', $data['basedir'] );
 		if ( ! empty( $basedir ) ) {
@@ -1462,7 +1462,7 @@ class Humanities_Commons {
 		if ( ! empty( $baseurl ) ) {
 			$data['baseurl'] = $baseurl;
 		}
-		hcommons_write_error_log( 'info', '****BP_CORE_ATTACHMENTS_UPLOAD_DIR_AFTER****-'.var_export( $data, true ).'-'.var_export( $dir, true ) );
+		//hcommons_write_error_log( 'info', '****BP_CORE_ATTACHMENTS_UPLOAD_DIR_AFTER****-'.var_export( $data, true ).'-'.var_export( $dir, true ) );
 
 		return $data;
 	}
@@ -1483,7 +1483,7 @@ class Humanities_Commons {
 		$memberships = array();
 		$member_types = bp_get_member_types();
 		$membership_header = $_SERVER['HTTP_ISMEMBEROF'] . ';';
-		hcommons_write_error_log( 'info', '**********************GET_MEMBERSHIPS********************-'.var_export( $membership_header, true ).'-'.var_export($member_types,true) );
+		//hcommons_write_error_log( 'info', '**********************GET_MEMBERSHIPS********************-'.var_export( $membership_header, true ).'-'.var_export($member_types,true) );
 
 		foreach ( $member_types as $key=>$value ) {
 
