@@ -274,12 +274,16 @@ class Humanities_Commons {
 	}
 
 	public function hcommons_set_groups_query_args( $args ) {
+		// profile loops per-type, leave as-is
+		if ( bp_is_user_profile() ) {
+			return $args;
+		}
 
 		//hcommons_write_error_log( 'info', '****GROUPS_QUERY_ARGS****-' . var_export( $args, true ) );
-		if ( bp_is_user_profile() || bp_is_current_action( 'my-groups' ) ) {
+		if ( bp_is_current_action( 'my-groups' ) ) {
 			$args['group_type'] = '';
 			return $args;
-		} 
+		}
 
 		if ( is_admin() && ! empty( $_REQUEST['page'] ) && 'bp-groups' == $_REQUEST['page'] ) {
 			$args['group_type'] = self::$society_id;
