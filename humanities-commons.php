@@ -96,7 +96,8 @@ class Humanities_Commons {
 		add_filter( 'bp_get_total_blog_count_for_user', array( $this, 'hcommons_get_total_blog_count_for_user' ) );
 		add_filter( 'bp_before_has_activities_parse_args', array( $this, 'hcommons_set_network_activities_query' ) );
 		add_filter( 'bp_activity_get_where_conditions', array( $this, 'hcommons_filter_activity_where_conditions' ) );
-		add_filter( 'bp_activity_after_save', array( $this, 'hcommons_set_activity_society_meta' ) );
+		add_action( 'bp_activity_after_save', array( $this, 'hcommons_set_activity_society_meta' ) );
+		add_action( 'bp_notification_after_save', array( $this, 'hcommons_set_notification_society_meta' ) );
 		add_filter( 'bp_activity_get_permalink', array( $this, 'hcommons_filter_activity_permalink' ), 10, 2 );
 		add_filter( 'body_class', array( $this, 'hcommons_society_body_class_name' ) );
 		// this filter makes 'bp_xprofile_change_field_visibility' false which is required for profile plugin visibility controls
@@ -760,6 +761,19 @@ class Humanities_Commons {
 	public function hcommons_set_activity_society_meta( $activity ) {
 
 		bp_activity_add_meta( $activity->id, 'society_id', self::$society_id, true );
+	}
+
+	/**
+	 * Add the current society id to the current notificaiton as a notification_meta record.
+	 *
+	 * @since HCommons
+	 *
+	 * @param array $notification
+	 */
+	public function hcommons_set_notification_society_meta( $notification ) {
+
+		hcommons_write_error_log( 'info', '****SET_NOTIFICATION_SOCIETY_META***-'.var_export( $notification, true ) );
+		bp_notifications_add_meta( $notification->id, 'society_id', self::$society_id, true );
 	}
 
 	/**
