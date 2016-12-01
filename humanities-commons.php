@@ -949,7 +949,7 @@ class Humanities_Commons {
 		if ( is_object( $row ) ) {
 			$society_network = wp_get_network( $row->site_id );
 			$scheme = ( is_ssl() ) ? 'https://' : 'http://';
-			$group_permalink = trailingslashit( $scheme . $society_network->domain . $society_network->path . $group->slug );
+			$group_permalink = trailingslashit( $scheme . $society_network->domain . $society_network->path . bp_get_groups_root_slug() . '/' . $group->slug );
 		}
 		return $group_permalink;
 	}
