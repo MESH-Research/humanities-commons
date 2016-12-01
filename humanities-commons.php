@@ -657,7 +657,7 @@ class Humanities_Commons {
 				$current_user_groups = groups_get_user_groups( $current_user_id );
 				$current_user_group_ids = $current_user_groups['groups'];
 
-				$filter_query = array_merge( $filter_query, [
+				$filter_query = array_merge( ( isset( $args['filter_query'] ) ) ? $args['filter_query'] : [], [
 					// exclude self
 					[
 						'column' => 'user_id',
