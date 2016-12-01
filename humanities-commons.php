@@ -105,8 +105,9 @@ class Humanities_Commons {
 		// should always return true for any logged-in user, since visibility controls on xprofile fields are not restricted
 		//add_filter( 'bp_current_user_can', array( $this, 'hcommons_check_site_member_can' ), 10, 4 );
 		add_filter( 'shibboleth_user_role', array( $this, 'hcommons_check_user_site_membership' ) );
-		add_filter( 'bp_get_group_permalink', array( $this, 'hcommons_set_group_permalink' ),10 ,2 );
 		add_filter( 'bp_get_groups_directory_permalink', array( $this, 'hcommons_set_groups_directory_permalink' ) );
+		add_filter( 'bp_get_group_permalink', array( $this, 'hcommons_set_group_permalink' ),10, 2 );
+		add_filter( 'bp_core_get_user_domain', array( $this, 'hcommons_set_members_directory_permalink' ),10, 4 );
 		add_filter( 'get_blogs_of_user', array( $this, 'hcommons_filter_get_blogs_of_user'), 10, 3 );
 		add_filter( 'bp_core_avatar_upload_path', array( $this, 'hcommons_set_bp_core_avatar_upload_path' ) );
 		add_filter( 'bp_core_avatar_url', array( $this, 'hcommons_set_bp_core_avatar_url' ) );
@@ -952,6 +953,39 @@ class Humanities_Commons {
 			$group_permalink = trailingslashit( $scheme . $society_network->domain . $society_network->path . bp_get_groups_root_slug() . '/' . $group->slug );
 		}
 		return $group_permalink;
+	}
+
+	/**
+	 * Set a given member permalink to contain the proper network.
+	 *
+	 * @since HCommons
+	 *
+	 * @param string $member_permalink
+	 * @param int $user_id
+	 * @return string $member_permalink Modified url.
+	 */
+	public function hcommons_set_members_directory_permalink( $member_permalink, $user_id, $user_nicename, $user_login ) {
+
+		if ( ! bp_is_members_directory() ) {
+			return $member_permalink;
+		}
+
+		hcommons_write_error_log( 'info', '****SET_MEMBERS_DIRECTORY_PERMALINK****-'.var_export( $member_permalink, true ) );
+		$member_types = bp_get_member_type( $user_id, false );
+
+		if ( in_array( self::$society_id, $member_types ) ) {
+			return $member_permalink;
+		}
+		$after_domain = bp_core_enable_root_profiles() ? $user_login : bp_get_members_root_slug() . '/' . $user_login;
+
+		global $wpdb;
+		$row = $wpdb->get_row( $wpdb->prepare( "SELECT site_id FROM $wpdb->sitemeta WHERE meta_key = '%s' AND meta_value = '%s'", 'society_id', 'hc' ) );
+		if ( is_object( $row ) ) {
+			$society_network = wp_get_network( $row->site_id );
+			$scheme = ( is_ssl() ) ? 'https://' : 'http://';
+			$member_permalink = trailingslashit( $scheme . $society_network->domain . $society_network->path . $after_domain );
+		}
+		return $member_permalink;
 	}
 
 	/**
