@@ -87,6 +87,7 @@ class Humanities_Commons {
 		add_filter( 'bp_before_has_groups_parse_args', array( $this, 'hcommons_set_groups_query_args' ) );
 		add_filter( 'groups_get_groups', array( $this, 'hcommons_groups_get_groups' ), 10, 2 );
 		add_action( 'groups_create_group_step_save_group-details', array( $this, 'hcommons_set_group_type' ) );
+		add_action( 'groups_create_group_step_save_group-details', array( $this, 'hcommons_set_group_mla_oid' ) );
 		add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_set_user_member_types' ) );
 		add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_maybe_set_user_role_for_site' ) );
 		add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_set_shibboleth_based_user_meta' ) );
@@ -371,6 +372,27 @@ class Humanities_Commons {
 		}
 
 		bp_groups_set_group_type( $id, self::$society_id );
+	}
+
+	public function hcommons_set_group_mla_oid( $group_id ) {
+
+                $society_id = self::$society_id;
+
+                if ( 'mla' === $society_id ) {
+
+			global $bp;
+			if ( $bp->groups->new_group_id ) {
+				$id = $bp->groups->new_group_id;
+			} else {
+				$id = $group_id;
+			}
+			$result = groups_add_groupmeta( $id, 'mla_oid', 'UXX', true );
+                                if ( is_wp_error( $result ) ) {
+					hcommons_write_error_log( 'info', '****MLA_OID_WRITE_FAILURE****-' . $id . '-' . var_export( $result, true ) );
+                                        echo "ERROR: " . var_export( $result, true );
+                                }
+			bp_groups_set_group_type( $id, self::$society_id );
+		}
 	}
 
 	public function hcommons_set_user_member_types( $user ) {
