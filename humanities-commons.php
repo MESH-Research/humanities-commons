@@ -92,6 +92,7 @@ class Humanities_Commons {
 		add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_maybe_set_user_role_for_site' ) );
 		add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_set_shibboleth_based_user_meta' ) );
 		add_filter( 'shibboleth_user_email', array( $this, 'hcommons_set_shibboleth_based_user_email' ) );
+		add_action( 'user_register', array( $this, 'hcommons_handle_user_register' ) );
 		add_filter( 'bp_before_has_blogs_parse_args', array( $this, 'hcommons_set_network_blogs_query' ) );
 		add_filter( 'bp_get_total_blog_count', array( $this, 'hcommons_get_total_blog_count' ) );
 		add_filter( 'bp_get_total_blog_count_for_user', array( $this, 'hcommons_get_total_blog_count_for_user' ) );
@@ -549,6 +550,13 @@ class Humanities_Commons {
 		$shib_email_array = explode( ';', $shib_email );
 		return $shib_email_array[0];
 
+	}
+
+	public function hcommons_handle_user_register( $user_id ) {
+		// ensure invite-anyone correctly sets up notifications/memberships/follows etc.
+		// we don't get the $key or $user params from 'user_register',
+		// but that's ok because invite_anyone_activate_user() doesn't use them anyway.
+		invite_anyone_activate_user( $user_id, null, null );
 	}
 
 	/**
