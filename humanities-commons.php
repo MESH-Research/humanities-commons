@@ -556,7 +556,9 @@ class Humanities_Commons {
 		// ensure invite-anyone correctly sets up notifications/memberships/follows etc.
 		// we don't get the $key or $user params from 'user_register',
 		// but that's ok because invite_anyone_activate_user() doesn't use them anyway.
-		invite_anyone_activate_user( $user_id, null, null );
+		if ( function_exists( 'invite_anyone_activate_user' ) ) {
+			invite_anyone_activate_user( $user_id, null, null );
+		}
 	}
 
 	/**
