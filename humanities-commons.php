@@ -93,6 +93,7 @@ class Humanities_Commons {
 		add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_set_shibboleth_based_user_meta' ) );
 		add_filter( 'shibboleth_user_email', array( $this, 'hcommons_set_shibboleth_based_user_email' ) );
 		add_action( 'user_register', array( $this, 'hcommons_handle_user_register' ) );
+		add_filter( 'invite_anyone_send_follow_requests_on_acceptance', '__return_false' );
 		add_filter( 'bp_before_has_blogs_parse_args', array( $this, 'hcommons_set_network_blogs_query' ) );
 		add_filter( 'bp_get_total_blog_count', array( $this, 'hcommons_get_total_blog_count' ) );
 		add_filter( 'bp_get_total_blog_count_for_user', array( $this, 'hcommons_get_total_blog_count_for_user' ) );
