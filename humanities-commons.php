@@ -303,6 +303,11 @@ class Humanities_Commons {
 			$args['group_type'] = self::$society_id;
 		}
 
+		// only show hc groups on /members/*/invite-anyone
+		if ( bp_is_user() && false !== strpos( $_SERVER['REQUEST_URI'], 'invite-anyone' ) ) {
+			$args['group_type'] = 'hc';
+		}
+
 		return $args;
 	}
 
