@@ -558,7 +558,9 @@ class Humanities_Commons {
 
 	}
 
-	public function hcommons_handle_user_register( $user_id ) {
+	public function hcommons_handle_user_register( $user ) {
+		$user_id = $user->ID;
+
 		// ensure invite-anyone correctly sets up notifications/memberships/follows etc.
 		// we don't get the $key or $user params from 'user_register',
 		// but that's ok because invite_anyone_activate_user() doesn't use them anyway.
