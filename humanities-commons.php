@@ -91,7 +91,7 @@ class Humanities_Commons {
 		add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_set_user_member_types' ) );
 		add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_maybe_set_user_role_for_site' ) );
 		add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_set_shibboleth_based_user_meta' ) );
-		add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_handle_user_register' ) );
+		add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_invite_anyone_activate_user' ) );
 		add_filter( 'shibboleth_user_email', array( $this, 'hcommons_set_shibboleth_based_user_email' ) );
 		add_filter( 'invite_anyone_send_follow_requests_on_acceptance', '__return_false' );
 		add_filter( 'bp_before_has_blogs_parse_args', array( $this, 'hcommons_set_network_blogs_query' ) );
@@ -558,14 +558,15 @@ class Humanities_Commons {
 
 	}
 
-	public function hcommons_handle_user_register( $user ) {
-		$user_id = $user->ID;
+	/**
+	 * ensure invite-anyone correctly sets up notifications after user registers
+	 */
+	public function hcommons_invite_anyone_activate_user( $user ) {
+		$meta_key = 'hcommons_invite_anyone_activate_user_done';
 
-		// ensure invite-anyone correctly sets up notifications/memberships/follows etc.
-		// we don't get the $key or $user params from 'user_register',
-		// but that's ok because invite_anyone_activate_user() doesn't use them anyway.
-		if ( function_exists( 'invite_anyone_activate_user' ) ) {
-			invite_anyone_activate_user( $user_id, null, null );
+		if ( ! get_user_meta( $user->ID, $meta_key ) && function_exists( 'invite_anyone_activate_user' ) ) {
+			invite_anyone_activate_user( $user->ID, null, null );
+			update_user_meta( $user->ID, $meta_key, true );
 		}
 	}
 
