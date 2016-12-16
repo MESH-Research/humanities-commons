@@ -924,10 +924,15 @@ class Humanities_Commons {
 
 		$user = get_user_by( 'login', $username );
 		$user_id = $user->ID;
-
+		$global_super_admins = array();
+		if ( defined( 'GLOBAL_SUPER_ADMINS' ) ) {
+			$global_super_admin_list = constant( 'GLOBAL_SUPER_ADMINS' );
+			$global_super_admins = explode( ',', $global_super_admin_list );
+		}
 		$memberships = $this->hcommons_get_user_memberships();
-		if ( ! in_array( self::$society_id, $memberships['societies'] ) && ! is_super_admin( $user_id ) ) {
-		hcommons_write_error_log( 'info', '****CHECK_USER_SITE_MEMBERSHIP_FAIL****-' . var_export( $memberships['societies'], true ) . var_export( self::$society_id, true ) . var_export( $user, true ) );
+		if ( ! in_array( self::$society_id, $memberships['societies'] ) && ! in_array( $user->user_login, $global_super_admins ) ) {
+			hcommons_write_error_log( 'info', '****CHECK_USER_SITE_MEMBERSHIP_FAIL****-' . var_export( $memberships['societies'], true ) .
+				var_export( self::$society_id, true ) . var_export( $user, true ) );
 			return '';
 		}
 
