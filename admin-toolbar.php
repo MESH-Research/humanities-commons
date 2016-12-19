@@ -63,6 +63,30 @@ function hcommons_admin_bar_render() {
 		}
         }
 
+		// add user societies to adminbar for easy navigation to society sites from non-society sites
+		$user_memberships = $humanities_commons::hcommons_get_user_memberships();
+
+		if ( ! empty( $user_memberships ) && ! empty( $user_memberships['societies'] ) ) {
+			$wp_admin_bar->add_menu( array(
+				'id' => 'hc-societies',
+				'parent' => false,
+				'title' => __( 'My Societies' )
+			) );
+
+			foreach ( $user_memberships['societies'] as $society_id ) {
+				$wp_admin_bar->add_menu( array(
+					'id' => 'hc-society-' . $society_id,
+					'parent' => 'hc-societies',
+					'title' => strtoupper( $society_id ),
+					'href' => sprintf(
+						'https://%s%s',
+						( 'hc' === $society_id ) ? '' : "$society_id.",
+						$humanities_commons::$main_site->domain
+					)
+				) );
+			}
+		}
+
 	$nodes = $wp_admin_bar->get_nodes();
 	//hcommons_write_error_log( 'info', '****ADMIN_BAR_RENDER****-'.var_export($nodes,true) );
 
