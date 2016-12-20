@@ -1420,14 +1420,14 @@ class Humanities_Commons {
 	 * and only their own on the front-end
 	 *
 	 * @param  array $array  array of the links to modify
-	 * @param  int 	 $id     id for admin links on the front-end 
+	 * @param  int 	 $id     id for admin links on the front-end
 	 * @return array $array  modified array of items
 	 */
 	public function hcommons_topic_admin_links( $array, $id ) {
 
 		$user = wp_get_current_user();
 
-		if( bbp_get_current_user_id() !== bbp_get_topic_author_id( bbp_get_topic_id() ) )
+		if( ! is_super_admin() && bbp_get_current_user_id() !== bbp_get_topic_author_id( bbp_get_topic_id() ) )
 			unset( $array['edit'] );
 		return $array;
 	}
@@ -1437,14 +1437,14 @@ class Humanities_Commons {
 	 * and only their own on the front-end
 	 *
 	 * @param  array $array  array of the links to modify
-	 * @param  int   $id     id for admin links on the front-end 
+	 * @param  int   $id     id for admin links on the front-end
 	 * @return array $array  modified array of items
 	 */
 	public function hcommons_reply_admin_links( $array, $id ) {
 
-		if( bbp_get_current_user_id() !== bbp_get_reply_author_id( bbp_get_reply_id() ) )
+		if( ! is_super_admin() && bbp_get_current_user_id() !== bbp_get_reply_author_id( bbp_get_reply_id() ) )
 			unset( $array['edit'] );
-		return $array;  
+		return $array;
 	}
 
 	/**
