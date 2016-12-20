@@ -302,7 +302,10 @@ class Humanities_Commons {
 		}
 
 		// only show hc groups on /members/*/invite-anyone
-		if ( bp_is_user() && false !== strpos( $_SERVER['REQUEST_URI'], 'invite-anyone' ) ) {
+		if (
+			! is_super_admin() &&
+			( bp_is_user() && false !== strpos( $_SERVER['REQUEST_URI'], 'invite-anyone' ) )
+		) {
 			$args['group_type'] = 'hc';
 		}
 
