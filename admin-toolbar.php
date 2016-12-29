@@ -87,6 +87,10 @@ function hcommons_admin_bar_render() {
 			}
 		}
 
+	if ( ! bp_is_root_blog() ) {
+		$wp_admin_bar->remove_menu( 'bp-register' );
+	}
+
 	$nodes = $wp_admin_bar->get_nodes();
 	//hcommons_write_error_log( 'info', '****ADMIN_BAR_RENDER****-'.var_export($nodes,true) );
 
