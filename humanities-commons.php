@@ -146,6 +146,28 @@ class Humanities_Commons {
 
 	
 		add_action( 'wp_login', array( $this, 'hcommons_comanage_api' ), 10, 2 );
+		add_action( 'init', array( $this, 'hcommons_remove_bp_settings_general' ) );
+	}
+
+	/**
+	 * Unserializes the shib_email meta to return to the user as an array
+	 * @param   object $user  		user object to be passed
+	 * @return  array  $shib_email  array to be used
+	 */
+	public static function hcommons_shib_email( $user ) {
+
+		$shib_email = maybe_unserialize( get_user_meta( $user->ID, 'shib_email', true ) );
+		return $shib_email;	
+
+	}
+
+	/**
+	 * Removes bp_settings_general action for front-end so custom built primary email switching can work
+	 * 
+	 * @return void
+	 */
+	public function hcommons_remove_bp_settings_general() {
+		remove_action( 'bp_actions',  'bp_settings_action_general', 10 );
 	}
 
 	/**
