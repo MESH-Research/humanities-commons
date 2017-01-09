@@ -1589,7 +1589,7 @@ class Humanities_Commons {
 	 *
 	 * @return array $memberships
 	 */
-	public function hcommons_get_user_memberships() {
+	public static function hcommons_get_user_memberships() {
 
 		$memberships = array();
 		$member_types = bp_get_member_types();
@@ -1622,7 +1622,7 @@ class Humanities_Commons {
 	 * @param string $data
 	 * @return string|array $login_methods
 	 */
-	public function hcommons_get_user_login_methods( $user_id ) {
+	public static function hcommons_get_user_login_methods( $user_id ) {
 
 		$methods = array ();
 		if ( defined( 'GOOGLE_LOGIN_METHOD_SCOPE' ) ) {
@@ -1664,7 +1664,7 @@ class Humanities_Commons {
 	 *
 	 * @return string|bool $identity_provider
 	 */
-	public function hcommons_get_identity_provider( $formatted = true ) {
+	public static function hcommons_get_identity_provider( $formatted = true ) {
 
 		if ( function_exists( 'shibboleth_session_active' ) && shibboleth_session_active() ) {
 			//hcommons_write_error_log( 'info', '**********************GET_IDENTITY_PROVIDER********************-' . var_export( $identity_provider, true ) );
