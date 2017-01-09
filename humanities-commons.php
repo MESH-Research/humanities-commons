@@ -45,7 +45,6 @@ function hcommons_write_error_log( $error_type, $error_message, $info = null ) {
 
 require_once ( dirname( __FILE__ ) . '/wpmn-taxonomy-functions.php' );
 require_once ( dirname( __FILE__ ) . '/admin-toolbar.php' );
-require_once ( dirname( __FILE__ ) . '/class.comanage-api.php' );
 
 class Humanities_Commons {
 
@@ -143,50 +142,6 @@ class Humanities_Commons {
 		// replace default bbp notification formatter with our own multinetwork-compatible version
 		remove_filter( 'bp_notifications_get_notifications_for_user', 'bbp_format_buddypress_notifications' );
 		add_filter( 'bp_notifications_get_notifications_for_user', array( $this, 'hcommons_bbp_format_buddypress_notifications' ), 10, 8 );
-
-	
-		add_action( 'wp_login', array( $this, 'hcommons_comanage_api' ), 10, 2 );
-		add_action( 'init', array( $this, 'hcommons_remove_bp_settings_general' ) );
-	}
-
-	/**
-	 * Unserializes the shib_email meta to return to the user as an array
-	 * @param   object $user  		user object to be passed
-	 * @return  array  $shib_email  array to be used
-	 */
-	public static function hcommons_shib_email( $user ) {
-
-		$shib_email = maybe_unserialize( get_user_meta( $user->ID, 'shib_email', true ) );
-		return $shib_email;	
-
-	}
-
-	/**
-	 * Removes bp_settings_general action for front-end so custom built primary email switching can work
-	 * 
-	 * @return void
-	 */
-	public function hcommons_remove_bp_settings_general() {
-		remove_action( 'bp_actions',  'bp_settings_action_general', 10 );
-	}
-
-	/**
-	 * Method to init COmanage api instance for the user
-	 *  
-	 * @param  string $user_login current username of logged in user
-	 * @param  object $user       user object containing all user data
-	 * @return void
-	 */
-	public function hcommons_comanage_api( $user_login, $user ) {
-
-		//use get_user_meta() to check if the current user has accepted the terms first before
-		//initializing the comanageApi class
-
-		$user_meta = get_user_meta( $user->ID, 'accepted_t_and_c', true );
-
-		if( is_user_logged_in() && $user_meta !== '1' || is_user_logged_in() && ! isset( $user_meta ) )
-			new comanageApi( $user );
-	
 	}
 
 	public function hcommons_filter_bp_taxonomy_storage_site( $site_id, $taxonomy ) {
