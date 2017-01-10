@@ -142,6 +142,18 @@ class Humanities_Commons {
 		// replace default bbp notification formatter with our own multinetwork-compatible version
 		remove_filter( 'bp_notifications_get_notifications_for_user', 'bbp_format_buddypress_notifications' );
 		add_filter( 'bp_notifications_get_notifications_for_user', array( $this, 'hcommons_bbp_format_buddypress_notifications' ), 10, 8 );
+		add_filter( 'bp_get_new_group_enable_forum', array( $this, 'hcommons_get_new_group_enable_forum' ) );
+	}
+
+	/**
+	 * Filter that enables forums by default on new group creation screen
+	 * 
+	 * @param  int 	$forum  false by default
+	 * @return int  $forum  true to enable forum by default
+	 */
+	public function hcommons_get_new_group_enable_forum( $forum ) {
+		$forum = 1;
+		return $forum;
 	}
 
 	public function hcommons_filter_bp_taxonomy_storage_site( $site_id, $taxonomy ) {
