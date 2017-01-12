@@ -58,7 +58,7 @@ function hcommons_admin_bar_render() {
 				'id' => 'bp-login',
 				'parent' => false,
 				'title' => __( 'Log in' ),
-				'href' => get_site_url() . '/Shibboleth.sso/Login',
+				'href' => wp_login_url(),
 			) );
 		}
         }
