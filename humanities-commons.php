@@ -143,8 +143,9 @@ class Humanities_Commons {
 		// replace default bbp notification formatter with our own multinetwork-compatible version
 		remove_filter( 'bp_notifications_get_notifications_for_user', 'bbp_format_buddypress_notifications' );
 		add_filter( 'bp_notifications_get_notifications_for_user', array( $this, 'hcommons_bbp_format_buddypress_notifications' ), 10, 8 );
+		add_filter( 'bp_get_new_group_enable_forum', array( $this, 'hcommons_get_new_group_enable_forum' ) );
 
-	
+
 		add_action( 'wp_login', array( $this, 'hcommons_comanage_api' ), 10, 2 );
 		add_action( 'init', array( $this, 'hcommons_remove_bp_settings_general' ) );
 	}
@@ -157,13 +158,13 @@ class Humanities_Commons {
 	public static function hcommons_shib_email( $user ) {
 
 		$shib_email = maybe_unserialize( get_user_meta( $user->ID, 'shib_email', true ) );
-		return $shib_email;	
+		return $shib_email;
 
 	}
 
 	/**
 	 * Removes bp_settings_general action for front-end so custom built primary email switching can work
-	 * 
+	 *
 	 * @return void
 	 */
 	public function hcommons_remove_bp_settings_general() {
@@ -172,7 +173,7 @@ class Humanities_Commons {
 
 	/**
 	 * Method to init COmanage api instance for the user
-	 *  
+	 *
 	 * @param  string $user_login current username of logged in user
 	 * @param  object $user       user object containing all user data
 	 * @return void
@@ -186,7 +187,18 @@ class Humanities_Commons {
 
 		if( is_user_logged_in() && $user_meta !== '1' || is_user_logged_in() && ! isset( $user_meta ) )
 			new comanageApi( $user );
-	
+
+	}
+
+	/**
+	 * Filter that enables forums by default on new group creation screen
+	 *
+	 * @param  int 	$forum  false by default
+	 * @return int  $forum  true to enable forum by default
+	 */
+	public function hcommons_get_new_group_enable_forum( $forum ) {
+		$forum = 1;
+		return $forum;
 	}
 
 	public function hcommons_filter_bp_taxonomy_storage_site( $site_id, $taxonomy ) {
@@ -1347,14 +1359,11 @@ class Humanities_Commons {
 	 * @return string $login_url Modified url.
 	 */
 	public function hcommons_login_url( $login_url ) {
-		remove_filter( 'login_url', 'shibboleth_login_url' );
+		parse_str( parse_url( $login_url, PHP_URL_QUERY ) );
 
-		if ( ! empty( self::$society_id ) && defined( 'LOGIN_PATH' ) ) {
-			return bp_get_root_domain() . LOGIN_PATH;
-		} else {
-			return $login_url;
-		}
+		add_query_arg( 'redirect_to', isset( $redirect_to ) ? $redirect_to : urlencode( '/' ), $login_url );
 
+		return $login_url;
 	}
 
 	/**
@@ -1515,7 +1524,7 @@ class Humanities_Commons {
 		}
 		if ( false !== strpos( $time_markup, ' on ' . $commons_name ) ) { // Deja vu
 			return $time_markup;
-		} 
+		}
 		$society_time_markup = sprintf( '<span class="time-since"> on %1$s </span>%2$s', $commons_name, $time_markup );
 		return $society_time_markup;
 	}
@@ -1634,7 +1643,7 @@ class Humanities_Commons {
 	 *
 	 * @return array $memberships
 	 */
-	public function hcommons_get_user_memberships() {
+	public static function hcommons_get_user_memberships() {
 
 		$memberships = array();
 		$member_types = bp_get_member_types();
@@ -1667,7 +1676,7 @@ class Humanities_Commons {
 	 * @param string $data
 	 * @return string|array $login_methods
 	 */
-	public function hcommons_get_user_login_methods( $user_id ) {
+	public static function hcommons_get_user_login_methods( $user_id ) {
 
 		$methods = array ();
 		if ( defined( 'GOOGLE_LOGIN_METHOD_SCOPE' ) ) {
@@ -1709,7 +1718,7 @@ class Humanities_Commons {
 	 *
 	 * @return string|bool $identity_provider
 	 */
-	public function hcommons_get_identity_provider( $formatted = true ) {
+	public static function hcommons_get_identity_provider( $formatted = true ) {
 
 		if ( function_exists( 'shibboleth_session_active' ) && shibboleth_session_active() ) {
 			//hcommons_write_error_log( 'info', '**********************GET_IDENTITY_PROVIDER********************-' . var_export( $identity_provider, true ) );
