@@ -1361,7 +1361,7 @@ class Humanities_Commons {
 	public function hcommons_login_url( $login_url ) {
 		parse_str( parse_url( $login_url, PHP_URL_QUERY ) );
 
-		$login_url = add_query_arg( 'redirect_to', isset( $redirect_to ) ? $redirect_to : urlencode( '/' ), $login_url );
+		$login_url = add_query_arg( 'redirect_to', urlencode( isset( $redirect_to ) ? $redirect_to : '/' ), $login_url );
 
 		return $login_url;
 	}
