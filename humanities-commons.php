@@ -1314,14 +1314,11 @@ class Humanities_Commons {
 	 * @return string $login_url Modified url.
 	 */
 	public function hcommons_login_url( $login_url ) {
-		remove_filter( 'login_url', 'shibboleth_login_url' );
+		parse_str( parse_url( $login_url, PHP_URL_QUERY ) );
 
-		if ( ! empty( self::$society_id ) && defined( 'LOGIN_PATH' ) ) {
-			return bp_get_root_domain() . LOGIN_PATH;
-		} else {
-			return $login_url;
-		}
+		add_query_arg( 'redirect_to', isset( $redirect_to ) ? $redirect_to : urlencode( '/' ), $login_url );
 
+		return $login_url;
 	}
 
 	/**
