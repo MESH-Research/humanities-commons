@@ -186,7 +186,10 @@ class Humanities_Commons {
 
 		$user_meta = get_user_meta( $user->ID, 'accepted_t_and_c', true );
 
+		//update_user_meta( $user->ID, 'accepted_t_and_c', '0' );
+
 		if( is_user_logged_in() && $user_meta !== '1' || is_user_logged_in() && ! isset( $user_meta ) )
+		//if( is_user_logged_in() )
 			new comanageApi( $user );
 
 	}

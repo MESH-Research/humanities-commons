@@ -30,7 +30,7 @@ class comanageApi {
 			$this->api_args = [ 
 				'headers' => [ 
 					'Authorization' => 'Basic ' . base64_encode( $this->username . ':' . $this->password )
-				] 
+				]
 			];
 
 			if( ! $this->username && ! $this->password ) {
@@ -48,6 +48,10 @@ class comanageApi {
 		//lets get the current user's id in COmanage
 		$co_person = $this->get_co_person( $user );
 
+		//check the person's roles to see if its expired
+		if( ! $this->check_person_roles( $co_person->CoPeople[0]->Id ) )
+			return;
+
 		//now lets check if the user has accepted the terms, if not -- redirect them
 		if( ! $this->check_t_c_agreement( $co_person->CoPeople[0]->Id ) ) {
 			
@@ -57,16 +61,16 @@ class comanageApi {
 			//var_dump( $this->has_accepted_terms );
 
 			//since the user already has accepted the terms at this point previously, we now update the user meta to reflect that
-			update_user_meta( $user->ID, 'accepted_t_and_c', '1' );
+			//update_user_meta( $user->ID, 'accepted_t_and_c', '1' );
 
 		} else {
 
 			//method to have user accept terms
-			$comanage_terms = $this->comanage_accept_terms( $co_person->CoPeople[0]->Id );
+			//$comanage_terms = $this->comanage_accept_terms( $co_person->CoPeople[0]->Id );
 
 			//if status code returns 201 which means "added", we then add that to the user meta
-			if( $comanage_terms['response']['code'] == 201 )
-				update_user_meta( $user->ID, 'accepted_t_and_c', '1' );
+			//if( $comanage_terms['response']['code'] == 201 )
+			//update_user_meta( $user->ID, 'accepted_t_and_c', '1' );
 
 			//wp_redirect( '/terms' );
 			//exit();
@@ -158,6 +162,12 @@ class comanageApi {
 
 	}
 
+	/**
+	 * Returns data on t and c agreements endpoint if the person has accepted/not accepted the agreement
+	 * 
+	 * @param  int   $co_person_id  id of person in comanage
+	 * @return object $req 			request object
+	 */
 	public function get_t_c_agreement_person( $co_person_id ) {
 
 		//echo "t & c agreement person <br/>";
@@ -167,7 +177,7 @@ class comanageApi {
 
 	}
 
-	public function get_co_person( $user ) {
+	public function get_co_person( $user ) { 
 
 		//echo "co person method <br />";
 		//$req = $this->request->get( $this->url . '/co_people.' . $this->format . '?coid=2&search.identifier=tester8', $this->api_args );
@@ -190,9 +200,66 @@ class comanageApi {
 		
 		//GET /co_person_roles/<id>.<format>
 		
-		$req = $this->request->get( $this->url . '/co_person_roles/' . $co_person_id  . '.' . $this->format,  $this->api_args );
+		$req = $this->request->get( $this->url . '/co_person_roles/.' . $this->format . '?copersonid=' . $co_person_id,  $this->api_args );
 
 		return $req;
+	}
+
+	/**
+	 * Gets all COUS for output into global class variable
+	 * 
+	 * @return array $cous  array of items retrieved from the comanage api
+	 */
+	public function get_all_cous() {
+		
+		$req = $this->request->get( $this->url . '/cous.' . $this->format, $this->api_args );
+
+		//json_decode the data from the request
+		$data = json_decode( $req['body'] );
+
+		//lets grab all of the items and put them into our own array to return
+		foreach( $data->Cous as $item ) {
+
+			$cous[] = [
+				'id' => $item->Id,
+				'name' => $item->Name,
+				'description' => $item->Description
+			];
+
+		}
+
+		return $cous;
+
+	}
+
+	/**
+	 * Checks if the user's MLA role is still active
+	 *
+	 * @todo  expand for memberships of other socities as well
+	 * 
+	 * @param  int     $co_person_id  id of person in comanage
+	 * @return boolean               [description]
+	 */
+	public function check_person_roles( $co_person_id ) {
+
+		$roles = json_decode( $this->get_co_person_role( $co_person_id )['body'] );
+		$cous = $this->get_all_cous();
+
+		foreach( $roles->CoPersonRoles as $role ) {
+			
+			//lets see if the user's MLA role is expired
+			if( $role->CouId == $cous[0]['id'] && $role->Status !== 'Expired' ) {
+				//user's role is not expired
+				$expired = false;
+			} else {
+				//user's role is expired
+				$expired = true;
+			}
+
+		}
+
+		return $expired;
+
 	}
 
 
