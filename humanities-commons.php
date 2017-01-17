@@ -119,7 +119,7 @@ class Humanities_Commons {
 		// these break login if the shibboleth plugin is not active
 		if ( 'development' !== getenv('WP_ENV') ) {
 			add_action( 'wp_login_failed', array( $this, 'hcommons_login_failed' ) );
-			add_filter( 'login_url', array( $this, 'hcommons_login_url' ) );
+			add_filter( 'login_redirect', array( $this, 'hcommons_login_redirect' ) );
 			add_filter( 'shibboleth_session_active', array( $this, 'hcommons_shibboleth_session_active' ) );
 		}
 		add_filter( 'bp_get_signup_page', array( $this, 'hcommons_register_url' ) );
@@ -1305,20 +1305,19 @@ class Humanities_Commons {
 	}
 
 	/**
-	 * Filter the login url to be society specific
-	 * This prevents redirect to /wp-admin after logging in
+	 * Filter the login redirect to prevent landing on wp-admin always.
 	 *
 	 * @since HCommons
 	 *
-	 * @param string $login_url
-	 * @return string $login_url Modified url.
+	 * @param string $redirect_to
+	 * @return string $redirect_to Modified path
 	 */
-	public function hcommons_login_url( $login_url ) {
-		parse_str( parse_url( $login_url, PHP_URL_QUERY ) );
+	public function hcommons_login_redirect( $redirect_to ) {
+		if ( strpos( $redirect_to, 'wp-admin' ) !== false ) {
+			$redirect_to = '/';
+		}
 
-		$login_url = add_query_arg( 'redirect_to', urlencode( isset( $redirect_to ) ? $redirect_to : '/' ), $login_url );
-
-		return $login_url;
+		return $redirect_to;
 	}
 
 	/**
