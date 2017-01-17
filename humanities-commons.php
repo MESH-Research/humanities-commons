@@ -158,7 +158,7 @@ class Humanities_Commons {
 	public static function hcommons_shib_email( $user ) {
 
 		$shib_email = maybe_unserialize( get_user_meta( $user->ID, 'shib_email', true ) );
-		return $shib_email;
+		return array_unique( $shib_email );
 
 	}
 
