@@ -159,7 +159,20 @@ class Humanities_Commons {
 	public static function hcommons_shib_email( $user ) {
 
 		$shib_email = maybe_unserialize( get_user_meta( $user->ID, 'shib_email', true ) );
-		return array_unique( $shib_email );
+
+        if( !is_string( $shib_email ) ) {
+        	
+        	//loops through the array and filters out anything that is null
+        	$email = array_filter( $shib_email );
+
+            return array_unique( $email );
+
+        } else {
+
+        	return $shib_email;
+        
+        }
+       
 
 	}
 
