@@ -94,9 +94,6 @@ class Humanities_Commons {
 
 		$this->request = new WP_Http();
 
-		//initializes to data to object properties containing comanage credentials
-		$this->hcommons_comanage_api_init();
-
 		self::$main_site = get_site_by_path( self::$main_network->domain, self::$main_network->path );
 		self::$society_id = get_network_option( '', 'society_id' );
 
@@ -169,7 +166,37 @@ class Humanities_Commons {
 		//add_action( 'init', array( $this, 'hcommons_comanage_api_init', ), 10, 2 );
 		add_action( 'init', array( $this, 'hcommons_comanage_api' ), 10, 2 );
 		add_action( 'init', array( $this, 'hcommons_save_comanage_user_id' ), 10, 2 );
+		add_action( 'init', array( $this, 'hcommons_init_api_credentials' ) );
 		add_action( 'init', array( $this, 'hcommons_remove_bp_settings_general' ) );
+
+	}
+
+
+	/**
+	 * Initializes api keys needed for comanage roles
+	 * 
+	 * @return void
+	 */
+	public function hcommons_init_api_credentials() {
+
+		if( !is_user_logged_in() )
+			return;
+
+		//lets use the comanageApi class to populate the class properties we need
+		try {
+			
+			$user = wp_get_current_user();
+			$api = new comanageApi( $user );
+
+			$this->url = $api->url;
+			$this->username = $api->username;
+			$this->password = $api->getPassword();
+			$this->api_args = $api->api_args;
+
+		} catch( Exception $e ) {
+			echo "Caught exception: " . $e->getMessage() . '<br />';
+		}
+
 	}
 
 	/**
@@ -189,36 +216,6 @@ class Humanities_Commons {
 		$api = new comanageApi( $user );
 		add_user_meta( $user->ID, 'comanage_user_id', $api->get_co_person( $user )->CoPeople[0]->Id );
 		
-	}
-
-	/**
-	 * Initializes api keys needed for comanage roles
-	 * 
-	 * @return void
-	 */
-	public function hcommons_comanage_api_init() {
-
-		try {
-
-			$this->url = getenv( 'COMANAGE_API_URL' );
-			$this->username = getenv( 'COMANAGE_API_USERNAME' );
-			$this->password = getenv( 'COMANAGE_API_PASSWORD' );
-
-			$this->api_args = [ 
-				'headers' => [ 
-					'Authorization' => 'Basic ' . base64_encode( $this->username . ':' . $this->password )
-				]
-			];
-
-			if( ! $this->username && ! $this->password ) {
-				throw new Exception('Uh oh! Username and password for comanage api not found!');
-			}
-
-		} catch( Exception $e ) {
-			echo 'Caught Exception: ' . $e->getMessage() . '<br />';
-			return;
-		}
-
 	}
 
 	/**

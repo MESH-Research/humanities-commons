@@ -195,5 +195,9 @@ class comanageApi {
 
 	}
 
+	public function getPassword() {
+		return $this->password;
+	}
+
 
 }
