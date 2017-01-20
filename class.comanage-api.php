@@ -251,7 +251,7 @@ class comanageApi {
 		$roles = $co_person_role['body'];
 
 		//retrieve all COUS from API to check against MLA COU
-		$cous = $self->get_all_cous();
+		$cous = $this->get_all_cous();
 
 		//loop through each role
 		foreach( $roles->CoPersonRoles as $role ) {
