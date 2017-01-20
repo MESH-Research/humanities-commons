@@ -51,10 +51,10 @@ class comanageApi {
 		}
 
 		//lets get the current user's id in COmanage
-		$co_person = $this->get_co_person( $this->user->data->user_login );
+		/*$co_person = $this->get_co_person( $this->user->data->user_login );
 
 		//now lets check if the user has accepted the terms, if not -- redirect them
-		/*if( ! $this->check_t_c_agreement( $co_person->CoPeople[0]->Id ) ) {
+		if( ! $this->check_t_c_agreement( $co_person->CoPeople[0]->Id ) ) {
 			
 			//do something if the response comes back as a string
 			//$this->has_accepted_terms = json_decode( $req['body'] );
@@ -198,34 +198,57 @@ class comanageApi {
 	public function get_co_person_role( $co_person_id ) {
 		
 		//GET /co_person_roles.<format>?copersonid=
-		$req = wp_remote_get( $this->url . '/co_person_roles/.' . $this->format . '?copersonid=' . $co_person_id,  $this->api_args );
-
-		return json_decode( $req );
+		$req = wp_remote_get( $this->url . '/co_person_roles.' . $this->format . '?copersonid=' . $co_person_id,  $this->api_args );
+		$data = json_decode( $req['body'] );
+		
+		return $data;
 
 	}
 
 	/**
-	 * Gets all COUS for output into global class variable
-	 * 
-	 * @return array $cous  array of items retrieved from the comanage api
+	 * Gets COU for output into global class variable, returns all cous by default
+	 *
+	 * @param  string  $society 
+	 * @return array   $cous    array of items retrieved from the comanage api
 	 */
-	public function get_all_cous() {
+	public function get_cous( $society = false ) {
 		
 		$req = wp_remote_get( $this->url . '/cous.' . $this->format, $this->api_args );
 
 		//json_decode the data from the request
 		$data = json_decode( $req['body'] );
 
-		//lets grab all of the items and put them into our own array to return
-		foreach( $data->Cous as $item ) {
+		if( !is_string( $society ) ) {
 
-			$cous[] = [
-				'id' => $item->Id,
-				'name' => $item->Name,
-				'description' => $item->Description
-			];
+			//lets grab all of the items and put them into our own array to return
+			foreach( $data->Cous as $item ) {
 
-		}
+				$cous[] = [
+					'id' => $item->Id,
+					'name' => $item->Name,
+					'description' => $item->Description
+				];
+
+			}
+
+		} else {
+
+			//loops through cou data to find the one matching the string in param
+			foreach( $data->Cous as $item ) {
+
+				if( $item->Name == strtoupper( $society ) ) {
+
+					$cous[] = [
+						'id' => $item->Id,
+						'name' => $item->Name,
+						'description' => $item->Description
+					];
+
+				}
+			}
+
+		}	
+
 
 		return $cous;
 
@@ -248,13 +271,13 @@ class comanageApi {
 		//gets all of the roles the person currently has
 		$co_person_role = $this->get_co_person_role( $co_person_id );
 
-		$roles = $co_person_role['body'];
+		$roles = $co_person_role->CoPersonRoles;
 
 		//retrieve all COUS from API to check against MLA COU
-		$cous = $this->get_all_cous();
+		$cous = $this->get_cous();
 
 		//loop through each role
-		foreach( $roles->CoPersonRoles as $role ) {
+		foreach( $roles as $role ) {
 
 			//check if each role matches the cous id of MLA and provide a case for each status
 			if( $role->CouId == $cous[0]['id'] ) {
