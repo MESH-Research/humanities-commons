@@ -47,10 +47,6 @@ require_once ( dirname( __FILE__ ) . '/wpmn-taxonomy-functions.php' );
 require_once ( dirname( __FILE__ ) . '/admin-toolbar.php' );
 require_once ( dirname( __FILE__ ) . '/class.comanage-api.php' );
 
-if( !class_exists( 'WP_Http' ) ) {
-    include_once( ABSPATH . WPINC. '/class-http.php' );
-}
-
 class Humanities_Commons {
 
 	/**
@@ -73,17 +69,6 @@ class Humanities_Commons {
 	 */
 	public static $shib_session_id;
 
-	/** WP_Http request */
-	public $request;
-
-	public $username;
-
-	protected $password;
-
-	public $format = "json";
-
-	public $url;
-
 	public function __construct() {
 
 		if ( defined( 'HC_SITE_ID' ) ) {
@@ -91,8 +76,6 @@ class Humanities_Commons {
 		} else {
 			self::$main_network = wp_get_network( (int) '1' );
 		}
-
-		$this->request = new WP_Http();
 
 		self::$main_site = get_site_by_path( self::$main_network->domain, self::$main_network->path );
 		self::$society_id = get_network_option( '', 'society_id' );
@@ -162,60 +145,8 @@ class Humanities_Commons {
 		remove_filter( 'bp_notifications_get_notifications_for_user', 'bbp_format_buddypress_notifications' );
 		add_filter( 'bp_notifications_get_notifications_for_user', array( $this, 'hcommons_bbp_format_buddypress_notifications' ), 10, 8 );
 		add_filter( 'bp_get_new_group_enable_forum', array( $this, 'hcommons_get_new_group_enable_forum' ) );
-
-		//add_action( 'init', array( $this, 'hcommons_comanage_api_init', ), 10, 2 );
-		add_action( 'init', array( $this, 'hcommons_comanage_api' ), 10, 2 );
-		add_action( 'init', array( $this, 'hcommons_save_comanage_user_id' ), 10, 2 );
-		add_action( 'init', array( $this, 'hcommons_init_api_credentials' ) );
 		add_action( 'init', array( $this, 'hcommons_remove_bp_settings_general' ) );
 
-	}
-
-
-	/**
-	 * Initializes api keys needed for comanage roles
-	 * 
-	 * @return void
-	 */
-	public function hcommons_init_api_credentials() {
-
-		if( !is_user_logged_in() )
-			return;
-
-		//lets use the comanageApi class to populate the class properties we need
-		try {
-			
-			$user = wp_get_current_user();
-			$api = new comanageApi( $user );
-
-			$this->url = $api->url;
-			$this->username = $api->username;
-			$this->password = $api->getPassword();
-			$this->api_args = $api->api_args;
-
-		} catch( Exception $e ) {
-			echo "Caught exception: " . $e->getMessage() . '<br />';
-		}
-
-	}
-
-	/**
-	 * Saves COmanage user ID into user meta to use with static method
-	 * 
-	 * @return void
-	 */
-	public function hcommons_save_comanage_user_id() {
-		
-		//lets not execute this if the user is not logged in
-		if( !is_user_logged_in() )
-			return;
-
-		$user = wp_get_current_user();
-
-		//lets use the $user object to get the user id from comanage on the get_co_person method
-		$api = new comanageApi( $user );
-		add_user_meta( $user->ID, 'comanage_user_id', $api->get_co_person( $user )->CoPeople[0]->Id );
-		
 	}
 
 	/**
@@ -245,151 +176,12 @@ class Humanities_Commons {
 	}
 
 	/**
-	 * Gets role from co_person by passing in person_id
-	 * 
-	 * @param  int    $co_person_id  CO user id
-	 * 
-	 * @return object $req			  object from api if request is successful               
-	 */
-	public function hcommons_get_co_person_role( $co_person_id ) {
-		
-		//GET /co_person_roles.<format>?copersonid=
-
-		$req = $this->request->get( $this->url . '/co_person_roles/.' . $this->format . '?copersonid=' . $co_person_id,  $this->api_args );
-
-		return $req;
-	}
-
-	/**
-	 * Gets all COUS for output into global class variable
-	 * 
-	 * @return array $cous  array of items retrieved from the comanage api
-	 */
-	public function hcommons_get_all_cous() {
-		
-		$req = $this->request->get( $this->url . '/cous.' . $this->format, $this->api_args );
-
-		//json_decode the data from the request
-		$data = json_decode( $req['body'] );
-
-		//lets grab all of the items and put them into our own array to return
-		foreach( $data->Cous as $item ) {
-
-			$cous[] = [
-				'id' => $item->Id,
-				'name' => $item->Name,
-				'description' => $item->Description
-			];
-
-		}
-
-		return $cous;
-
-	}
-
-	/**
-	 * Checks if the user's MLA role is still active
-	 *
-	 * @todo  expand for memberships of other societies as well
-	 *
-	 * @param  int     $co_person_id  id of person in comanage
-	 * @return array
-	 */
-	public static function hcommons_get_person_roles( $co_person_id ) {
-
-		//create new static object for non-static object references
-		$self = new Static;
-
-		//gets all of the roles the person currently has
-		$co_person_role = $self->hcommons_get_co_person_role( $co_person_id );
-
-		//json_decode all roles
-		$roles = json_decode( $co_person_role['body'] );
-
-		//retrieve all COUS from API to check against MLA COU
-		$cous = $self->hcommons_get_all_cous();
-
-		//loop through each role
-		foreach( $roles->CoPersonRoles as $role ) {
-
-			//check if each role matches the cous id of MLA and provide a case for each status
-			if( $role->CouId == $cous[0]['id'] ) {
-
-				switch( $role->Status ) {
-
-					case "Active" :
-
-						$array = [
-							'status' => 'Active',
-							'valid_through' => strtotime( $role->ValidThrough ),
-							'expired' => false
-						];
-					
-					break;
-
-					case "Expired" : 
-						
-						$array = [
-							'status' => 'Expired',
-							'valid_through' => strtotime( $role->ValidThrough ),
-							'expired' => true
-						];
-
-					break;
-
-					case "Pending" :
-						
-						$array = [
-							'status' => 'Pending',
-							'valid_through' => strtotime( $role->ValidThrough ),
-							'expired' => false
-						];
-
-					break;
-				
-				}
-
-			}
-
-		}
-
-		return $array;
-
-	}
-
-
-	/**
 	 * Removes bp_settings_general action for front-end so custom built primary email switching can work
 	 *
 	 * @return void
 	 */
 	public function hcommons_remove_bp_settings_general() {
 		remove_action( 'bp_actions',  'bp_settings_action_general', 10 );
-	}
-
-	/**
-	 * Method to init COmanage api instance for the user
-	 *
-	 * @param  string $user_login current username of logged in user
-	 * @param  object $user       user object containing all user data
-	 * @return void
-	 */
-	public function hcommons_comanage_api() {
-
-		if( !is_user_logged_in() )
-			return;
-
-		//use get_user_meta() to check if the current user has accepted the terms first before
-		//initializing the comanageApi class
-		$user = wp_get_current_user();
-
-		//$user_meta = get_user_meta( $user->ID, 'accepted_t_and_c', true );
-		update_user_meta( $user->ID, 'accepted_t_and_c', '0' );
-
-		//if( is_user_logged_in() && $user_meta !== '1' || is_user_logged_in() && ! isset( $user_meta ) )
-		//if( is_user_logged_in() )
-			new comanageApi( $user );
-
 	}
 
 	/**
@@ -2044,6 +1836,7 @@ class Humanities_Commons {
 }
 
 $humanities_commons = new Humanities_Commons;
+$comanage_api = new comanageApi;
 
 function hcommons_check_non_member_active_session() {
 
