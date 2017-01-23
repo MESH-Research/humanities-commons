@@ -208,35 +208,20 @@ class comanageApi {
 	/**
 	 * Gets COU for output into global class variable, returns all cous by default
 	 *
-	 * @param  string  $society 
+	 * @param  string  $society_id
 	 * @return array   $cous    array of items retrieved from the comanage api
 	 */
-	public function get_cous( $society = false ) {
-		
+	public function get_cous( $society_id = '' ) {
+
 		$req = wp_remote_get( $this->url . '/cous.' . $this->format, $this->api_args );
 
 		//json_decode the data from the request
 		$data = json_decode( $req['body'] );
 
-		if( !is_string( $society ) ) {
-
-			//lets grab all of the items and put them into our own array to return
-			foreach( $data->Cous as $item ) {
-
-				$cous[] = [
-					'id' => $item->Id,
-					'name' => $item->Name,
-					'description' => $item->Description
-				];
-
-			}
-
-		} else {
-
 			//loops through cou data to find the one matching the string in param
 			foreach( $data->Cous as $item ) {
 
-				if( $item->Name == strtoupper( $society ) ) {
+				if ( empty( $society_id ) || $item->Name == strtoupper( $society_id ) ) {
 
 					$cous[] = [
 						'id' => $item->Id,
@@ -247,80 +232,59 @@ class comanageApi {
 				}
 			}
 
-		}	
-
-
 		return $cous;
 
 	}
 
 	/**
-	 * Checks if the user's MLA role is still active
-	 *
-	 * @todo  expand for memberships of other societies as well
+	 * Checks if the user's society role is still active
 	 *
 	 * @param  string     $wordpress_username  wordpress username of logged in user
+	 * @param  string     $society_id  society to check
 	 * @return array
 	 */
-	public function get_person_roles( $wordpress_username ) {
+	public function get_person_roles( $wordpress_username, $society_id = '' ) {
 
 		//lets get the ID in comanage for the current logged in user
 		$co_person = $this->get_co_person( $wordpress_username );
-		$co_person_id = $co_person->CoPeople[0]->Id;
-
+		//multiple records - find first active
+		foreach( $co_person as $person_record ) {
+			if ( $person_record[0]->CoId == "2" && $person_record[0]->Status == 'Active' ) {
+				$co_person_id = $person_record[0]->Id;
+				break 1;
+			}
+		}
 		//gets all of the roles the person currently has
-		$co_person_role = $this->get_co_person_role( $co_person_id );
+		$co_person_roles = $this->get_co_person_role( $co_person_id );
 
-		$roles = $co_person_role->CoPersonRoles;
+		$roles = $co_person_roles->CoPersonRoles;
 
-		//retrieve all COUS from API to check against MLA COU
-		$cous = $this->get_cous();
+		//retrieve current society COU from API or retrieve all
+		$cous = $this->get_cous( $society_id );
+		$roles_found = array();
 
-		//loop through each role
-		foreach( $roles as $role ) {
+		foreach( $cous as $cou ) {
+			//loop through each role
+			foreach( $roles as $role ) {
+				//check if each role matches the cou id of the society and provide a case for each status
+				if( $role->CouId == $cou['id'] ) {
 
-			//check if each role matches the cous id of MLA and provide a case for each status
-			if( $role->CouId == $cous[0]['id'] ) {
+					$roles_found[$cou['name']] = [
+						'status' => $role->Status,
+						'affiliation' => $role->Affiliation,
+						'title' => $role->Title,
+						'o' => $role->O,
+						'valid_from' => substr( $role->ValidFrom, 0, 10 ),
+						'valid_through' => substr( $role->ValidThrough, 0, 10 ),
+					];
 
-				switch( $role->Status ) {
-
-					case "Active" :
-
-						$array = [
-							'status' => 'Active',
-							'valid_through' => strtotime( $role->ValidThrough ),
-							'expired' => false
-						];
-					
-					break;
-
-					case "Expired" : 
-						
-						$array = [
-							'status' => 'Expired',
-							'valid_through' => strtotime( $role->ValidThrough ),
-							'expired' => true
-						];
-
-					break;
-
-					case "Pending" :
-						
-						$array = [
-							'status' => 'Pending',
-							'valid_through' => strtotime( $role->ValidThrough ),
-							'expired' => false
-						];
-
-					break;
-				
 				}
 
 			}
 
 		}
 
-		return $array;
+		return $roles_found;
 
 	}
 
