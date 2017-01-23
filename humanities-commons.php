@@ -1430,7 +1430,7 @@ class Humanities_Commons {
 				' #entry-content p { line-height: 1.5; margin-top: 12px !important; } ' .
 				' #login form p.submit input { background-color: #0085ba !important; } ' .
 				' .login form { margin-top: 0px; !important; }</style>';
-			echo '<div class="entry-content entry-summary"><p>Welcome to the future home of Humanities Commons. Please forgive our appearance while we get ready for our big debut in early 2017. For information about the project, and to sign up for e-mail updates, please visit <a href="https://news.hcommons.org">news.hcommons.org.</a></p></div>';
+			echo '<div class="entry-content entry-summary"><p>Welcome to the future home of CAA Commons. Please forgive our appearance while we get ready for our big debut in early 2017.</p></div>';
 		}
 	}
 
