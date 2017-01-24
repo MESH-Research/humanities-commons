@@ -247,6 +247,7 @@ class comanageApi {
 
 		//lets get the ID in comanage for the current logged in user
 		$co_person = $this->get_co_person( $wordpress_username );
+		
 		//multiple records - find first active
 		foreach( $co_person as $person_record ) {
 			if ( $person_record[0]->CoId == "2" && $person_record[0]->Status == 'Active' ) {
@@ -264,6 +265,7 @@ class comanageApi {
 		$roles_found = array();
 
 		foreach( $cous as $cou ) {
+
 			//loop through each role
 			foreach( $roles as $role ) {
 				//check if each role matches the cou id of the society and provide a case for each status
@@ -284,6 +286,7 @@ class comanageApi {
 
 		}
 
+		ksort( $roles_found );
 		return $roles_found;
 
 	}
