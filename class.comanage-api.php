@@ -13,25 +13,13 @@ class comanageApi {
 	public $url;
 	public $api_args;
 	public $has_accepted_terms = false;
-	public $user;
 
 	public function __construct() {
-		
-		add_action( 'init', array( $this, 'run' ), 10, 2 );
-
-	}
-
-	public function run() {
-
-		//we dont initalize if the user is not logged in
-		if( !is_user_logged_in() )
-			return;
 
 		try {
 			
 			//look up co_person_role endpoint to see if user's current role is expired
 			$this->url = getenv( 'COMANAGE_API_URL' );
-			$this->user = wp_get_current_user();
 			$this->username = getenv( 'COMANAGE_API_USERNAME' );
 			$this->password = getenv( 'COMANAGE_API_PASSWORD' );
 
@@ -213,7 +201,12 @@ class comanageApi {
 	 */
 	public function get_cous( $society_id = '' ) {
 
-		$req = wp_remote_get( $this->url . '/cous.' . $this->format, $this->api_args );
+		$req = get_transient( 'comanage_cous' . $society_id );
+
+		if ( ! $req ) {
+			$req = wp_remote_get( $this->url . '/cous.' . $this->format, $this->api_args );
+			set_transient( 'comanage_cous' . $society_id, $req, 24 * HOUR_IN_SECONDS );
+		}
 
 		//json_decode the data from the request
 		$data = json_decode( $req['body'] );
