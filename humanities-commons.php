@@ -122,6 +122,7 @@ class Humanities_Commons {
 			add_filter( 'wp_safe_redirect_fallback', array( $this, 'hcommons_remove_admin_redirect' ) );
 			add_filter( 'login_redirect', array( $this, 'hcommons_remove_admin_redirect' ) );
 			add_filter( 'shibboleth_session_active', array( $this, 'hcommons_shibboleth_session_active' ) );
+			add_action( 'login_init', array( $this, 'hcommons_login_init' ) );
 		}
 		add_filter( 'bp_get_signup_page', array( $this, 'hcommons_register_url' ) );
 		add_action( 'pre_user_query', array( &$this, 'hcommons_filter_site_users_only' ) ); // do_action_ref_array() is used for pre_user_query
@@ -1323,6 +1324,23 @@ class Humanities_Commons {
 		}
 
 		return $location;
+	}
+
+	/**
+	 * Require shibboleth login rather than allowing vanilla wp-login.
+	 *
+	 * @since HCommons
+	 */
+	public function hcommons_login_init() {
+		if ( ! isset( $_REQUEST['action'] ) || $_REQUEST['action'] !== 'shibboleth' ) {
+			$exploded_url = explode( '?', $_SERVER['REQUEST_URI'] );
+
+			parse_str( parse_url( $_SERVER['REQUEST_URI'], PHP_URL_QUERY ), $parsed_query );
+
+			$parsed_query['action'] = 'shibboleth';
+
+			wp_safe_redirect( $exploded_url[0] . '?' . http_build_query( $parsed_query ) );
+		}
 	}
 
 	/**
