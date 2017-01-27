@@ -1370,7 +1370,10 @@ class Humanities_Commons {
 	 * @since HCommons
 	 */
 	public function hcommons_login_init() {
-		if ( ! isset( $_REQUEST['action'] ) || $_REQUEST['action'] !== 'shibboleth' ) {
+		if (
+			! isset( $_REQUEST['action'] ) ||
+			! in_array( $_REQUEST['action'] !== [ 'shibboleth', 'logout' ] )
+		) {
 			$exploded_url = explode( '?', $_SERVER['REQUEST_URI'] );
 
 			parse_str( parse_url( $_SERVER['REQUEST_URI'], PHP_URL_QUERY ), $parsed_query );
