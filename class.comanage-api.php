@@ -34,7 +34,7 @@ class comanageApi {
 			}
 
 		} catch( Exception $e ) {
-			echo 'Caught Exception: ' . $e->getMessage() . '<br />';
+			//echo 'Caught Exception: ' . $e->getMessage() . '<br />';
 			return;
 		}
 

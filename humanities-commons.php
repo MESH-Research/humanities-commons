@@ -134,8 +134,8 @@ class Humanities_Commons {
 		add_filter( 'password_protected_login_headertitle', array( $this, 'hcommons_password_protect_title' ) );
 		add_filter( 'password_protected_login_headerurl', array( $this, 'hcommons_password_protect_url' ) );
 		add_action( 'password_protected_login_messages', array( $this, 'hcommons_password_protect_message' ) );
-		add_filter( 'bbp_topic_admin_links', array( $this, 'hcommons_topic_admin_links' ) );
-		add_filter( 'bbp_reply_admin_links', array( $this, 'hcommons_reply_admin_links' ) );
+		add_filter( 'bbp_topic_admin_links', array( $this, 'hcommons_topic_admin_links' ), 10, 2 );
+		add_filter( 'bbp_reply_admin_links', array( $this, 'hcommons_reply_admin_links' ), 10, 2 );
 		add_filter( 'bp_activity_time_since', array( $this, 'hcommons_filter_activity_time_since' ), 10, 2 );
 		add_filter( 'bp_attachments_cover_image_upload_dir', array( $this, 'hcommons_cover_image_upload_dir' ), 10, 2 );
 		//add_filter( 'bp_attachments_pre_cover_image_ajax_upload', array( $this, 'hcommons_cover_image_ajax_upload' ), 10, 4 );
@@ -983,7 +983,8 @@ class Humanities_Commons {
 			$global_super_admins = explode( ',', $global_super_admin_list );
 		}
 		$memberships = $this->hcommons_get_user_memberships();
-		if ( ! in_array( self::$society_id, $memberships['societies'] ) && ! in_array( $user->user_login, $global_super_admins ) ) {
+		$member_societies = (array)$memberships['societies'];
+		if ( ! in_array( self::$society_id, $member_societies ) && ! in_array( $user->user_login, $global_super_admins ) ) {
 			hcommons_write_error_log( 'info', '****CHECK_USER_SITE_MEMBERSHIP_FAIL****-' . var_export( $memberships['societies'], true ) .
 				var_export( self::$society_id, true ) . var_export( $user, true ) );
 			return '';
