@@ -208,7 +208,7 @@ class Humanities_Commons {
 
 	public function hcommons_filter_hc_taxonomy_storage_site( $site_id, $taxonomy ) {
 
-		if ( in_array( $taxonomy, array( 'mla_academic_interests', 'humcore_deposit_subject', 'humcore_deposit_tag' ) ) ) {
+		if ( in_array( $taxonomy, array( 'mla_academic_interests', 'humcore_deposit_language', 'humcore_deposit_subject', 'humcore_deposit_tag' ) ) ) {
 			return (int) '1'; // Go legacy during beta.
 		} else {
 			return $site_id;
