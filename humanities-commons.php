@@ -45,6 +45,7 @@ function hcommons_write_error_log( $error_type, $error_message, $info = null ) {
 
 require_once ( dirname( __FILE__ ) . '/wpmn-taxonomy-functions.php' );
 require_once ( dirname( __FILE__ ) . '/admin-toolbar.php' );
+require_once ( dirname( __FILE__ ) . '/class.comanage-api.php' );
 
 class Humanities_Commons {
 
@@ -145,11 +146,48 @@ class Humanities_Commons {
 		remove_filter( 'bp_notifications_get_notifications_for_user', 'bbp_format_buddypress_notifications' );
 		add_filter( 'bp_notifications_get_notifications_for_user', array( $this, 'hcommons_bbp_format_buddypress_notifications' ), 10, 8 );
 		add_filter( 'bp_get_new_group_enable_forum', array( $this, 'hcommons_get_new_group_enable_forum' ) );
+		add_action( 'init', array( $this, 'hcommons_remove_bp_settings_general' ) );
+
+	}
+
+	/**
+	 * Unserializes the shib_email meta to return to the user as an array
+	 * 
+	 * @param   object $user  		user object to be passed
+	 * @return  array  $shib_email  array to be used
+	 */
+	public static function hcommons_shib_email( $user ) {
+
+		$shib_email = maybe_unserialize( get_user_meta( $user->ID, 'shib_email', true ) );
+
+        if( !is_string( $shib_email ) ) {
+        	
+        	//loops through the array and filters out anything that is null
+        	$email = array_filter( $shib_email );
+
+            return array_unique( $email );
+
+        } else {
+
+        	return $shib_email;
+        
+        }
+       
+
+	}
+
+	/**
+	 * Removes bp_settings_general action for front-end so custom built primary email switching can work
+	 *
+	 * @return void
+	 */
+	public function hcommons_remove_bp_settings_general() {
+		remove_action( 'bp_actions',  'bp_settings_action_general', 10 );
 	}
 
 	/**
 	 * Filter that enables forums by default on new group creation screen
-	 * 
+	 *
 	 * @param  int 	$forum  false by default
 	 * @return int  $forum  true to enable forum by default
 	 */
@@ -170,7 +208,7 @@ class Humanities_Commons {
 
 	public function hcommons_filter_hc_taxonomy_storage_site( $site_id, $taxonomy ) {
 
-		if ( in_array( $taxonomy, array( 'mla_academic_interests', 'humcore_deposit_subject', 'humcore_deposit_tag' ) ) ) {
+		if ( in_array( $taxonomy, array( 'mla_academic_interests', 'humcore_deposit_language', 'humcore_deposit_subject', 'humcore_deposit_tag' ) ) ) {
 			return (int) '1'; // Go legacy during beta.
 		} else {
 			return $site_id;
@@ -1504,7 +1542,7 @@ class Humanities_Commons {
 		}
 		if ( false !== strpos( $time_markup, ' on ' . $commons_name ) ) { // Deja vu
 			return $time_markup;
-		} 
+		}
 		$society_time_markup = sprintf( '<span class="time-since"> on %1$s </span>%2$s', $commons_name, $time_markup );
 		return $society_time_markup;
 	}
@@ -1819,6 +1857,7 @@ class Humanities_Commons {
 }
 
 $humanities_commons = new Humanities_Commons;
+$comanage_api = new comanageApi;
 
 function hcommons_check_non_member_active_session() {
 

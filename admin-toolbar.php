@@ -39,10 +39,12 @@ function hcommons_admin_bar_render() {
 
         if ( ! is_admin() ) {
                 $site_name_clone = $wp_admin_bar->get_node( 'site-name' );
-                $site_name_clone->href = str_replace( '/wp-admin', '', $site_name_clone->href );
                 $wp_admin_bar->remove_menu( 'site-name' );
                 $wp_admin_bar->remove_menu( 'dashboard' );
-                $wp_admin_bar->add_menu( $site_name_clone );
+		if ( is_object( $site_name_clone ) ) {
+			$site_name_clone->href = str_replace( '/wp-admin', '', $site_name_clone->href );
+			$wp_admin_bar->add_menu( $site_name_clone );
+		}
         }
 
         if ( ! is_user_logged_in() ) {
