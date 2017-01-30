@@ -1321,7 +1321,7 @@ class Humanities_Commons {
 		$referrer = $_SERVER['HTTP_REFERER'];
 		hcommons_write_error_log( 'info', '****LOGIN_FAILED****-' . var_export( $referrer, true ) );
 		if ( ! empty( $referrer ) && strstr( $referrer, 'idp/profile/SAML2/Redirect/SSO?' ) ) {
-			if ( ! strstr( $_SERVER['REQUEST_URI'], '/not-a-member' ) ) { // make sure we don’t redirect twice
+			if ( ! strstr( $_SERVER['REQUEST_URI'], '/not-a-member' ) && ! strstr( $_SERVER['REQUEST_URI'], '/inactive-member' ) ) { // one redirect
 				wp_redirect( 'https://' . $_SERVER['HTTP_X_FORWARDED_HOST'] . '/not-a-member' );
 				exit();
 			}
