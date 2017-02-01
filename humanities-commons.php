@@ -147,53 +147,8 @@ class Humanities_Commons {
 		add_filter( 'bp_notifications_get_notifications_for_user', array( $this, 'hcommons_bbp_format_buddypress_notifications' ), 10, 8 );
 		add_filter( 'bp_get_new_group_enable_forum', array( $this, 'hcommons_get_new_group_enable_forum' ) );
 		add_action( 'init', array( $this, 'hcommons_remove_bp_settings_general' ) );
+		add_action( 'bp_before_group_settings_creation_step', array( $this, 'hcommons_groups_group_before_save') );
 
-	}
-
-	/**
-	 * Unserializes the shib_email meta to return to the user as an array
-	 * 
-	 * @param   object $user  		user object to be passed
-	 * @return  array  $shib_email  array to be used
-	 */
-	public static function hcommons_shib_email( $user ) {
-
-		$shib_email = maybe_unserialize( get_user_meta( $user->ID, 'shib_email', true ) );
-
-        if( !is_string( $shib_email ) ) {
-        	
-        	//loops through the array and filters out anything that is null
-        	$email = array_filter( $shib_email );
-
-            return array_unique( $email );
-
-        } else {
-
-        	return $shib_email;
-        
-        }
-       
-
-	}
-
-	/**
-	 * Removes bp_settings_general action for front-end so custom built primary email switching can work
-	 *
-	 * @return void
-	 */
-	public function hcommons_remove_bp_settings_general() {
-		remove_action( 'bp_actions',  'bp_settings_action_general', 10 );
-	}
-
-	/**
-	 * Filter that enables forums by default on new group creation screen
-	 *
-	 * @param  int 	$forum  false by default
-	 * @return int  $forum  true to enable forum by default
-	 */
-	public function hcommons_get_new_group_enable_forum( $forum ) {
-		$forum = 1;
-		return $forum;
 	}
 
 	public function hcommons_filter_bp_taxonomy_storage_site( $site_id, $taxonomy ) {
@@ -1652,8 +1607,62 @@ class Humanities_Commons {
 	}
 
 	/**
+	 * Filter that enables forums by default on new group creation screen
+	 *
+	 * @param  int 	$forum  false by default
+	 * @return int  $forum  true to enable forum by default
+	 */
+	public function hcommons_get_new_group_enable_forum( $forum ) {
+		$forum = 1;
+		return $forum;
+	}
+
+	/**
+	 * Removes bp_settings_general action for front-end so custom built primary email switching can work
+	 *
+	 * @return void
+	 */
+	public function hcommons_remove_bp_settings_general() {
+		remove_action( 'bp_actions',  'bp_settings_action_general', 10 );
+	}
+
+	/**
+	 * Sets default group subscription settings in group creation step to 'digest' instead of 'all emails'
+	 * 
+	 * @return void
+	 */
+	public function hcommons_groups_group_before_save() {
+
+		global $bp;
+
+		groups_update_groupmeta( $bp->groups->new_group_id, 'ass_default_subscription', 'dig' );
+
+	}
+
+	/**
 	 * Functions not tied to any filter or action.
 	 */
+
+	/**
+	 * Unserializes the shib_email meta to return to the user as an array
+	 * 
+	 * @param   object $user  		user object to be passed
+	 * @return  array  $shib_email  array to be used
+	 */
+	public static function hcommons_shib_email( $user ) {
+
+		$shib_email = maybe_unserialize( get_user_meta( $user->ID, 'shib_email', true ) );
+
+		if( ! is_string( $shib_email ) ) {
+
+			//loops through the array and filters out anything that is null
+			$email = array_filter( $shib_email );
+			return array_unique( $email );
+		} else {
+			return $shib_email;
+		}
+
+	}
 
 	/**
 	 * Return user memberships from session
