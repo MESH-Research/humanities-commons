@@ -1033,7 +1033,7 @@ class Humanities_Commons {
 			return $member_permalink;
 		}
 
-		hcommons_write_error_log( 'info', '****SET_MEMBERS_DIRECTORY_PERMALINK****-'.var_export( $member_permalink, true ) );
+		//hcommons_write_error_log( 'info', '****SET_MEMBERS_DIRECTORY_PERMALINK****-'.var_export( $member_permalink, true ) );
 		$member_types = bp_get_member_type( $user_id, false );
 
 		if ( in_array( self::$society_id, $member_types ) ) {
@@ -1230,7 +1230,7 @@ class Humanities_Commons {
 			return;
 		}
 */
-		hcommons_write_error_log( 'info', '****SYNC_BP_PROFILE****-'.var_export( $user, true ) );
+		hcommons_write_error_log( 'info', '****SYNC_BP_PROFILE****-'.var_export( $user->ID, true ) );
 		$name = $_SERVER['HTTP_DISPLAYNAME']; // user record maybe not fully populated for first time users.
 		xprofile_set_field_data( 'Name', $user->ID, $name );
 
@@ -1274,7 +1274,7 @@ class Humanities_Commons {
 		global $wpdb;
 		$prefix = $wpdb->get_blog_prefix();
 		$referrer = $_SERVER['HTTP_REFERER'];
-		hcommons_write_error_log( 'info', '****LOGIN_FAILED****-' . var_export( $referrer, true ) );
+		hcommons_write_error_log( 'info', '****LOGIN_FAILED****-' . $_SERVER['HTTP_REFERER'] . ' ' . $_SERVER['HTTP_X_FORWARDED_FOR'] . ' ' . $_SERVER['HTTP_EMPLOYEENUMBER'] );
 		if ( ! empty( $referrer ) && strstr( $referrer, 'idp/profile/SAML2/Redirect/SSO?' ) ) {
 			if ( ! strstr( $_SERVER['REQUEST_URI'], '/not-a-member' ) && ! strstr( $_SERVER['REQUEST_URI'], '/inactive-member' ) ) { // one redirect
 				wp_redirect( 'https://' . $_SERVER['HTTP_X_FORWARDED_HOST'] . '/not-a-member' );
