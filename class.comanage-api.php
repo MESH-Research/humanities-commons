@@ -201,29 +201,45 @@ class comanageApi {
 	 */
 	public function get_cous( $society_id = '' ) {
 
+
 		$req = get_transient( 'comanage_cous' . $society_id );
 
 		if ( ! $req ) {
-			$req = wp_remote_get( $this->url . '/cous.' . $this->format, $this->api_args );
+
+			$temp_cous = array();
+			$temp_cous['Cous'][] = [ 'Id' => '1', 'Name' => 'MLA',
+						'Description' => 'Modern Language Association' ];
+			$temp_cous['Cous'][] = [ 'Id' => '2', 'Name' => 'CAA',
+						'Description' => 'College Art Association' ];
+			$temp_cous['Cous'][] = [ 'Id' => '3', 'Name' => 'ASEEES',
+						'Description' => 'Association for Slavic, Eastern European, and Eurasian Studies' ];
+			$temp_cous['Cous'][] = [ 'Id' => '4', 'Name' => 'AJS',
+						'Description' => 'Association for Jewish Studies' ];
+			$temp_cous['Cous'][] = [ 'Id' => '5', 'Name' => 'HC',
+						'Description' => 'Humanities Commons' ];
+
+			$req['body'] = json_encode( $temp_cous );
+			//$req = wp_remote_get( $this->url . '/cous.' . $this->format, $this->api_args );
 			set_transient( 'comanage_cous' . $society_id, $req, 24 * HOUR_IN_SECONDS );
 		}
 
 		//json_decode the data from the request
-		$data = json_decode( $req['body'] );
+		$data = json_decode( $req['body'], true );
+		$cous = array();
 
-			//loops through cou data to find the one matching the string in param
-			foreach( $data->Cous as $item ) {
+		//loops through cou data to find the one matching the string in param
+		foreach( $data['Cous'] as $item ) {
 
-				if ( empty( $society_id ) || $item->Name == strtoupper( $society_id ) ) {
+			if ( empty( $society_id ) || $item->Name == strtoupper( $society_id ) ) {
 
-					$cous[] = [
-						'id' => $item->Id,
-						'name' => $item->Name,
-						'description' => $item->Description
-					];
+				$cous[] = [
+					'id' => $item['Id'],
+					'name' => $item['Name'],
+					'description' => $item['Description']
+				];
 
-				}
 			}
+		}
 
 		return $cous;
 
