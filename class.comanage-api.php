@@ -230,7 +230,7 @@ class comanageApi {
 		//loops through cou data to find the one matching the string in param
 		foreach( $data['Cous'] as $item ) {
 
-			if ( empty( $society_id ) || $item->Name == strtoupper( $society_id ) ) {
+			if ( empty( $society_id ) || $item['Name'] == strtoupper( $society_id ) ) {
 
 				$cous[] = [
 					'id' => $item['Id'],
