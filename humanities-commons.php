@@ -124,6 +124,7 @@ class Humanities_Commons {
 			add_filter( 'login_redirect', array( $this, 'hcommons_remove_admin_redirect' ) );
 			add_filter( 'shibboleth_session_active', array( $this, 'hcommons_shibboleth_session_active' ) );
 			add_action( 'login_init', array( $this, 'hcommons_login_init' ) );
+			add_action( 'init', array( $this, 'hcommons_shibboleth_autologout' ) );
 		}
 		add_filter( 'bp_get_signup_page', array( $this, 'hcommons_register_url' ) );
 		add_action( 'pre_user_query', array( &$this, 'hcommons_filter_site_users_only' ) ); // do_action_ref_array() is used for pre_user_query
@@ -1318,6 +1319,20 @@ class Humanities_Commons {
 		}
 
 		return $location;
+	}
+
+	/**
+	 * Force logout of current network if shibboleth session has expired.
+	 * This is intended to make logging out of one network log the user out of all networks,
+	 * but also serves to deal with shibboleth expiration or other unexpected scenarios.
+	 */
+	public function hcommons_shibboleth_autologout() {
+		if ( is_user_logged_in() && ! shibboleth_session_active() ) {
+			$logout_url = shibboleth_get_option('shibboleth_logout_url');
+			wp_logout();
+			wp_redirect($logout_url);
+			exit;
+		}
 	}
 
 	/**
