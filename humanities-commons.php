@@ -117,15 +117,15 @@ class Humanities_Commons {
 		add_filter( 'bp_core_avatar_url', array( $this, 'hcommons_set_bp_core_avatar_url' ) );
 		add_filter( 'bp_get_group_join_button', array( $this, 'hcommons_check_bp_get_group_join_button' ), 10, 2 );
 		add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_sync_bp_profile' ), 10, 3 );
-		// these break login if the shibboleth plugin is not active
-		if ( 'development' !== getenv('WP_ENV') ) {
-			add_action( 'wp_login_failed', array( $this, 'hcommons_login_failed' ) );
-			add_filter( 'wp_safe_redirect_fallback', array( $this, 'hcommons_remove_admin_redirect' ) );
-			add_filter( 'login_redirect', array( $this, 'hcommons_remove_admin_redirect' ) );
-			add_filter( 'shibboleth_session_active', array( $this, 'hcommons_shibboleth_session_active' ) );
-			add_action( 'login_init', array( $this, 'hcommons_login_init' ) );
-			add_action( 'init', array( $this, 'hcommons_shibboleth_autologout' ) );
-		}
+
+		// these require shibboleth
+		add_action( 'wp_login_failed', array( $this, 'hcommons_login_failed' ) );
+		add_filter( 'wp_safe_redirect_fallback', array( $this, 'hcommons_remove_admin_redirect' ) );
+		add_filter( 'login_redirect', array( $this, 'hcommons_remove_admin_redirect' ) );
+		add_filter( 'shibboleth_session_active', array( $this, 'hcommons_shibboleth_session_active' ) );
+		add_action( 'login_init', array( $this, 'hcommons_login_init' ) );
+		add_action( 'init', array( $this, 'hcommons_shibboleth_autologout' ) );
+
 		add_filter( 'bp_get_signup_page', array( $this, 'hcommons_register_url' ) );
 		add_action( 'pre_user_query', array( &$this, 'hcommons_filter_site_users_only' ) ); // do_action_ref_array() is used for pre_user_query
 		add_filter( 'invite_anyone_is_large_network', '__return_true' ); //hide invite anyone member list on create/edit group screen
