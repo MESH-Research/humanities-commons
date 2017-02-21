@@ -1642,15 +1642,27 @@ class Humanities_Commons {
 	 */
 	public function hcommons_settings_general_ajax() {
 
+		//lets check if the server is sending a POST request with the nonce as data
 		if ( $_SERVER['REQUEST_METHOD'] == 'POST' && wp_verify_nonce( $_POST['nonce'], 'settings_general_nonce' ) ) {
-			print_r( $_POST );
+
+			//lets get the current user data
+			$user = wp_get_current_user();
 
 			if ( isset( $_POST['primary_email'] ) && ! empty( $_POST['primary_email'] ) ) {
+
 				$user->user_email = $_POST['primary_email'];
-				wp_update_user( ['ID' => $user->ID, 'user_email' => esc_attr( $_POST['primary_email'] ) ] );
+				$updated_user = wp_update_user( ['ID' => $user->ID, 'user_email' => esc_attr( $_POST['primary_email'] ) ] );
+
+				//if there is a wp_error on wp_update_user(), 
+				//there was a problem saving the record, if there isnt then output json data for ajax
+				if( ! is_wp_error( $updated_user ) )
+					echo json_encode(['updated' => true, 'primary_email' => $user->user_email]);
+
 			}
 
 		}
+
+		die();
 
 	}
 
