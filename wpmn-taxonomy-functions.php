@@ -114,6 +114,7 @@ function wpmn_get_object_terms( $object_ids, $taxonomies, $args = array() ) {
 
 		$site_terms = wp_get_object_terms( $object_ids, $site_taxonomies, $args );
 		$retval     = array_merge( $retval, $site_terms );
+		//TODO Handle taxonomy error.
 
 		if ( $switched ) {
 			restore_current_blog();
@@ -275,6 +276,47 @@ function wpmn_get_term_by( $field, $value, $taxonomy = '', $output = OBJECT, $fi
         }
 
         return $retval;
+}
+
+/**
+ * Get objects in term and taxonomy.
+ *
+ * @since x.x.x
+ *
+ * @see get_objects_in_term() for a full description of function and parameters.
+ *
+ * @param int|array    $term_ids ID or IDs of terms.
+ * @param string|array $taxonomies Name or names of taxonomies to match.
+ * @param array        $args       See {@see get_objects_in_term()}.
+ * @return array
+ */
+function wpmn_get_objects_in_term( $term_ids, $taxonomies, $args = array() ) {
+	// Different taxonomies may be stored on different sites.
+	$taxonomy_site_map = array();
+	foreach ( (array) $taxonomies as $taxonomy ) {
+		$taxonomy_site_id = wpmn_get_taxonomy_term_site_id( $taxonomy );
+		$taxonomy_site_map[ $taxonomy_site_id ][] = $taxonomy;
+	}
+
+	$retval = array();
+	foreach ( $taxonomy_site_map as $taxonomy_site_id => $site_taxonomies ) {
+		$switched = false;
+		if ( $taxonomy_site_id !== get_current_blog_id() ) {
+			switch_to_blog( $taxonomy_site_id );
+			wpmn_register_taxonomies();
+			$switched = true;
+		}
+
+		$site_terms = get_objects_in_term( $term_ids, $site_taxonomies, $args );
+		$retval     = array_merge( $retval, $site_terms );
+		//TODO Handle taxonomy error.
+
+		if ( $switched ) {
+			restore_current_blog();
+		}
+	}
+
+	return $retval;
 }
 
 /**

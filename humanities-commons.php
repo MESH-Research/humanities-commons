@@ -46,6 +46,7 @@ function hcommons_write_error_log( $error_type, $error_message, $info = null ) {
 require_once ( dirname( __FILE__ ) . '/wpmn-taxonomy-functions.php' );
 require_once ( dirname( __FILE__ ) . '/admin-toolbar.php' );
 require_once ( dirname( __FILE__ ) . '/class.comanage-api.php' );
+require_once ( dirname( __FILE__ ) . '/class.mla-hcommons.php' );
 
 class Humanities_Commons {
 
@@ -149,6 +150,7 @@ class Humanities_Commons {
 		add_filter( 'bp_get_new_group_enable_forum', array( $this, 'hcommons_get_new_group_enable_forum' ) );
 		add_action( 'init', array( $this, 'hcommons_remove_bp_settings_general' ) );
 		add_action( 'bp_before_group_settings_creation_step', array( $this, 'hcommons_groups_group_before_save') );
+		add_action( 'wp_ajax_hcommons_settings_general', array( $this, 'hcommons_settings_general_ajax' ) );
 
 	}
 
@@ -164,7 +166,8 @@ class Humanities_Commons {
 
 	public function hcommons_filter_hc_taxonomy_storage_site( $site_id, $taxonomy ) {
 
-		if ( in_array( $taxonomy, array( 'mla_academic_interests', 'humcore_deposit_language', 'humcore_deposit_subject', 'humcore_deposit_tag' ) ) ) {
+		if ( in_array( $taxonomy, array( 'mla_academic_interests', 'humcore_deposit_language', 'humcore_deposit_subject', 'humcore_deposit_tag',
+						 'hcommons_society_member_id' ) ) ) {
 			return (int) '1'; // Go legacy during beta.
 		} else {
 			return $site_id;
@@ -1633,6 +1636,25 @@ class Humanities_Commons {
 	}
 
 	/**
+	 * Handles logic from ajax call in child-theme
+	 *
+	 * @return void
+	 */
+	public function hcommons_settings_general_ajax() {
+
+		if ( $_SERVER['REQUEST_METHOD'] == 'POST' && wp_verify_nonce( $_POST['nonce'], 'settings_general_nonce' ) ) {
+			print_r( $_POST );
+
+			if ( isset( $_POST['primary_email'] ) && ! empty( $_POST['primary_email'] ) ) {
+				$user->user_email = $_POST['primary_email'];
+				wp_update_user( ['ID' => $user->ID, 'user_email' => esc_attr( $_POST['primary_email'] ) ] );
+			}
+
+		}
+
+	}
+
+	/**
 	 * Removes bp_settings_general action for front-end so custom built primary email switching can work
 	 *
 	 * @return void
@@ -1883,6 +1905,7 @@ class Humanities_Commons {
 
 $humanities_commons = new Humanities_Commons;
 $comanage_api = new comanageApi;
+$mla_hcommons = new Mla_Hcommons;
 
 function hcommons_check_non_member_active_session() {
 
