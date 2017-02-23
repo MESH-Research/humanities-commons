@@ -151,8 +151,34 @@ class Humanities_Commons {
 		add_action( 'init', array( $this, 'hcommons_remove_bp_settings_general' ) );
 		add_action( 'bp_before_group_settings_creation_step', array( $this, 'hcommons_groups_group_before_save') );
 		add_action( 'wp_ajax_hcommons_settings_general', array( $this, 'hcommons_settings_general_ajax' ) );
+		add_filter( 'bp_before_activity_get_parse_args', array( $this, 'hcommons_set_network_admin_activities_query' ) );
 
 	}
+
+    /* Filter the activity query by the society id for the current network admin.
+     *
+     * @since HCommons
+     *
+     * @param array $args
+     * @return array $args
+     */
+    public function hcommons_set_network_admin_activities_query( $args ) {
+
+		if( ! is_admin() )
+			return $args;
+
+        $args['meta_query'] = array(
+            array(
+                'key'     => 'society_id',
+                'value'   => self::$society_id,
+                'type'    => 'string',
+                'compare' => '='
+            ),
+        );
+
+        return $args;
+
+    }
 
 	public function hcommons_filter_bp_taxonomy_storage_site( $site_id, $taxonomy ) {
 
