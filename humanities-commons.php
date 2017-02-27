@@ -94,6 +94,7 @@ class Humanities_Commons {
 		add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_maybe_set_user_role_for_site' ) );
 		add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_set_shibboleth_based_user_meta' ) );
 		add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_invite_anyone_activate_user' ) );
+		add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_sync_bp_profile' ) );
 		add_filter( 'shibboleth_user_email', array( $this, 'hcommons_set_shibboleth_based_user_email' ) );
 		add_filter( 'invite_anyone_send_follow_requests_on_acceptance', '__return_false' );
 		add_filter( 'bp_before_has_blogs_parse_args', array( $this, 'hcommons_set_network_blogs_query' ) );
@@ -117,7 +118,6 @@ class Humanities_Commons {
 		add_filter( 'bp_core_avatar_upload_path', array( $this, 'hcommons_set_bp_core_avatar_upload_path' ) );
 		add_filter( 'bp_core_avatar_url', array( $this, 'hcommons_set_bp_core_avatar_url' ) );
 		add_filter( 'bp_get_group_join_button', array( $this, 'hcommons_check_bp_get_group_join_button' ), 10, 2 );
-		add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_sync_bp_profile' ), 10, 3 );
 
 		// these require shibboleth
 		add_action( 'wp_login_failed', array( $this, 'hcommons_login_failed' ) );
@@ -148,37 +148,12 @@ class Humanities_Commons {
 		remove_filter( 'bp_notifications_get_notifications_for_user', 'bbp_format_buddypress_notifications' );
 		add_filter( 'bp_notifications_get_notifications_for_user', array( $this, 'hcommons_bbp_format_buddypress_notifications' ), 10, 8 );
 		add_filter( 'bp_get_new_group_enable_forum', array( $this, 'hcommons_get_new_group_enable_forum' ) );
-		add_action( 'init', array( $this, 'hcommons_remove_bp_settings_general' ) );
-		add_action( 'bp_before_group_settings_creation_step', array( $this, 'hcommons_groups_group_before_save') );
 		add_action( 'wp_ajax_hcommons_settings_general', array( $this, 'hcommons_settings_general_ajax' ) );
 		add_filter( 'bp_before_activity_get_parse_args', array( $this, 'hcommons_set_network_admin_activities_query' ) );
+		add_action( 'init', array( $this, 'hcommons_remove_bp_settings_general' ) );
+		add_action( 'bp_before_group_settings_creation_step', array( $this, 'hcommons_groups_group_before_save') );
 
 	}
-
-    /* Filter the activity query by the society id for the current network admin.
-     *
-     * @since HCommons
-     *
-     * @param array $args
-     * @return array $args
-     */
-    public function hcommons_set_network_admin_activities_query( $args ) {
-
-		if( ! is_admin() )
-			return $args;
-
-        $args['meta_query'] = array(
-            array(
-                'key'     => 'society_id',
-                'value'   => self::$society_id,
-                'type'    => 'string',
-                'compare' => '='
-            ),
-        );
-
-        return $args;
-
-    }
 
 	public function hcommons_filter_bp_taxonomy_storage_site( $site_id, $taxonomy ) {
 
@@ -582,6 +557,68 @@ class Humanities_Commons {
 	}
 
 	/**
+	 * ensure invite-anyone correctly sets up notifications after user registers
+	 */
+	public function hcommons_invite_anyone_activate_user( $user ) {
+		$meta_key = 'hcommons_invite_anyone_activate_user_done';
+
+		if ( ! get_user_meta( $user->ID, $meta_key ) && function_exists( 'invite_anyone_activate_user' ) ) {
+			invite_anyone_activate_user( $user->ID, null, null );
+			update_user_meta( $user->ID, $meta_key, true );
+		}
+	}
+
+	/**
+	 * Syncs the HCommons managed WordPress profile data to HCommons XProfile Group fields.
+	 *
+	 * @since HCommons
+	 *
+	 * @param object $user   User object whose profile is being synced. Passed by reference.
+	 */
+	function hcommons_sync_bp_profile( $user ) {
+
+		$user_id = $user->ID;
+
+		$shib_session_id = get_user_meta( $user_id, 'shib_session_id', true );
+/*
+		if ( $shib_session_id == self::$shib_session_id ) {
+			hcommons_write_error_log( 'info', '****SYNC_BP_PROFILE_OUT****-' . var_export( $shib_session_id, true ) );
+			return;
+		}
+*/
+		hcommons_write_error_log( 'info', '****SYNC_BP_PROFILE****-'.var_export( $user->ID, true ) );
+		$name = $_SERVER['HTTP_DISPLAYNAME']; // user record maybe not fully populated for first time users.
+		xprofile_set_field_data( 'Name', $user->ID, $name );
+
+		$current_title = xprofile_get_field_data( 'Title', $user->ID );
+		if ( empty( $current_title ) ) {
+			$titles = maybe_unserialize( get_user_meta( $user->ID, 'shib_title', true ) );
+			if ( is_array( $titles ) ) {
+				$title = $titles[0];
+			} else {
+				$title = $titles;
+			}
+			if ( ! empty( $title ) ) {
+				xprofile_set_field_data( 'Title', $user->ID, $title );
+			}
+		}
+
+		$current_org = xprofile_get_field_data( 'Institutional or Other Affiliation', $user->ID );
+		if ( empty( $current_org ) ) {
+			$orgs = maybe_unserialize( get_user_meta( $user->ID, 'shib_org', true ) );
+			if ( is_array( $orgs ) ) {
+				$org = $orgs[0];
+			} else {
+				$org = $orgs;
+			}
+			if ( ! empty( $org ) ) {
+				xprofile_set_field_data( 'Institutional or Other Affiliation', $user->ID, str_replace( 'Mla', 'MLA', $org ) );
+			}
+		}
+
+	}
+
+	/**
 	 * Return first email if multiple provided in shibboleth session.
 	 *
 	 * @since HCommons
@@ -594,18 +631,6 @@ class Humanities_Commons {
 		$shib_email_array = explode( ';', $shib_email );
 		return $shib_email_array[0];
 
-	}
-
-	/**
-	 * ensure invite-anyone correctly sets up notifications after user registers
-	 */
-	public function hcommons_invite_anyone_activate_user( $user ) {
-		$meta_key = 'hcommons_invite_anyone_activate_user_done';
-
-		if ( ! get_user_meta( $user->ID, $meta_key ) && function_exists( 'invite_anyone_activate_user' ) ) {
-			invite_anyone_activate_user( $user->ID, null, null );
-			update_user_meta( $user->ID, $meta_key, true );
-		}
 	}
 
 	/**
@@ -1243,56 +1268,6 @@ class Humanities_Commons {
 	}
 
 	/**
-	 * Syncs the HCommons managed WordPress profile data to HCommons XProfile Group fields.
-	 *
-	 * @since HCommons
-	 *
-	 * @param object $user   User object whose profile is being synced. Passed by reference.
-	 */
-	function hcommons_sync_bp_profile( $user ) {
-
-		$user_id = $user->ID;
-
-		$shib_session_id = get_user_meta( $user_id, 'shib_session_id', true );
-/*
-		if ( $shib_session_id == self::$shib_session_id ) {
-			hcommons_write_error_log( 'info', '****SYNC_BP_PROFILE_OUT****-' . var_export( $shib_session_id, true ) );
-			return;
-		}
-*/
-		hcommons_write_error_log( 'info', '****SYNC_BP_PROFILE****-'.var_export( $user->ID, true ) );
-		$name = $_SERVER['HTTP_DISPLAYNAME']; // user record maybe not fully populated for first time users.
-		xprofile_set_field_data( 'Name', $user->ID, $name );
-
-		$current_title = xprofile_get_field_data( 'Title', $user->ID );
-		if ( empty( $current_title ) ) {
-			$titles = maybe_unserialize( get_user_meta( $user->ID, 'shib_title', true ) );
-			if ( is_array( $titles ) ) {
-				$title = $titles[0];
-			} else {
-				$title = $titles;
-			}
-			if ( ! empty( $title ) ) {
-				xprofile_set_field_data( 'Title', $user->ID, $title );
-			}
-		}
-
-		$current_org = xprofile_get_field_data( 'Institutional or Other Affiliation', $user->ID );
-		if ( empty( $current_org ) ) {
-			$orgs = maybe_unserialize( get_user_meta( $user->ID, 'shib_org', true ) );
-			if ( is_array( $orgs ) ) {
-				$org = $orgs[0];
-			} else {
-				$org = $orgs;
-			}
-			if ( ! empty( $org ) ) {
-				xprofile_set_field_data( 'Institutional or Other Affiliation', $user->ID, str_replace( 'Mla', 'MLA', $org ) );
-			}
-		}
-
-	}
-
-	/**
 	 * Handle a failed login attempt. Determine if the user has visitor status.
 	 *
 	 * @since HCommons
@@ -1651,6 +1626,62 @@ class Humanities_Commons {
 	}
 
 	/**
+	 * copied from bbp_format_buddypress_notifications()
+	 * added switch_to_blog logic for multinetwork compatibility
+	 */
+	public function hcommons_bbp_format_buddypress_notifications( $action, $item_id, $secondary_item_id, $total_items, $format = 'string', $component_action_name, $component_name, $notification_id ) {
+		$return = $action;
+
+		// New reply notifications
+		if ( 'bbp_new_reply' === $action ) {
+			$society_id = bp_notifications_get_meta( $notification_id, 'society_id', true );
+			$notification_blog_id = (int) constant( strtoupper( $society_id ) . '_ROOT_BLOG_ID' );
+			$switched = false;
+			if ( ! empty( $notification_blog_id ) && $notification_blog_id !== get_current_blog_id() ) {
+				switch_to_blog( $notification_blog_id );
+				$switched = true;
+			}
+
+			$topic_id    = bbp_get_reply_topic_id( $item_id );
+			$topic_title = bbp_get_topic_title( $topic_id );
+			$topic_link  = wp_nonce_url( add_query_arg( array( 'action' => 'bbp_mark_read', 'topic_id' => $topic_id ), bbp_get_reply_url( $item_id ) ), 'bbp_mark_topic_' . $topic_id );
+			$title_attr  = __( 'Topic Replies', 'bbpress' );
+
+			if ( (int) $total_items > 1 ) {
+				$text   = sprintf( __( 'You have %d new replies', 'bbpress' ), (int) $total_items );
+				$filter = 'bbp_multiple_new_subscription_notification';
+			} else {
+				if ( !empty( $secondary_item_id ) ) {
+					$text = sprintf( __( 'You have %d new reply to %2$s from %3$s', 'bbpress' ), (int) $total_items, $topic_title, bp_core_get_user_displayname( $secondary_item_id ) );
+				} else {
+					$text = sprintf( __( 'You have %d new reply to %s',             'bbpress' ), (int) $total_items, $topic_title );
+				}
+				$filter = 'bbp_single_new_subscription_notification';
+			}
+
+			// WordPress Toolbar
+			if ( 'string' === $format ) {
+				$return = apply_filters( $filter, '<a href="' . esc_url( $topic_link ) . '" title="' . esc_attr( $title_attr ) . '">' . esc_html( $text ) . '</a>', (int) $total_items, $text, $topic_link );
+
+				// Deprecated BuddyBar
+			} else {
+				$return = apply_filters( $filter, array(
+					'text' => $text,
+					'link' => $topic_link
+				), $topic_link, (int) $total_items, $text, $topic_title );
+			}
+
+			do_action( 'bbp_format_buddypress_notifications', $action, $item_id, $secondary_item_id, $total_items );
+
+			if ( $switched ) {
+				restore_current_blog();
+			}
+		}
+
+		return $return;
+	}
+
+	/**
 	 * Filter that enables forums by default on new group creation screen
 	 *
 	 * @param  int 	$forum  false by default
@@ -1689,6 +1720,32 @@ class Humanities_Commons {
 		}
 
 		die();
+
+	}
+
+	/* Filter the activity query by the society id for the current network admin.
+	 *
+	 * @since HCommons
+	 *
+	 * @param array $args
+	 * @return array $args
+	 */
+	public function hcommons_set_network_admin_activities_query( $args ) {
+
+		if ( ! is_admin() ) {
+			return $args;
+		}
+
+		$args['meta_query'] = array(
+			array(
+				'key'     => 'society_id',
+				'value'   => self::$society_id,
+				'type'    => 'string',
+				'compare' => '='
+			),
+	);
+
+	return $args;
 
 	}
 
@@ -1882,62 +1939,6 @@ class Humanities_Commons {
 			return $username;
 		}
 		return false;
-	}
-
-	/**
-	 * copied from bbp_format_buddypress_notifications()
-	 * added switch_to_blog logic for multinetwork compatibility
-	 */
-	public function hcommons_bbp_format_buddypress_notifications( $action, $item_id, $secondary_item_id, $total_items, $format = 'string', $component_action_name, $component_name, $notification_id ) {
-		$return = $action;
-
-		// New reply notifications
-		if ( 'bbp_new_reply' === $action ) {
-			$society_id = bp_notifications_get_meta( $notification_id, 'society_id', true );
-			$notification_blog_id = (int) constant( strtoupper( $society_id ) . '_ROOT_BLOG_ID' );
-			$switched = false;
-			if ( ! empty( $notification_blog_id ) && $notification_blog_id !== get_current_blog_id() ) {
-				switch_to_blog( $notification_blog_id );
-				$switched = true;
-			}
-
-			$topic_id    = bbp_get_reply_topic_id( $item_id );
-			$topic_title = bbp_get_topic_title( $topic_id );
-			$topic_link  = wp_nonce_url( add_query_arg( array( 'action' => 'bbp_mark_read', 'topic_id' => $topic_id ), bbp_get_reply_url( $item_id ) ), 'bbp_mark_topic_' . $topic_id );
-			$title_attr  = __( 'Topic Replies', 'bbpress' );
-
-			if ( (int) $total_items > 1 ) {
-				$text   = sprintf( __( 'You have %d new replies', 'bbpress' ), (int) $total_items );
-				$filter = 'bbp_multiple_new_subscription_notification';
-			} else {
-				if ( !empty( $secondary_item_id ) ) {
-					$text = sprintf( __( 'You have %d new reply to %2$s from %3$s', 'bbpress' ), (int) $total_items, $topic_title, bp_core_get_user_displayname( $secondary_item_id ) );
-				} else {
-					$text = sprintf( __( 'You have %d new reply to %s',             'bbpress' ), (int) $total_items, $topic_title );
-				}
-				$filter = 'bbp_single_new_subscription_notification';
-			}
-
-			// WordPress Toolbar
-			if ( 'string' === $format ) {
-				$return = apply_filters( $filter, '<a href="' . esc_url( $topic_link ) . '" title="' . esc_attr( $title_attr ) . '">' . esc_html( $text ) . '</a>', (int) $total_items, $text, $topic_link );
-
-				// Deprecated BuddyBar
-			} else {
-				$return = apply_filters( $filter, array(
-					'text' => $text,
-					'link' => $topic_link
-				), $topic_link, (int) $total_items, $text, $topic_title );
-			}
-
-			do_action( 'bbp_format_buddypress_notifications', $action, $item_id, $secondary_item_id, $total_items );
-
-			if ( $switched ) {
-				restore_current_blog();
-			}
-		}
-
-		return $return;
 	}
 }
 
