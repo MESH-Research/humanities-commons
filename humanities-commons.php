@@ -152,6 +152,52 @@ class Humanities_Commons {
 		add_filter( 'bp_before_activity_get_parse_args', array( $this, 'hcommons_set_network_admin_activities_query' ) );
 		add_action( 'init', array( $this, 'hcommons_remove_bp_settings_general' ) );
 		add_action( 'bp_before_group_settings_creation_step', array( $this, 'hcommons_groups_group_before_save') );
+		add_action( 'bp_groups_admin_meta_boxes', array( $this, 'hcommons_remove_group_type_meta_boxes' ) );
+		add_action( 'bp_groups_admin_meta_boxes', array( $this, 'hcommons_add_group_type_meta_box' ) );
+
+	}
+
+	/**
+	 * Adds new group type metabox to user admin area in bp-groups
+	 * 
+	 * @return void
+	 */
+	public function hcommons_add_group_type_meta_box() {
+
+		if( is_admin() && $_GET['page'] == 'bp-groups' ) {
+			add_meta_box(
+				'hcommons_admin_group_type',
+				_x( 'Group Type', 'groups admin edit screen', 'buddypress' ),
+				array( $this, 'hcommons_group_type_meta_box_view' ),
+				get_current_screen()->id,
+				'side',
+				'core'
+			);
+		}
+
+	}
+
+	/**
+	 * Outputs view for new group type metabox
+	 * 
+	 * @return void
+	 */
+	public function hcommons_group_type_meta_box_view() {
+
+		include( dirname( __FILE__ ) . '/admin_view/group_type.php' );
+	
+	}
+
+	/**
+	 * Removes current group type meta box to be replaced by another
+	 * 
+	 * @return void
+	 */
+	public function hcommons_remove_group_type_meta_boxes() {
+
+		if( is_admin() && $_GET['page'] == 'bp-groups' ) {
+			remove_meta_box( 'bp_groups_admin_group_type', 'toplevel_page_bp-groups-network', 'side' );
+		}
 
 	}
 
