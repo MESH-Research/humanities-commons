@@ -154,7 +154,36 @@ class Humanities_Commons {
 		add_action( 'bp_before_group_settings_creation_step', array( $this, 'hcommons_groups_group_before_save') );
 		add_action( 'bp_groups_admin_meta_boxes', array( $this, 'hcommons_remove_group_type_meta_boxes' ) );
 		add_action( 'bp_groups_admin_meta_boxes', array( $this, 'hcommons_add_group_type_meta_box' ) );
+		add_action( 'bp_members_admin_user_metaboxes', array( $this, 'hcommons_remove_member_type_meta_boxes' ) );
+		add_action( 'bp_members_admin_user_metaboxes', array( $this, 'hcommons_add_member_type_meta_box' ) );
 
+	}
+
+	public function hcommons_remove_member_type_meta_boxes() {
+
+		if( is_admin() && $_GET['page'] == 'bp-profile-edit' ) {
+			remove_meta_box( 'bp_members_admin_member_type', 'users_page_bp-profile-edit-network', 'side' );
+		}
+
+	}
+
+	public function hcommons_add_member_type_meta_box() {
+
+		if( is_admin() && $_GET['page'] == 'bp-profile-edit' ) {
+			add_meta_box(
+				'hcommons_members_admin_member_type',
+				_x( 'Member Type', 'members user-admin edit screen', 'buddypress' ),
+				array( $this, 'hcommons_member_type_meta_box_view' ),
+				get_current_screen()->id,
+				'side',
+				'core'
+			);
+		}
+
+	}
+
+	public function hcommons_member_type_meta_box_view() {
+		include( dirname( __FILE__ ) . '/admin_view/member_type.php' );
 	}
 
 	/**
