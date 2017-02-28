@@ -159,6 +159,11 @@ class Humanities_Commons {
 
 	}
 
+	/**
+	 * Removes member type meta box on user screen in wp-admin
+	 * 
+	 * @return void
+	 */
 	public function hcommons_remove_member_type_meta_boxes() {
 
 		if( is_admin() && $_GET['page'] == 'bp-profile-edit' ) {
@@ -167,6 +172,11 @@ class Humanities_Commons {
 
 	}
 
+	/**
+	 * Adds new member type meta box on user screen in wp-admin
+	 * 
+	 * @return void 
+	 */
 	public function hcommons_add_member_type_meta_box() {
 
 		if( is_admin() && $_GET['page'] == 'bp-profile-edit' ) {
@@ -182,8 +192,36 @@ class Humanities_Commons {
 
 	}
 
+	/**
+	 * Outputs view for member type meta box on user screen in wp-admin
+	 * 
+	 * @return void
+	 */
 	public function hcommons_member_type_meta_box_view() {
-		include( dirname( __FILE__ ) . '/admin_view/member_type.php' );
+		
+		$user = wp_get_current_user();
+
+		// Bail if no user ID.
+		if ( empty( $user->data->ID ) ) {
+			return;
+		}
+
+		$types = bp_get_member_types( array(), 'objects' );
+		$current_type = bp_get_member_types( array(), 'objects' );
+
+		echo "<ul>";
+
+		//output member types user currently has
+		foreach( $current_type as $key => $type ) {
+
+			if( bp_has_member_type( $user->data->ID, $type->name ) == true ) {
+				echo "<li>" . strtoupper( $type->name ) . "</li>";
+			}
+
+		}
+
+		echo "</ul>";
+
 	}
 
 	/**
@@ -213,8 +251,41 @@ class Humanities_Commons {
 	 */
 	public function hcommons_group_type_meta_box_view() {
 
-		include( dirname( __FILE__ ) . '/admin_view/group_type.php' );
+		$types 		   = bp_groups_get_group_types( array(), 'objects' ); 
+		$current_types = (array) bp_groups_get_group_type( $group->id, false );
+		$backend_only  = bp_groups_get_group_types( array( 'show_in_create_screen' => false ) );
+
+		?>
+
+		<ul class="categorychecklist form-no-clear">
+			<?php foreach ( $types as $type ) : ?>
+				<li>
+					<label class="selectit">
+						<?php
+							if( in_array( $type->name, $current_types ) ) {
+
+								echo esc_html( $type->labels['singular_name'] );
+								if ( in_array( $type->name, $backend_only ) ) {
+									printf( ' <span class="description">%s</span>', esc_html__( '(Not available on the front end)', 'buddypress' ) );
+								}
+
+							} elseif( ! $current_types[0] && $type->name == 'hc' ) {
+								echo esc_html( $type->labels['singular_name'] );
+								if ( in_array( $type->name, $backend_only ) ) {
+									printf( ' <span class="description">%s</span>', esc_html__( '(Not available on the front end)', 'buddypress' ) );
+								}
+							}
+
+						?>
+
+					</label>
+				</li>
+
+			<?php endforeach; ?>
+		</ul>
 	
+	<?php
+
 	}
 
 	/**
