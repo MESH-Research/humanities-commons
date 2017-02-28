@@ -443,7 +443,7 @@ class Humanities_Commons {
 		}
 
 		//hcommons_write_error_log( 'info', '****GROUPS_QUERY_ARGS****-' . var_export( $args, true ) );
-		if ( $args['scope'] == 'personal' ) {
+		if ( isset( $args['scope'] ) && $args['scope'] == 'personal' ) {
 			$args['group_type'] = '';
 			return $args;
 		}
