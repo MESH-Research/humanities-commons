@@ -482,7 +482,13 @@ class Humanities_Commons {
 		$context = debug_backtrace(); //TODO get proper filters in BuddyPress_Event_Organiser_EO, bpmfp_get_other_groups_for_user and get rid of backtrace.
 		//hcommons_write_error_log( 'info', '****FILTER_GROUPS_GET_GROUPS_QUERY****-'.var_export( $context, true ) );
 
-		if ( 'BuddyPress_Event_Organiser_EO' == $context[3]['class'] || 'bpmfp_get_other_groups_for_user' == $context[3]['function'] ) {
+		if (
+			isset( $context[3] ) &&
+			(
+				( isset( $context[3]['class'] ) && 'BuddyPress_Event_Organiser_EO' == $context[3]['class'] ) ||
+				( isset( $context[3]['function'] ) && 'bpmfp_get_other_groups_for_user' == $context[3]['function'] )
+			)
+		) {
 
 			//hcommons_write_error_log( 'info', '****FILTER_GROUPS_GET_GROUPS_TRACE****-'.var_export( $context[3], true ) );
 			//hcommons_write_error_log( 'info', '****PRE_GROUPS_GET_GROUPS1****-' . var_export( $r, true ) );
