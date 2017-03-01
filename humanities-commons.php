@@ -1160,21 +1160,25 @@ class Humanities_Commons {
 	 * @return string $group_permalink Modified url.
 	 */
 	public function hcommons_set_groups_directory_permalink( $group_permalink ) {
+		global $groups_template;
 
-		$group_id = bp_get_group_id();
-		$group_society_id = bp_groups_get_group_type( $group_id );
+		if ( ! empty( $groups_template->group ) ) {
+			$group_id = bp_get_group_id();
+			$group_society_id = bp_groups_get_group_type( $group_id );
 
-		if ( $group_society_id === self::$society_id ) {
-			return $group_permalink;
+			if ( $group_society_id === self::$society_id ) {
+				return $group_permalink;
+			}
+
+			global $wpdb;
+			$row = $wpdb->get_row( $wpdb->prepare( "SELECT site_id FROM $wpdb->sitemeta WHERE meta_key = '%s' AND meta_value = '%s'", 'society_id', $group_society_id ) );
+			if ( is_object( $row ) ) {
+				$society_network = wp_get_network( $row->site_id );
+				$scheme = ( is_ssl() ) ? 'https://' : 'http://';
+				$group_permalink = trailingslashit( $scheme . $society_network->domain . $society_network->path . bp_get_groups_root_slug() );
+			}
 		}
 
-		global $wpdb;
-		$row = $wpdb->get_row( $wpdb->prepare( "SELECT site_id FROM $wpdb->sitemeta WHERE meta_key = '%s' AND meta_value = '%s'", 'society_id', $group_society_id ) );
-		if ( is_object( $row ) ) {
-			$society_network = wp_get_network( $row->site_id );
-			$scheme = ( is_ssl() ) ? 'https://' : 'http://';
-			$group_permalink = trailingslashit( $scheme . $society_network->domain . $society_network->path . bp_get_groups_root_slug() );
-		}
 		return $group_permalink;
 	}
 
