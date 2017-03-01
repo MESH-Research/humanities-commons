@@ -154,8 +154,8 @@ class Humanities_Commons {
 		add_action( 'bp_before_group_settings_creation_step', array( $this, 'hcommons_groups_group_before_save') );
 		add_action( 'bp_groups_admin_meta_boxes', array( $this, 'hcommons_remove_group_type_meta_boxes' ) );
 		add_action( 'bp_groups_admin_meta_boxes', array( $this, 'hcommons_add_group_type_meta_box' ) );
-		add_action( 'bp_members_admin_user_metaboxes', array( $this, 'hcommons_remove_member_type_meta_boxes' ) );
-		add_action( 'bp_members_admin_user_metaboxes', array( $this, 'hcommons_add_member_type_meta_box' ) );
+		add_action( 'bp_members_admin_user_metaboxes', array( $this, 'hcommons_remove_member_type_meta_boxes' ), 10, 2 );
+		add_action( 'bp_members_admin_user_metaboxes', array( $this, 'hcommons_add_member_type_meta_box' ), 10, 2 );
 
 	}
 
@@ -177,7 +177,7 @@ class Humanities_Commons {
 	 * 
 	 * @return void 
 	 */
-	public function hcommons_add_member_type_meta_box() {
+	public function hcommons_add_member_type_meta_box( $profile, $user_id ) {
 
 		if( is_admin() && $_GET['page'] == 'bp-profile-edit' ) {
 			add_meta_box(
@@ -198,29 +198,26 @@ class Humanities_Commons {
 	 * @return void
 	 */
 	public function hcommons_member_type_meta_box_view() {
-		
-		$user = wp_get_current_user();
 
-		// Bail if no user ID.
-		if ( empty( $user->data->ID ) ) {
-			return;
-		}
+		if( isset( $_GET['user_id'] ) && is_admin() ) {
 
-		$types = bp_get_member_types( array(), 'objects' );
-		$current_type = bp_get_member_types( array(), 'objects' );
+			//make sure user id is only numerical
+			$user_id = filter_var( $_GET['user_id'], FILTER_SANITIZE_NUMBER_INT );
+			$types = bp_get_member_types( array(), 'objects' );
+			$member_types = bp_get_member_type( $user_id, false );
 
-		echo "<ul>";
+			echo "<ul>";
 
-		//output member types user currently has
-		foreach( $current_type as $key => $type ) {
+			//output member types user currently has
+			foreach( $member_types as $type ) {
 
-			if( bp_has_member_type( $user->data->ID, $type->name ) == true ) {
-				echo "<li>" . strtoupper( $type->name ) . "</li>";
+				echo "<li>" . strtoupper( $type ) . "</li>";
+
 			}
 
-		}
+			echo "</ul>";
 
-		echo "</ul>";
+		}
 
 	}
 
@@ -251,33 +248,17 @@ class Humanities_Commons {
 	 */
 	public function hcommons_group_type_meta_box_view() {
 
-		$types 		   = bp_groups_get_group_types( array(), 'objects' ); 
-		$current_types = (array) bp_groups_get_group_type( $group->id, false );
-		$backend_only  = bp_groups_get_group_types( array( 'show_in_create_screen' => false ) );
+		//make sure group id is only numerical
+		$group_id = filter_var( $_GET['gid'], FILTER_SANITIZE_NUMBER_INT );
+		$current_types = (array) bp_groups_get_group_type( $group_id, false );
 
 		?>
 
 		<ul class="categorychecklist form-no-clear">
-			<?php foreach ( $types as $type ) : ?>
+			<?php foreach ( $current_types as $type ) : ?>
 				<li>
 					<label class="selectit">
-						<?php
-							if( in_array( $type->name, $current_types ) ) {
-
-								echo esc_html( $type->labels['singular_name'] );
-								if ( in_array( $type->name, $backend_only ) ) {
-									printf( ' <span class="description">%s</span>', esc_html__( '(Not available on the front end)', 'buddypress' ) );
-								}
-
-							} elseif( ! $current_types[0] && $type->name == 'hc' ) {
-								echo esc_html( $type->labels['singular_name'] );
-								if ( in_array( $type->name, $backend_only ) ) {
-									printf( ' <span class="description">%s</span>', esc_html__( '(Not available on the front end)', 'buddypress' ) );
-								}
-							}
-
-						?>
-
+						<?php echo strtoupper( esc_html( $type ) ); ?>
 					</label>
 				</li>
 
