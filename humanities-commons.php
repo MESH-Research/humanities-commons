@@ -156,6 +156,89 @@ class Humanities_Commons {
 		add_action( 'bp_groups_admin_meta_boxes', array( $this, 'hcommons_add_group_type_meta_box' ) );
 		add_action( 'bp_members_admin_user_metaboxes', array( $this, 'hcommons_remove_member_type_meta_boxes' ), 10, 2 );
 		add_action( 'bp_members_admin_user_metaboxes', array( $this, 'hcommons_add_member_type_meta_box' ), 10, 2 );
+		add_action( 'bp_groups_admin_meta_boxes', array( $this, 'hcommons_add_manage_group_memberships_meta_box' ) );
+		add_action( 'bp_groups_admin_load', array( $this, 'hcommons_save_managed_group_membership' ) );
+
+	}
+
+	/**
+	 * Handles saving of manage group metabox
+	 *
+	 * @return void
+	 */
+	public function hcommons_save_managed_group_membership() {
+
+		//displays what action we are in
+		$action = bp_admin_list_table_current_bulk_action();
+
+		//lets check if the request method and action are on post and save
+		if( $action == 'save' ) {
+
+			//is the new value set?
+			if( isset( $_POST['manage_membership'] ) ) {
+
+				//grabs group_id from get and sanitizes it
+				$group_id = filter_var( $_GET['gid'], FILTER_SANITIZE_NUMBER_INT );
+
+				$manage_membership = filter_var( $_POST['manage_membership'], FILTER_SANITIZE_STRIPPED );
+				$manage_membership_meta = groups_get_groupmeta( $group_id, 'manage_membership', true );
+
+				//lets update the group meta for manage membership
+				if( $manage_membership !== $manage_membership_meta ) {
+
+					groups_update_groupmeta( $group_id, 'manage_membership', $manage_membership );
+
+				}
+
+
+			}
+
+		}
+
+	}
+
+	/**
+	 * Handles metabox creation for manage membership metabox
+	 *
+	 * @return void
+	 */
+	public function hcommons_add_manage_group_memberships_meta_box() {
+
+		if( is_admin() && $_GET['page'] == 'bp-groups' ) {
+
+			add_meta_box(
+				'hcommons_admin_groups_manage',
+				_x( 'Manage Group Memberships', 'Manages group memberships', 'buddypress' ),
+				array( $this, 'hcommons_admin_manage_group_memberships_view' ),
+				get_current_screen()->id,
+				'side',
+				'core'
+			);
+
+		}
+	}
+
+	/**
+	 * Outputs view for manage membership metabox
+	 *
+	 * @return void
+	 */
+	public function hcommons_admin_manage_group_memberships_view() {
+
+		//grabs group_id from get and sanitizes it
+		$group_id = filter_var( $_GET['gid'], FILTER_SANITIZE_NUMBER_INT );
+		$manage_membership_meta = groups_get_groupmeta( $group_id, 'manage_membership', true );
+?>
+
+		<label>
+			<input type="radio" name="manage_membership" value="yes" <?php echo ( $manage_membership_meta == 'yes' ) ? 'checked' : '' ; ?> />Yes
+		</label>
+		<br />
+		<label>
+			<input type="radio" name="manage_membership" value="no" <?php echo ( $manage_membership_meta == 'no' ) ? 'checked' : '' ; ?> />No
+		</label>
+
+<?php
 
 	}
 
@@ -203,7 +286,6 @@ class Humanities_Commons {
 
 			//make sure user id is only numerical
 			$user_id = filter_var( $_GET['user_id'], FILTER_SANITIZE_NUMBER_INT );
-			$types = bp_get_member_types( array(), 'objects' );
 			$member_types = bp_get_member_type( $user_id, false );
 
 			echo "<ul>";
