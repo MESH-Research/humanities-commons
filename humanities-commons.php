@@ -1907,8 +1907,18 @@ class Humanities_Commons {
 	 * @return int  $forum  true to enable forum by default
 	 */
 	public function hcommons_get_new_group_enable_forum( $forum ) {
-		$forum = 1;
-		return $forum;
+
+		//grabs current step during group creation only
+		$current_step = bp_get_groups_current_create_step();
+
+		//we only want the discussion forum to be checked by default on group creation
+		if( $current_step == 'forum' ) {
+
+			$forum = 1;
+			return $forum;
+
+		}
+
 	}
 
 	/**
