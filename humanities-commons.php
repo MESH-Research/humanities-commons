@@ -1038,9 +1038,9 @@ class Humanities_Commons {
 					],
 
 				] );
-			}
 
-			$args['filter_query'] = $filter_query;
+				$args['filter_query'] = $filter_query;
+			}
 		}
 
 		if ( 'hc' !== self::$society_id && ! bp_is_user_profile() && ! bp_is_user_activity() ) {
