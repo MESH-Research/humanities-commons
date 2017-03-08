@@ -1919,10 +1919,10 @@ class Humanities_Commons {
 		if( $current_step == 'forum' ) {
 
 			$forum = 1;
-			return $forum;
 
 		}
 
+		return $forum;
 	}
 
 	/**
