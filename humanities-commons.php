@@ -158,7 +158,6 @@ class Humanities_Commons {
 		add_action( 'bp_members_admin_user_metaboxes', array( $this, 'hcommons_add_member_type_meta_box' ), 10, 2 );
 		add_action( 'bp_groups_admin_meta_boxes', array( $this, 'hcommons_add_manage_group_memberships_meta_box' ) );
 		add_action( 'bp_groups_admin_load', array( $this, 'hcommons_save_managed_group_membership' ) );
-		add_action( 'get_network', array( $this, 'hcommons_get_network' ) );
 
 	}
 
