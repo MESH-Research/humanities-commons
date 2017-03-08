@@ -772,18 +772,6 @@ class Humanities_Commons {
 	}
 
 	/**
-	 * ensure invite-anyone correctly sets up notifications after user registers
-	 */
-	public function hcommons_invite_anyone_activate_user( $user ) {
-		$meta_key = 'hcommons_invite_anyone_activate_user_done';
-
-		if ( ! get_user_meta( $user->ID, $meta_key ) && function_exists( 'invite_anyone_activate_user' ) ) {
-			invite_anyone_activate_user( $user->ID, null, null );
-			update_user_meta( $user->ID, $meta_key, true );
-		}
-	}
-
-	/**
 	 * Syncs the HCommons managed WordPress profile data to HCommons XProfile Group fields.
 	 *
 	 * @since HCommons
