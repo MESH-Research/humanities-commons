@@ -244,7 +244,7 @@ class Humanities_Commons {
 
 	/**
 	 * Removes member type meta box on user screen in wp-admin
-	 * 
+	 *
 	 * @return void
 	 */
 	public function hcommons_remove_member_type_meta_boxes() {
@@ -257,8 +257,8 @@ class Humanities_Commons {
 
 	/**
 	 * Adds new member type meta box on user screen in wp-admin
-	 * 
-	 * @return void 
+	 *
+	 * @return void
 	 */
 	public function hcommons_add_member_type_meta_box( $profile, $user_id ) {
 
@@ -277,7 +277,7 @@ class Humanities_Commons {
 
 	/**
 	 * Outputs view for member type meta box on user screen in wp-admin
-	 * 
+	 *
 	 * @return void
 	 */
 	public function hcommons_member_type_meta_box_view() {
@@ -305,7 +305,7 @@ class Humanities_Commons {
 
 	/**
 	 * Adds new group type metabox to user admin area in bp-groups
-	 * 
+	 *
 	 * @return void
 	 */
 	public function hcommons_add_group_type_meta_box() {
@@ -325,7 +325,7 @@ class Humanities_Commons {
 
 	/**
 	 * Outputs view for new group type metabox
-	 * 
+	 *
 	 * @return void
 	 */
 	public function hcommons_group_type_meta_box_view() {
@@ -346,14 +346,14 @@ class Humanities_Commons {
 
 			<?php endforeach; ?>
 		</ul>
-	
+
 	<?php
 
 	}
 
 	/**
 	 * Removes current group type meta box to be replaced by another
-	 * 
+	 *
 	 * @return void
 	 */
 	public function hcommons_remove_group_type_meta_boxes() {
@@ -846,6 +846,22 @@ class Humanities_Commons {
 		$shib_email_array = explode( ';', $shib_email );
 		return $shib_email_array[0];
 
+	}
+
+	/**
+	 * ensure invite-anyone correctly sets up notifications after user registers
+	 */
+	public function hcommons_invite_anyone_activate_user( $user ) {
+		$meta_key = 'hcommons_invite_anyone_activate_user_done';
+
+		if (
+			! empty( $user->user_email ) &&
+			! get_user_meta( $user->ID, $meta_key ) &&
+			function_exists( 'invite_anyone_activate_user' )
+		) {
+			invite_anyone_activate_user( $user->ID, null, null );
+			update_user_meta( $user->ID, $meta_key, true );
+		}
 	}
 
 	/**
@@ -1939,7 +1955,7 @@ class Humanities_Commons {
 				$user->user_email = $_POST['primary_email'];
 				$updated_user = wp_update_user( ['ID' => $user->ID, 'user_email' => esc_attr( $_POST['primary_email'] ) ] );
 
-				//if there is a wp_error on wp_update_user(), 
+				//if there is a wp_error on wp_update_user(),
 				//there was a problem saving the record, if there isnt then output json data for ajax
 				if( ! is_wp_error( $updated_user ) )
 					echo json_encode(['updated' => true, 'primary_email' => $user->user_email]);
@@ -1989,7 +2005,7 @@ class Humanities_Commons {
 
 	/**
 	 * Sets default group subscription settings in group creation step to 'digest' instead of 'all emails'
-	 * 
+	 *
 	 * @return void
 	 */
 	public function hcommons_groups_group_before_save() {
@@ -2006,7 +2022,7 @@ class Humanities_Commons {
 
 	/**
 	 * Unserializes the shib_email meta to return to the user as an array
-	 * 
+	 *
 	 * @param   object $user  		user object to be passed
 	 * @return  array  $shib_email  array to be used
 	 */
