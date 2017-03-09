@@ -117,6 +117,11 @@ class Humanities_Commons {
 		add_filter( 'get_blogs_of_user', array( $this, 'hcommons_filter_get_blogs_of_user'), 10, 3 );
 		add_filter( 'bp_core_avatar_upload_path', array( $this, 'hcommons_set_bp_core_avatar_upload_path' ) );
 		add_filter( 'bp_core_avatar_url', array( $this, 'hcommons_set_bp_core_avatar_url' ) );
+
+		// disable in favor of bp-blog-avatar
+		// see https://buddypress.trac.wordpress.org/ticket/6544
+		add_filter( 'bp_is_blogs_site-icon_active', '__return_false' );
+
 		add_filter( 'bp_get_group_join_button', array( $this, 'hcommons_check_bp_get_group_join_button' ), 10, 2 );
 
 		// these require shibboleth
