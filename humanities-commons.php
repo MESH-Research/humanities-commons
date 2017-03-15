@@ -126,10 +126,10 @@ class Humanities_Commons {
 
 		// these require shibboleth
 		add_action( 'wp_login_failed', array( $this, 'hcommons_login_failed' ) );
-		add_filter( 'wp_safe_redirect_fallback', array( $this, 'hcommons_remove_admin_redirect' ) );
-		add_filter( 'login_redirect', array( $this, 'hcommons_remove_admin_redirect' ) );
+		//add_filter( 'wp_safe_redirect_fallback', array( $this, 'hcommons_remove_admin_redirect' ) );
+		//add_filter( 'login_redirect', array( $this, 'hcommons_remove_admin_redirect' ) );
 		add_filter( 'shibboleth_session_active', array( $this, 'hcommons_shibboleth_session_active' ) );
-		add_action( 'login_init', array( $this, 'hcommons_login_init' ) );
+		//add_action( 'login_init', array( $this, 'hcommons_login_init' ) );
 		add_action( 'init', array( $this, 'hcommons_shibboleth_autologout' ) );
 
 		add_filter( 'bp_get_signup_page', array( $this, 'hcommons_register_url' ) );
