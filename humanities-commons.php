@@ -2155,7 +2155,7 @@ class Humanities_Commons {
 	 *
 	 * @return bool $classes
 	 */
-	public function hcommons_non_member_active_session() {
+	public static function hcommons_non_member_active_session() {
 
 		if ( function_exists( 'shibboleth_session_active' ) && shibboleth_session_active() ) {
 			$user_memberships = self::hcommons_get_user_memberships();
