@@ -2189,7 +2189,5 @@ $comanage_api = new comanageApi;
 $mla_hcommons = new Mla_Hcommons;
 
 function hcommons_check_non_member_active_session() {
-
-	global $humanities_commons;
-	return $humanities_commons->hcommons_non_member_active_session();
+	return Humanities_Commons::hcommons_non_member_active_session();
 }
