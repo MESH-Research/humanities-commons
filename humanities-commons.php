@@ -1224,6 +1224,14 @@ class Humanities_Commons {
 			return '';
 		}
 
+		// auto-login global super-admins
+		// this is necessary when the super-admin does not have an explicit role on the current network
+		if ( ! is_user_logged_in() && in_array( $user->user_login, $global_super_admins ) ) {
+			wp_set_auth_cookie( $user_id );
+			wp_safe_redirect( $_SERVER['REQUEST_URI'] );
+			exit();
+		}
+
 		//Check for existing user role, we don't want to overwrite role assignments made in WP.
 		global $wp_roles;
 		$user_role_set = false;
