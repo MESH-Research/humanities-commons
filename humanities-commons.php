@@ -163,7 +163,24 @@ class Humanities_Commons {
 		add_action( 'bp_members_admin_user_metaboxes', array( $this, 'hcommons_add_member_type_meta_box' ), 10, 2 );
 		add_action( 'bp_groups_admin_meta_boxes', array( $this, 'hcommons_add_manage_group_memberships_meta_box' ) );
 		add_action( 'bp_groups_admin_load', array( $this, 'hcommons_save_managed_group_membership' ) );
+		add_filter( 'eventorganiser_options', array( $this, 'hcommons_eventoragniser_options' ) );
 
+	}
+
+	/**
+	 * Checks event organiser plugin options to make sure pretty urls are unset by default to avoid
+	 * "too many redirects" error when clicking on a date in the calendar widget
+	 *
+	 * @param  array $options array of options that are set in the admin panel
+	 * @return array $options updated array with prettyurl unset
+	 */
+	public function hcommons_eventoragniser_options( $options ) {
+
+		if( $options['prettyurl'] !== 0 ) {
+			$options['prettyurl'] = 0;
+		}
+
+		return $options;
 	}
 
 	/**
