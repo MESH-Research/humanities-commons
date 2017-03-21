@@ -410,6 +410,16 @@ class Humanities_Commons {
 	public function hcommons_register_member_types() {
 
 		bp_register_member_type(
+			'aaup',
+			array(
+				'labels' => array(
+					'name' => 'AAUP',
+					'singular_name' => 'AAUP',
+				),
+				'has_directory' => 'aaup'
+			) );
+
+		bp_register_member_type(
 			'ajs',
 			array(
 				'labels' => array(
@@ -461,6 +471,16 @@ class Humanities_Commons {
 	}
 
 	public function hcommons_register_group_types() {
+
+		bp_groups_register_group_type(
+			'aaup',
+			array(
+				'labels' => array(
+					'name' => 'AAUP',
+					'singular_name' => 'AAUP',
+				),
+				'has_directory' => 'aaup'
+			) );
 
 		bp_groups_register_group_type(
 			'ajs',
