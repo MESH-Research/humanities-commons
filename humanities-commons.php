@@ -413,10 +413,10 @@ class Humanities_Commons {
 			'aaup',
 			array(
 				'labels' => array(
-					'name' => 'AAUP',
-					'singular_name' => 'AAUP',
+					'name' => 'UP',
+					'singular_name' => 'UP',
 				),
-				'has_directory' => 'aaup'
+				'has_directory' => 'up'
 			) );
 
 		bp_register_member_type(
@@ -476,10 +476,10 @@ class Humanities_Commons {
 			'aaup',
 			array(
 				'labels' => array(
-					'name' => 'AAUP',
-					'singular_name' => 'AAUP',
+					'name' => 'UP',
+					'singular_name' => 'UP',
 				),
-				'has_directory' => 'aaup'
+				'has_directory' => 'up'
 			) );
 
 		bp_groups_register_group_type(

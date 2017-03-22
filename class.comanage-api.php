@@ -217,7 +217,7 @@ class comanageApi {
 						'Description' => 'Association for Jewish Studies' ];
 			$temp_cous['Cous'][] = [ 'Id' => '5', 'Name' => 'HC',
 						'Description' => 'Humanities Commons' ];
-			$temp_cous['Cous'][] = [ 'Id' => '6', 'Name' => 'AAUP',
+			$temp_cous['Cous'][] = [ 'Id' => '6', 'Name' => 'UP',
 						'Description' => 'Association of American University Presses' ];
 
 			$req['body'] = json_encode( $temp_cous );
