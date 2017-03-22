@@ -1265,7 +1265,7 @@ class Humanities_Commons {
 		// this is necessary when the super-admin does not have an explicit role on the current network
 		if ( ! is_user_logged_in() && in_array( $user->user_login, $global_super_admins ) ) {
 			wp_set_auth_cookie( $user_id );
-			wp_safe_redirect( $_SERVER['REQUEST_URI'] );
+			wp_safe_redirect( remove_query_arg( 'reauth', $_SERVER['REQUEST_URI'] ) );
 			exit();
 		}
 
