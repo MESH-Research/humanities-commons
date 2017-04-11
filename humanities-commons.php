@@ -1897,7 +1897,7 @@ class Humanities_Commons {
 	public function hcommons_bbp_format_buddypress_notifications( $action, $item_id, $secondary_item_id, $total_items, $format = 'string', $component_action_name, $component_name, $notification_id ) {
 		$return = $action;
 
-		if( function_exists( 'bp_forums_is_bbpress_active' ) ) {
+		if( function_exists( 'bbp_format_buddypress_notifications' ) ) {
 
 			// New reply notifications
 			if ( 'bbp_new_reply' === $action ) {
