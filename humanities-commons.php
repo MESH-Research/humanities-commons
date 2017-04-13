@@ -410,7 +410,7 @@ class Humanities_Commons {
 	public function hcommons_register_member_types() {
 
 		bp_register_member_type(
-			'aaup',
+			'up',
 			array(
 				'labels' => array(
 					'name' => 'UP',
@@ -473,7 +473,7 @@ class Humanities_Commons {
 	public function hcommons_register_group_types() {
 
 		bp_groups_register_group_type(
-			'aaup',
+			'up',
 			array(
 				'labels' => array(
 					'name' => 'UP',
