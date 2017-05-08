@@ -756,7 +756,9 @@ class Humanities_Commons {
 		$result = update_user_meta( $user_id, 'shib_login_host', $login_host );
 
 		$shib_orcid = $_SERVER['HTTP_EDUPERSONORCID'];
-		$result = update_user_meta( $user_id, 'shib_orcid', $shib_orcid );
+		if ( ! empty( $_SERVER['HTTP_EDUPERSONORCID'] ) ) {
+			$result = update_user_meta( $user_id, 'shib_orcid', $shib_orcid );
+		}
 
 		$shib_org = $_SERVER['HTTP_O'];
 		if ( false === strpos( $shib_org, ';' ) ) {
