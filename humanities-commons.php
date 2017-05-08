@@ -755,6 +755,9 @@ class Humanities_Commons {
 		$result = update_user_meta( $user_id, 'shib_session_id', self::$shib_session_id );
 		$result = update_user_meta( $user_id, 'shib_login_host', $login_host );
 
+		$shib_orcid = $_SERVER['HTTP_EDUPERSONORCID'];
+		$result = update_user_meta( $user_id, 'shib_orcid', $shib_orcid );
+
 		$shib_org = $_SERVER['HTTP_O'];
 		if ( false === strpos( $shib_org, ';' ) ) {
 			$shib_org_updated = $shib_org;
@@ -858,6 +861,14 @@ class Humanities_Commons {
 			}
 			if ( ! empty( $org ) ) {
 				xprofile_set_field_data( 'Institutional or Other Affiliation', $user->ID, str_replace( 'Mla', 'MLA', $org ) );
+			}
+		}
+
+		$current_orcid = xprofile_get_field_data( 18, $user->ID );
+		if ( empty( $current_orcid ) ) {
+			$orcid = get_user_meta( $user->ID, 'shib_orcid', true );
+			if ( ! empty( $orcid ) ) {
+				xprofile_set_field_data( 18, $user->ID, $orcid );
 			}
 		}
 
@@ -2216,6 +2227,22 @@ class Humanities_Commons {
 		if ( function_exists( 'shibboleth_session_active' ) && shibboleth_session_active() ) {
 			$username = $_SERVER['HTTP_EMPLOYEENUMBER'];
 			return $username;
+		}
+		return false;
+	}
+
+	/**
+	 * Return user ORCID from session
+	 *
+	 * @since HCommons
+	 *
+	 * @return string|bool $orcid
+	 */
+	public static function hcommons_get_user_orcid() {
+
+		if ( function_exists( 'shibboleth_session_active' ) && shibboleth_session_active() ) {
+			$orcid = $_SERVER['HTTP_EDUPERSONORCID'];
+			return $orcid;
 		}
 		return false;
 	}
