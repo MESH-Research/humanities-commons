@@ -164,6 +164,7 @@ class Humanities_Commons {
 		add_action( 'bp_groups_admin_meta_boxes', array( $this, 'hcommons_add_manage_group_memberships_meta_box' ) );
 		add_action( 'bp_groups_admin_load', array( $this, 'hcommons_save_managed_group_membership' ) );
 		add_filter( 'eventorganiser_options', array( $this, 'hcommons_eventoragniser_options' ) );
+		add_filter( 'bp_docs_map_meta_caps', array( $this, 'hcommons_check_docs_new_member_caps' ), 10, 4 );
 
 	}
 
@@ -2071,8 +2072,48 @@ class Humanities_Commons {
 	}
 
 	/**
+	 * Waiting period for BP DOCS
+	 *
+	 * @return void
+	 */
+	public function hcommons_check_docs_new_member_caps( $caps, $cap, $user_id, $args ) {
+
+		$vetted_user = $this->hcommons_vet_user();
+
+		if ( ! $vetted_user ) {
+			return array( 'do_not_allow' );
+		} else {
+			return $caps;
+		}
+	}
+
+	/**
 	 * Functions not tied to any filter or action.
 	 */
+
+	/**
+	 * Try to catch the spammers
+	 *
+	 * @return boolean
+	 */
+	public static function hcommons_vet_user() {
+
+		$current_user = wp_get_current_user();
+		$member_types = (array)bp_get_member_type( $current_user->ID, false );
+		if ( empty( $member_types ) || ( 1 == count( $member_types ) && in_array( 'hc', $member_types ) ) ) {
+			$society_member = false;
+		} else {
+			return true;
+		}
+
+		$timeDiff = time() - strtotime( $current_user->user_registered );
+
+		if ( $timeDiff < ( 60 * 60 * 48 ) ) {
+			return false;
+		} else {
+			return true;
+		}
+	}
 
 	/**
 	 * Unserializes the shib_email meta to return to the user as an array
