@@ -1338,10 +1338,6 @@ class Humanities_Commons {
 		$group_id = $group->id;
 		$group_society_id = bp_groups_get_group_type( $group_id );
 
-		if ( $group_society_id === self::$society_id ) {
-			return $group_permalink;
-		}
-
 		global $wpdb;
 		$row = $wpdb->get_row( $wpdb->prepare( "SELECT site_id FROM $wpdb->sitemeta WHERE meta_key = '%s' AND meta_value = '%s'", 'society_id', $group_society_id ) );
 		if ( is_object( $row ) ) {
