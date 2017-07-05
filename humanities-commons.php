@@ -165,6 +165,7 @@ class Humanities_Commons {
 		add_action( 'bp_groups_admin_load', array( $this, 'hcommons_save_managed_group_membership' ) );
 		add_filter( 'eventorganiser_options', array( $this, 'hcommons_eventoragniser_options' ) );
 		add_filter( 'bp_docs_map_meta_caps', array( $this, 'hcommons_check_docs_new_member_caps' ), 10, 4 );
+		add_filter( 'wpmu_active_signup', array( $this, 'hcommons_check_sites_new_member_status' ) );
 
 	}
 
@@ -2074,7 +2075,7 @@ class Humanities_Commons {
 	/**
 	 * Waiting period for BP DOCS
 	 *
-	 * @return void
+	 * @return array
 	 */
 	public function hcommons_check_docs_new_member_caps( $caps, $cap, $user_id, $args ) {
 
@@ -2084,6 +2085,22 @@ class Humanities_Commons {
 			return array( 'do_not_allow' );
 		} else {
 			return $caps;
+		}
+	}
+
+	/**
+	 * Waiting period for site creation
+	 *
+	 * @return string
+	 */
+	public function hcommons_check_sites_new_member_status( $active_signup ) {
+
+		$vetted_user = $this->hcommons_vet_user();
+
+		if ( ! $vetted_user ) {
+			return 'none';
+		} else {
+			return $active_signup;
 		}
 	}
 
