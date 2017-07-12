@@ -136,7 +136,8 @@ class Humanities_Commons {
 		add_action( 'pre_user_query', array( &$this, 'hcommons_filter_site_users_only' ) ); // do_action_ref_array() is used for pre_user_query
 		add_filter( 'invite_anyone_is_large_network', '__return_true' ); //hide invite anyone member list on create/edit group screen
 		add_action( 'bp_init',  array( $this, 'hcommons_remove_nav_items' ) );
-		add_action( 'bp_init', array( $this, 'hcommons_remove_bpges_actions' ) );
+		//add_action( 'bp_init', array( $this, 'hcommons_remove_bpges_actions' ) );
+		add_action( 'ass_digest_group_activity_ids', array( $this, 'hcommons_filter_ass_digest_group_activity_ids' ) );
 		add_action( 'bp_init', array( $this, 'hcommons_set_default_scope_society' ) );
 		add_filter( 'password_protected_login_headertitle', array( $this, 'hcommons_password_protect_title' ) );
 		add_filter( 'password_protected_login_headerurl', array( $this, 'hcommons_password_protect_url' ) );
@@ -1699,6 +1700,21 @@ class Humanities_Commons {
 			remove_action( 'ass_digest_event_weekly', 'ass_weekly_digest_fire' );
 		}
 
+	}
+
+	/**
+	 * Remove activity items that don't belong to the current network from digest emails
+	 */
+	function hcommons_filter_ass_digest_group_activity_ids( $group_activity_ids ) {
+		$network_activity_ids = [];
+
+		foreach ( $group_activity_ids as $group_id => $activity_ids ) {
+			if ( self::$society_id === bp_groups_get_group_type( $group_id ) ) {
+				$network_activity_ids[ $group_id ] = $activity_ids;
+			}
+		}
+
+		return $network_activity_ids;
 	}
 
 	/**
