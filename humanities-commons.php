@@ -164,8 +164,71 @@ class Humanities_Commons {
 		add_action( 'bp_groups_admin_meta_boxes', array( $this, 'hcommons_add_manage_group_memberships_meta_box' ) );
 		add_action( 'bp_groups_admin_load', array( $this, 'hcommons_save_managed_group_membership' ) );
 		add_filter( 'eventorganiser_options', array( $this, 'hcommons_eventoragniser_options' ) );
+		
+		add_action( 'hcommons_set_user_member_types', array( $this, 'hcommons_types_for_newsletter' ), 10, 2 );
+		add_action('wp_footer', array( $this, 'hcommons_newsletter_lite' ) );
+		//add_filter( 'bp_get_member_type', [$this, 'hcommons_member_type_for_newsletter'] );
 
 	}
+
+	public function hcommons_types_for_newsletter( $member_societies, $memberships ) {
+
+		//if array_diff is not empty, user is in an enrollment
+		if( !is_empty( array_diff( $member_societies, $memberships['societies'] ) ) ) {
+
+			echo "<pre>";
+
+			var_dump( $member_societies );
+			
+			var_dump( $memberships['societies'] );
+			echo "</pre>";
+			die();
+
+		}
+
+
+	}
+
+	public function hcommons_member_type_for_newsletter( $type, $user_id, $single ) {
+
+		var_dump( $type );
+		die();
+	}
+
+	/**
+	 * Loads custom newsletter js file to tap into api for subscribe_add post requests
+	 * 
+	 * @return void
+	 */
+	public function hcommons_newsletter_lite() {
+
+		if( is_front_page() ) {
+
+			$user = wp_get_current_user();
+
+	    	wp_enqueue_script( 'newsletter-script', get_stylesheet_directory_uri() . '/js/newsletter-lite.js', ['jquery']);
+
+	    	if( self::$society_id == 'mla' ) {
+
+	       		$array = [
+	       			'url' => 'thewire.' . constant( strtoupper( self::$society_id ) . '_SITE_URL' )
+	       		];
+	       
+	    	} else {
+
+	       		$array = [
+	       			'url' => 'news' . constant( strtoupper( self::$society_id ) . '_SITE_URL' )
+				];
+			}
+
+			$array['user_email'] = $user->data->user_email;
+			
+			wp_localize_script('newsletter-script', 'newsletter_script_vars', $array );
+		
+		}
+       
+	}
+
 
 	/**
 	 * Checks event organiser plugin options to make sure pretty urls are unset by default to avoid
@@ -690,6 +753,10 @@ class Humanities_Commons {
 		$memberships = $this->hcommons_get_user_memberships();
 		hcommons_write_error_log( 'info', '****RETURNED_MEMBERSHIPS****-' . $_SERVER['HTTP_HOST'] . '-' . var_export( $user->user_login, true ) . '-' . var_export( $memberships, true ) );
 		$member_societies = (array) bp_get_member_type( $user_id, false );
+
+		//add do_action here -- hcommons_set_user_member_types
+		do_action('hcommons_set_user_member_types', $member_societies, $memberships);
+		
 		hcommons_write_error_log( 'info', '****PRE_SET_USER_MEMBER_TYPES****-' . var_export( $member_societies, true ) );
 		$result = bp_set_member_type( $user_id, '' ); // Clear existing types, if any.
 		$append = true;
