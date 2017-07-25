@@ -167,22 +167,69 @@ class Humanities_Commons {
 		
 		add_action( 'hcommons_set_user_member_types', array( $this, 'hcommons_types_for_newsletter' ), 10, 2 );
 		add_action('wp_footer', array( $this, 'hcommons_newsletter_lite' ) );
+		add_filter( 'https_ssl_verify', '__return_false' );
 		//add_filter( 'bp_get_member_type', [$this, 'hcommons_member_type_for_newsletter'] );
 
 	}
 
+	/**
+	 * Handles newsletter subscriptions for news and thewire sites in societies
+	 *
+	 * @param  array $member_societies   societies available
+	 * @param  array $memberships      	 memberships current user has
+	 *
+	 * @return void
+	 */
 	public function hcommons_types_for_newsletter( $member_societies, $memberships ) {
 
-		//if array_diff is not empty, user is in an enrollment
-		if( !is_empty( array_diff( $member_societies, $memberships['societies'] ) ) ) {
+		$api_keys = [ 'A70BBA569877000B308E3F9F816632B1', '233AD65734ED7ABD1B2DCE66B655135D' ];
 
-			echo "<pre>";
+		if( ! $member_societies ) {
+			$member_societies = [];
+		}
 
-			var_dump( $member_societies );
-			
-			var_dump( $memberships['societies'] );
-			echo "</pre>";
-			die();
+		//checks against the users memberships to make sure they are part of societies
+		if( ! in_array( $memberships, $member_societies ) ) {
+
+			$user = wp_get_current_user();
+
+			//set api request data array
+			$data = array(
+			    'api_method'        =>   'subscriber_add',
+			    'api_key'           =>   '233AD65734ED7ABD1B2DCE66B655135D',
+			    'api_data'          =>   array(
+			        'email'             => $user->user_email,
+			        'list_id'           => [1]
+			    )
+			);
+
+			foreach( $memberships['societies'] as $membership ) {
+
+				//check if user has hc membership to strip scheme from url
+				if( $membership == 'hc' ) {
+
+					$hc_url = parse_url( constant( strtoupper( $membership ) . '_SITE_URL' ) );
+					$url = 'http://news.' $hc_url['host'] . '/wp-admin/admin-ajax.php?action=newsletters_api';
+
+				}
+
+				//check if user has mla membership to direct newsletter to thewire.mla
+				if( $membership == 'mla' ) {
+
+					$url = 'http://thewire.' . constant( strtoupper( $membership ) . '_SITE_URL' )  .  '/wp-admin/admin-ajax.php?action=newsletters_api';
+
+				}
+
+				//this catches any other society membership to direct newsletter to news.{society}
+				if ( $membership !== 'mla' || $membership !== 'hc' ) {
+
+					$url = 'http://news.' . constant( strtoupper( $membership ) . '_SITE_URL' ) .  '/wp-admin/admin-ajax.php?action=newsletters_api';
+
+				}
+
+				$post_req = wp_remote_post( $url, [ 'body' => json_encode( $data ), 'headers' => [ 'content-type' => 'application/json' ] ] );
+
+			}
 
 		}
 
@@ -207,6 +254,14 @@ class Humanities_Commons {
 			$user = wp_get_current_user();
 
 	    	wp_enqueue_script( 'newsletter-script', get_stylesheet_directory_uri() . '/js/newsletter-lite.js', ['jquery']);
+
+	    	foreach( $memberships as $membership ) {
+if( $membership == 'mla' ) {
+wp_remote_post( 'https://thewire.' . constant( strtoupper( $membership ) . '_SITE_URL' )  .  '/wp-admin/admin-ajax.php?action=newsletters', [ 'body' => $data ] );
+} else {
+wp_remote_post( 'https://news.' . constant( strtoupper( $membership ) . '_SITE_URL' )  .  '/wp-admin/admin-ajax.php?action=newsletters', [ 'body' => $data ] );
+}
+}
 
 	    	if( self::$society_id == 'mla' ) {
 
