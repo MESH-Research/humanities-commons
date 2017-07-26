@@ -210,14 +210,14 @@ class Humanities_Commons {
 				//check if user has mla membership to direct newsletter to thewire.mla
 				if( $membership == 'mla' ) {
 
-					$url = 'http://thewire.' . $site_url  .  '/wp-admin/admin-ajax.php?action=newsletters_api';
+					$url = 'http://thewire.' . $site_url .  '/wp-admin/admin-ajax.php?action=newsletters_api';
 
 				}
 
 				//this catches any other society membership to direct newsletter to news.{society}
 				if ( $membership !== 'mla' || $membership !== 'hc' ) {
 
-					$url = 'http://news.' . $site_url . '_SITE_URL' ) .  '/wp-admin/admin-ajax.php?action=newsletters_api';
+					$url = 'http://news.' . $site_url .  '/wp-admin/admin-ajax.php?action=newsletters_api';
 
 				}
 
