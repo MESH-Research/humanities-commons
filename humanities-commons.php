@@ -205,25 +205,19 @@ class Humanities_Commons {
 
 			foreach( $memberships['societies'] as $membership ) {
 
-				//check if user has hc membership to strip scheme from url
-				if( $membership == 'hc' ) {
-
-					$hc_url = parse_url( constant( strtoupper( $membership ) . '_SITE_URL' ) );
-					$url = 'http://news.' $hc_url['host'] . '/wp-admin/admin-ajax.php?action=newsletters_api';
-
-				}
+				$site_url = str_replace( 'https://', '', constant( strtoupper( $membership ) . '_SITE_URL' ) );
 
 				//check if user has mla membership to direct newsletter to thewire.mla
 				if( $membership == 'mla' ) {
 
-					$url = 'http://thewire.' . constant( strtoupper( $membership ) . '_SITE_URL' )  .  '/wp-admin/admin-ajax.php?action=newsletters_api';
+					$url = 'http://thewire.' . $site_url  .  '/wp-admin/admin-ajax.php?action=newsletters_api';
 
 				}
 
 				//this catches any other society membership to direct newsletter to news.{society}
 				if ( $membership !== 'mla' || $membership !== 'hc' ) {
 
-					$url = 'http://news.' . constant( strtoupper( $membership ) . '_SITE_URL' ) .  '/wp-admin/admin-ajax.php?action=newsletters_api';
+					$url = 'http://news.' . $site_url . '_SITE_URL' ) .  '/wp-admin/admin-ajax.php?action=newsletters_api';
 
 				}
 
