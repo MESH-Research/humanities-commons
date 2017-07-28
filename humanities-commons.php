@@ -182,7 +182,13 @@ class Humanities_Commons {
 	 */
 	public function hcommons_types_for_newsletter( $member_societies, $memberships ) {
 
-		$api_keys = [ 'A70BBA569877000B308E3F9F816632B1', '233AD65734ED7ABD1B2DCE66B655135D' ];
+		$api_keys = [ 
+			'ajs' => 'A70BBA569877000B308E3F9F816632B1', 
+			'hc' => '233AD65734ED7ABD1B2DCE66B655135D',
+			'aseees' => 'EA079B6D44EAA62CF70DA051FA314BED',
+			'caa' => 'A70BBA569877000B308E3F9F816632B1',
+			'mla' => '233AD65734ED7ABD1B2DCE66B655135D'
+		];
 
 		if( ! $member_societies ) {
 			$member_societies = [];
@@ -196,7 +202,6 @@ class Humanities_Commons {
 			//set api request data array
 			$data = array(
 			    'api_method'        =>   'subscriber_add',
-			    'api_key'           =>   '233AD65734ED7ABD1B2DCE66B655135D',
 			    'api_data'          =>   array(
 			        'email'             => $user->user_email,
 			        'list_id'           => [1]
@@ -204,6 +209,9 @@ class Humanities_Commons {
 			);
 
 			foreach( $memberships['societies'] as $membership ) {
+
+				//set api key depending on the membership type
+				$data['api_key'] = $api_keys[$membership];
 
 				$site_url = str_replace( 'https://', '', constant( strtoupper( $membership ) . '_SITE_URL' ) );
 
