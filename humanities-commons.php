@@ -165,8 +165,9 @@ class Humanities_Commons {
 		add_action( 'bp_groups_admin_load', array( $this, 'hcommons_save_managed_group_membership' ) );
 		add_filter( 'eventorganiser_options', array( $this, 'hcommons_eventoragniser_options' ) );
 		
-		add_action( 'hcommons_set_user_member_types', array( $this, 'hcommons_types_for_newsletter' ), 10, 2 );
-		add_action('wp_footer', array( $this, 'hcommons_newsletter_lite' ) );
+		add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_types_for_newsletter' ), 10, 2 );
+		//add_action( 'hcommons_set_user_member_types', array( $this, 'hcommons_types_for_newsletter' ), 10, 2 );
+		//add_action('wp_footer', array( $this, 'hcommons_newsletter_lite' ) );
 		add_filter( 'https_ssl_verify', '__return_false' );
 		//add_filter( 'bp_get_member_type', [$this, 'hcommons_member_type_for_newsletter'] );
 
@@ -194,10 +195,14 @@ class Humanities_Commons {
 			$member_societies = [];
 		}
 
+		var_dump( $this->hcommons_set_user_member_types( null, true ) );
+
 		//checks against the users memberships to make sure they are part of societies
 		if( ! in_array( $memberships, $member_societies ) ) {
 
 			$user = wp_get_current_user();
+
+			var_dump( $user );
 
 			//set api request data array
 			$data = array(
@@ -220,10 +225,7 @@ class Humanities_Commons {
 
 					$url = 'http://thewire.' . $site_url .  '/wp-admin/admin-ajax.php?action=newsletters_api';
 
-				}
-
-				//this catches any other society membership to direct newsletter to news.{society}
-				if ( $membership !== 'mla' || $membership !== 'hc' ) {
+				} else {
 
 					$url = 'http://news.' . $site_url .  '/wp-admin/admin-ajax.php?action=newsletters_api';
 
@@ -231,59 +233,17 @@ class Humanities_Commons {
 
 				$post_req = wp_remote_post( $url, [ 'body' => json_encode( $data ), 'headers' => [ 'content-type' => 'application/json' ] ] );
 
-			}
+				preg_match('/already subscribed/', $post_req['body'], $match );
+				
+				if( array_key_exists( '0', $match ) ) {
+					hcommons_write_error_log( 'info', '*** NEWSLETTER LITE LOG ***', [ 'message' => 'user is already subscribed', 'society' => $membership ] );
+				}
 
+			}
+die();
 		}
 
 
-	}
-
-	public function hcommons_member_type_for_newsletter( $type, $user_id, $single ) {
-
-		var_dump( $type );
-		die();
-	}
-
-	/**
-	 * Loads custom newsletter js file to tap into api for subscribe_add post requests
-	 * 
-	 * @return void
-	 */
-	public function hcommons_newsletter_lite() {
-
-		if( is_front_page() ) {
-
-			$user = wp_get_current_user();
-
-	    	wp_enqueue_script( 'newsletter-script', get_stylesheet_directory_uri() . '/js/newsletter-lite.js', ['jquery']);
-
-	    	foreach( $memberships as $membership ) {
-if( $membership == 'mla' ) {
-wp_remote_post( 'https://thewire.' . constant( strtoupper( $membership ) . '_SITE_URL' )  .  '/wp-admin/admin-ajax.php?action=newsletters', [ 'body' => $data ] );
-} else {
-wp_remote_post( 'https://news.' . constant( strtoupper( $membership ) . '_SITE_URL' )  .  '/wp-admin/admin-ajax.php?action=newsletters', [ 'body' => $data ] );
-}
-}
-
-	    	if( self::$society_id == 'mla' ) {
-
-	       		$array = [
-	       			'url' => 'thewire.' . constant( strtoupper( self::$society_id ) . '_SITE_URL' )
-	       		];
-	       
-	    	} else {
-
-	       		$array = [
-	       			'url' => 'news' . constant( strtoupper( self::$society_id ) . '_SITE_URL' )
-				];
-			}
-
-			$array['user_email'] = $user->data->user_email;
-			
-			wp_localize_script('newsletter-script', 'newsletter_script_vars', $array );
-		
-		}
-       
 	}
 
 
@@ -796,7 +756,7 @@ wp_remote_post( 'https://news.' . constant( strtoupper( $membership ) . '_SITE_U
 		}
 	}
 
-	public function hcommons_set_user_member_types( $user ) {
+	public function hcommons_set_user_member_types( $user, $m = null ) {
 
 		$user_id = $user->ID;
 
@@ -820,6 +780,12 @@ wp_remote_post( 'https://news.' . constant( strtoupper( $membership ) . '_SITE_U
 		foreach( $memberships['societies'] as $member_type ) {
 			$result = bp_set_member_type( $user_id, $member_type, $append );
 			hcommons_write_error_log( 'info', '****SET_EACH_MEMBER_TYPE****-' . $user_id . '-' . $member_type . '-' . var_export( $result, true ) );
+		}
+
+		if( ! is_null( $m ) ) {
+
+			return [ 'member_societies' => $member_societies, 'memberships' => $memberships ];
+		
 		}
 	}
 
