@@ -733,6 +733,7 @@ class Humanities_Commons {
 				delete_user_meta( $user_id, $prefix . 'capabilities' );
 				delete_user_meta( $user_id, $prefix . 'user_level' );
 			}
+			$this->hcommons_login_failed( $user->user_login ); // trigger redirect to not-a-member
 		}
 	}
 
