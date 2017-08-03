@@ -164,12 +164,10 @@ class Humanities_Commons {
 		add_action( 'bp_groups_admin_meta_boxes', array( $this, 'hcommons_add_manage_group_memberships_meta_box' ) );
 		add_action( 'bp_groups_admin_load', array( $this, 'hcommons_save_managed_group_membership' ) );
 		add_filter( 'eventorganiser_options', array( $this, 'hcommons_eventoragniser_options' ) );
-		
-		//add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_types_for_newsletter' ), 10, 2 );
+		add_filter( 'bp_docs_map_meta_caps', array( $this, 'hcommons_check_docs_new_member_caps' ), 10, 4 );
+		add_filter( 'wpmu_active_signup', array( $this, 'hcommons_check_sites_new_member_status' ) );
 		add_action( 'hcommons_set_user_member_types', array( $this, 'hcommons_types_for_newsletter' ), 10, 2 );
-		//add_action('wp_footer', array( $this, 'hcommons_newsletter_lite' ) );
 		add_filter( 'https_ssl_verify', '__return_false' );
-		//add_filter( 'bp_get_member_type', [$this, 'hcommons_member_type_for_newsletter'] );
 
 	}
 
@@ -237,9 +235,7 @@ class Humanities_Commons {
 
 		}
 
-
 	}
-
 
 	/**
 	 * Checks event organiser plugin options to make sure pretty urls are unset by default to avoid
@@ -776,11 +772,16 @@ class Humanities_Commons {
 			hcommons_write_error_log( 'info', '****SET_EACH_MEMBER_TYPE****-' . $user_id . '-' . $member_type . '-' . var_export( $result, true ) );
 		}
 
-		if( ! is_null( $m ) ) {
-
-			return [ 'member_societies' => $member_societies, 'memberships' => $memberships ];
-		
+		if ( 'caa' == self::$society_id ) {
+			foreach( $memberships['groups']['caa'] as $group_name ) {
+				$group_id = $this->hcommons_lookup_society_group_id( self::$society_id, $group_name );
+				if ( ! groups_is_user_member( $user_id, $group_id ) ) {
+					$success = groups_join_group( $group_id, $user_id );
+					hcommons_write_error_log( 'info', '****ADD_GROUP_MEMBERSHIP***-' . $group_id . '-' . $user_id );
+				}
+			}
 		}
+
 	}
 
 	public function hcommons_maybe_set_user_role_for_site( $user ) {
@@ -1420,10 +1421,6 @@ class Humanities_Commons {
 
 		$group_id = $group->id;
 		$group_society_id = bp_groups_get_group_type( $group_id );
-
-		if ( $group_society_id === self::$society_id ) {
-			return $group_permalink;
-		}
 
 		global $wpdb;
 		$row = $wpdb->get_row( $wpdb->prepare( "SELECT site_id FROM $wpdb->sitemeta WHERE meta_key = '%s' AND meta_value = '%s'", 'society_id', $group_society_id ) );
@@ -2155,8 +2152,65 @@ class Humanities_Commons {
 	}
 
 	/**
+	 * Waiting period for BP DOCS
+	 *
+	 * @return array
+	 */
+	public function hcommons_check_docs_new_member_caps( $caps, $cap, $user_id, $args ) {
+
+		$vetted_user = $this->hcommons_vet_user();
+
+		if ( ! $vetted_user ) {
+			return array( 'do_not_allow' );
+		} else {
+			return $caps;
+		}
+	}
+
+	/**
+	 * Waiting period for site creation
+	 *
+	 * @return string
+	 */
+	public function hcommons_check_sites_new_member_status( $active_signup ) {
+
+		$vetted_user = $this->hcommons_vet_user();
+
+		if ( ! $vetted_user ) {
+			return 'none';
+		} else {
+			return $active_signup;
+		}
+	}
+
+	/**
 	 * Functions not tied to any filter or action.
 	 */
+
+	/**
+	 * Try to catch the spammers
+	 *
+	 * @return boolean
+	 */
+	public static function hcommons_vet_user() {
+
+		$current_user = wp_get_current_user();
+		$member_types = (array)bp_get_member_type( $current_user->ID, false );
+		if ( empty( $member_types ) || ( 1 == count( $member_types ) && in_array( 'hc', $member_types ) ) ) {
+			$society_member = false;
+		} else {
+			return true;
+		}
+
+		$timeDiff = time() - strtotime( $current_user->user_registered );
+
+		if ( $timeDiff < ( 60 * 60 * 48 ) ) {
+			//return false;
+			return true; // disable spammer check for now
+		} else {
+			return true;
+		}
+	}
 
 	/**
 	 * Unserializes the shib_email meta to return to the user as an array
@@ -2339,6 +2393,44 @@ class Humanities_Commons {
 		}
 		return false;
 	}
+
+        /**
+         * Lookup society group id by name.
+	 *
+	 * @since HCommons
+	 *
+	 * @param string $society_id
+	 * @param string $group_name
+	 * @return string group id
+         */
+        public function hcommons_lookup_society_group_id( $society_id, $group_name ) {
+
+                $managed_group_names = get_transient( $society_id . '_managed_group_names' );
+
+                if ( false === $managed_group_names || empty( $managed_group_names ) ) {
+
+                        $bp = buddypress();
+                        global $wpdb;
+                        $managed_group_names = array();
+                        $all_groups = $wpdb->get_results( 'SELECT * FROM ' . $bp->table_prefix . 'bp_groups' );
+                        foreach ( $all_groups as $group ) {
+
+                                $group_society_id = bp_groups_get_group_type( $group->id, true );
+                                if ( $society_id === $group_society_id ) {
+					$autopopulate = groups_get_groupmeta( $group->id, 'autopopulate' );
+                                        if ( ! empty( $autopopulate ) && 'Y' === $autopopulate ) {
+                                                $managed_group_names[strip_tags( stripslashes( $group->name ) )] = $group->id;
+                                        }
+
+                                }
+
+                        }
+                        set_transient( $society_id . '_managed_group_names', $managed_group_names, 24 * HOUR_IN_SECONDS );
+                }
+		//hcommons_write_error_log( 'info', '****DUMP_LOOKUP_TRANSIENT***-' . var_export( $managed_group_names, true ) );
+                return $managed_group_names[$group_name];
+
+        }
 }
 
 $humanities_commons = new Humanities_Commons;

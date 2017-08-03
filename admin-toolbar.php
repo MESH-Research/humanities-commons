@@ -96,6 +96,11 @@ function hcommons_admin_bar_render() {
 	$nodes = $wp_admin_bar->get_nodes();
 	//hcommons_write_error_log( 'info', '****ADMIN_BAR_RENDER****-'.var_export($nodes,true) );
 
+	$vetted_user = humanities_commons::hcommons_vet_user();
+	if ( ! $vetted_user ) {
+		$wp_admin_bar->remove_menu( 'my-account-bp_docs' );
+	}
+
 }
 add_action( 'wp_before_admin_bar_render', 'hcommons_admin_bar_render' );
 
