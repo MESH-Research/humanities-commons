@@ -165,8 +165,8 @@ class Humanities_Commons {
 		add_action( 'bp_groups_admin_load', array( $this, 'hcommons_save_managed_group_membership' ) );
 		add_filter( 'eventorganiser_options', array( $this, 'hcommons_eventoragniser_options' ) );
 		
-		add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_types_for_newsletter' ), 10, 2 );
-		//add_action( 'hcommons_set_user_member_types', array( $this, 'hcommons_types_for_newsletter' ), 10, 2 );
+		//add_action( 'shibboleth_set_user_roles', array( $this, 'hcommons_types_for_newsletter' ), 10, 2 );
+		add_action( 'hcommons_set_user_member_types', array( $this, 'hcommons_types_for_newsletter' ), 10, 2 );
 		//add_action('wp_footer', array( $this, 'hcommons_newsletter_lite' ) );
 		add_filter( 'https_ssl_verify', '__return_false' );
 		//add_filter( 'bp_get_member_type', [$this, 'hcommons_member_type_for_newsletter'] );
@@ -195,20 +195,14 @@ class Humanities_Commons {
 			$member_societies = [];
 		}
 
-		var_dump( $this->hcommons_set_user_member_types( null, true ) );
-
 		//checks against the users memberships to make sure they are part of societies
 		if( ! in_array( $memberships, $member_societies ) ) {
-
-			$user = wp_get_current_user();
-
-			var_dump( $user );
 
 			//set api request data array
 			$data = array(
 			    'api_method'        =>   'subscriber_add',
 			    'api_data'          =>   array(
-			        'email'             => $user->user_email,
+			        'email'             => $_SERVER['HTTP_MAIL'],
 			        'list_id'           => [1]
 			    )
 			);
@@ -236,11 +230,11 @@ class Humanities_Commons {
 				preg_match('/already subscribed/', $post_req['body'], $match );
 				
 				if( array_key_exists( '0', $match ) ) {
-					hcommons_write_error_log( 'info', '*** NEWSLETTER LITE LOG ***', [ 'message' => 'user is already subscribed', 'society' => $membership ] );
+					hcommons_write_error_log( 'info', '*** NEWSLETTER LITE LOG ***', [ 'message' => 'user is already subscribed', 'username' => $_SERVER['HTTP_EMPLOYEENUMBER'], 'name' => $_SERVER['HTTP_DISPLAYNAME'], 'society' => $membership ] );
 				}
 
 			}
-die();
+
 		}
 
 
