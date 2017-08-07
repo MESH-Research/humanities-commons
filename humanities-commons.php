@@ -849,8 +849,14 @@ class Humanities_Commons {
 		}
 */
 		hcommons_write_error_log( 'info', '****SYNC_BP_PROFILE****-'.var_export( $user->ID, true ) );
-		$name = $_SERVER['HTTP_DISPLAYNAME']; // user record maybe not fully populated for first time users.
-		xprofile_set_field_data( 'Name', $user->ID, $name );
+
+		$current_name = xprofile_get_field_data( 'Name', $user->ID );
+                if ( empty( $current_name ) ) {
+			$name = $_SERVER['HTTP_DISPLAYNAME']; // user record maybe not fully populated for first time users.
+                        if ( ! empty( $name ) ) {
+                                xprofile_set_field_data( 'Name', $user->ID, $name );
+                        }
+                }
 
 		$current_title = xprofile_get_field_data( 'Title', $user->ID );
 		if ( empty( $current_title ) ) {
