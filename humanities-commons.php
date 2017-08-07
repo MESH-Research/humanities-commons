@@ -700,6 +700,16 @@ class Humanities_Commons {
 			$result = bp_set_member_type( $user_id, $member_type, $append );
 			hcommons_write_error_log( 'info', '****SET_EACH_MEMBER_TYPE****-' . $user_id . '-' . $member_type . '-' . var_export( $result, true ) );
 		}
+		if ( 'caa' == self::$society_id ) {
+			foreach( $memberships['groups']['caa'] as $group_name ) {
+				$group_id = $this->hcommons_lookup_society_group_id( self::$society_id, $group_name );
+				if ( ! groups_is_user_member( $user_id, $group_id ) ) {
+					$success = groups_join_group( $group_id, $user_id );
+					hcommons_write_error_log( 'info', '****ADD_GROUP_MEMBERSHIP***-' . $group_id . '-' . $user_id );
+				}
+			}
+		}
+
 	}
 
 	public function hcommons_maybe_set_user_role_for_site( $user ) {
@@ -840,8 +850,14 @@ class Humanities_Commons {
 		}
 */
 		hcommons_write_error_log( 'info', '****SYNC_BP_PROFILE****-'.var_export( $user->ID, true ) );
-		$name = $_SERVER['HTTP_DISPLAYNAME']; // user record maybe not fully populated for first time users.
-		xprofile_set_field_data( 'Name', $user->ID, $name );
+
+		$current_name = xprofile_get_field_data( 'Name', $user->ID );
+                if ( empty( $current_name ) ) {
+			$name = $_SERVER['HTTP_DISPLAYNAME']; // user record maybe not fully populated for first time users.
+                        if ( ! empty( $name ) ) {
+                                xprofile_set_field_data( 'Name', $user->ID, $name );
+                        }
+                }
 
 		$current_title = xprofile_get_field_data( 'Title', $user->ID );
 		if ( empty( $current_title ) ) {
@@ -2138,7 +2154,8 @@ class Humanities_Commons {
 		$timeDiff = time() - strtotime( $current_user->user_registered );
 
 		if ( $timeDiff < ( 60 * 60 * 48 ) ) {
-			return false;
+			//return false;
+			return true; // disable spammer check for now
 		} else {
 			return true;
 		}
@@ -2325,6 +2342,44 @@ class Humanities_Commons {
 		}
 		return false;
 	}
+
+        /**
+         * Lookup society group id by name.
+	 *
+	 * @since HCommons
+	 *
+	 * @param string $society_id
+	 * @param string $group_name
+	 * @return string group id
+         */
+        public function hcommons_lookup_society_group_id( $society_id, $group_name ) {
+
+                $managed_group_names = get_transient( $society_id . '_managed_group_names' );
+
+                if ( false === $managed_group_names || empty( $managed_group_names ) ) {
+
+                        $bp = buddypress();
+                        global $wpdb;
+                        $managed_group_names = array();
+                        $all_groups = $wpdb->get_results( 'SELECT * FROM ' . $bp->table_prefix . 'bp_groups' );
+                        foreach ( $all_groups as $group ) {
+
+                                $group_society_id = bp_groups_get_group_type( $group->id, true );
+                                if ( $society_id === $group_society_id ) {
+					$autopopulate = groups_get_groupmeta( $group->id, 'autopopulate' );
+                                        if ( ! empty( $autopopulate ) && 'Y' === $autopopulate ) {
+                                                $managed_group_names[strip_tags( stripslashes( $group->name ) )] = $group->id;
+                                        }
+
+                                }
+
+                        }
+                        set_transient( $society_id . '_managed_group_names', $managed_group_names, 24 * HOUR_IN_SECONDS );
+                }
+		//hcommons_write_error_log( 'info', '****DUMP_LOOKUP_TRANSIENT***-' . var_export( $managed_group_names, true ) );
+                return $managed_group_names[$group_name];
+
+        }
 }
 
 $humanities_commons = new Humanities_Commons;
