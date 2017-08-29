@@ -131,6 +131,8 @@ class Humanities_Commons {
 		add_filter( 'shibboleth_session_active', array( $this, 'hcommons_shibboleth_session_active' ) );
 		//add_action( 'login_init', array( $this, 'hcommons_login_init' ) );
 		add_action( 'init', array( $this, 'hcommons_shibboleth_autologout' ) );
+		add_filter( 'site_option_shibboleth_login_url', 'hcommons_filter_site_option_shibboleth_urls' );
+		add_filter( 'site_option_shibboleth_logout_url', 'hcommons_filter_site_option_shibboleth_urls' );
 
 		add_filter( 'bp_get_signup_page', array( $this, 'hcommons_register_url' ) );
 		add_action( 'pre_user_query', array( &$this, 'hcommons_filter_site_users_only' ) ); // do_action_ref_array() is used for pre_user_query
@@ -1629,6 +1631,14 @@ class Humanities_Commons {
 			wp_redirect($logout_url);
 			exit;
 		}
+	}
+
+	/**
+	 * filter shibboleth_login_url & shibboleth_logout_url to always use https
+	 */
+	function hcommons_filter_site_option_shibboleth_urls( $value ) {
+		$value = str_replace( 'http:', 'https:', $value );
+		return $value;
 	}
 
 	/**
