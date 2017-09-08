@@ -607,20 +607,10 @@ class Humanities_Commons {
 	 */
 	public function hcommons_groups_get_groups( $data, $r ) {
 
-		$context = debug_backtrace(); //TODO get proper filters in BuddyPress_Event_Organiser_EO, bpmfp_get_other_groups_for_user and get rid of backtrace.
-		//hcommons_write_error_log( 'info', '****FILTER_GROUPS_GET_GROUPS_QUERY****-'.var_export( $context, true ) );
-
 		if (
-			isset( $context[3] ) &&
-			(
-				( isset( $context[3]['class'] ) && 'BuddyPress_Event_Organiser_EO' == $context[3]['class'] ) ||
-				( isset( $context[3]['function'] ) && 'bpmfp_get_other_groups_for_user' == $context[3]['function'] )
-			)
+			self::backtrace_contains( 'class', 'BuddyPress_Event_Organiser_EO' ) ||
+			self::backtrace_contains( 'function', 'bpmfp_get_other_groups_for_user' )
 		) {
-
-			//hcommons_write_error_log( 'info', '****FILTER_GROUPS_GET_GROUPS_TRACE****-'.var_export( $context[3], true ) );
-			//hcommons_write_error_log( 'info', '****PRE_GROUPS_GET_GROUPS1****-' . var_export( $r, true ) );
-			//hcommons_write_error_log( 'info', '****PRE_GROUPS_GET_GROUPS0****-' . var_export( $data, true ) );
 
 			$new_groups = BP_Groups_Group::get( array(
 				'type'               => $r['type'],
@@ -1802,7 +1792,7 @@ class Humanities_Commons {
 	public function hcommons_reply_admin_links( $array, $id ) {
 
 		$cap = groups_filter_bbpress_caps('bp_moderate');
-		
+
 		if( $cap == true && bbp_get_current_user_id() !== bbp_get_reply_author_id( bbp_get_reply_id() ) ) {
 			unset( $array['edit'] );
 		}
@@ -2374,6 +2364,26 @@ class Humanities_Commons {
                 return $managed_group_names[$group_name];
 
         }
+
+	/**
+	 * helper function to facilitate conditions where caller can be identified by function/class name
+	 *
+	 * @param string $key a key in the backtrace to check, e.g. 'function' or 'class'
+	 * @param string $value the value of $key to look for, i.e. the function/class name
+	 * @return bool does debug_backtrace() contain the specified key/value pair?
+	 */
+	public static function backtrace_contains( $key, $value ) {
+		$retval = false;
+
+		foreach ( debug_backtrace() as $bt ) {
+			if ( isset( $bt[ $key ] ) && $value === $bt[ $key ] ) {
+				$retval = true;
+				break;
+			}
+		}
+
+		return $retval;
+	}
 }
 
 $humanities_commons = new Humanities_Commons;
