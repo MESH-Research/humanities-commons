@@ -1004,7 +1004,13 @@ class Humanities_Commons {
 		$blog_ids = array();
 		$current_blog_id = get_current_blog_id();
 
-		if ( 'hc' !== self::$society_id && empty( $args['user_id'] ) && ! bp_is_current_action('my-sites') ) {
+
+		if (
+			'hc' !== self::$society_id &&
+			empty( $args['user_id'] ) &&
+			! bp_is_current_action('my-sites') &&
+			! bp_is_current_component('profile')
+		) {
 
 			$current_network = get_current_site();
 			$network_sites = wp_get_sites( array( 'network_id' => $current_network->id, 'limit' => 9999 ) );
