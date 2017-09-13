@@ -562,7 +562,7 @@ class Humanities_Commons {
 			return $args;
 		}
 
-		if ( 'hc' === self::$society_id && empty( $args['scope'] ) ) {
+		if ( 'hc' === self::$society_id && empty( $args['scope'] ) && ! self::backtrace_contains( 'class', 'EP_BP_API' ) ) {
 			$args['group_type'] = '';
 		} else {
 			$args['group_type'] = self::$society_id;
