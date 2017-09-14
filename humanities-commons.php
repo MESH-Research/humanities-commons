@@ -691,8 +691,12 @@ class Humanities_Commons {
 			$result = bp_set_member_type( $user_id, $member_type, $append );
 			hcommons_write_error_log( 'info', '****SET_EACH_MEMBER_TYPE****-' . $user_id . '-' . $member_type . '-' . var_export( $result, true ) );
 		}
-		if ( 'caa' == self::$society_id ) {
-			foreach( $memberships['groups']['caa'] as $group_name ) {
+
+		//If site is a society we are mapping groups for and the user is member of the society, map any groups from comanage to wp.
+		//TODO add logic to remove groups the user is no longer a member of
+		if ( in_array( self::$society_id, array( 'ajs', 'aseees', 'caa' ) ) &&
+			in_array( self::$society_id, $memberships['societies'] ) ) {
+			foreach( $memberships['groups'][self::$society_id] as $group_name ) {
 				$group_id = $this->hcommons_lookup_society_group_id( self::$society_id, $group_name );
 				if ( ! groups_is_user_member( $user_id, $group_id ) ) {
 					$success = groups_join_group( $group_id, $user_id );
