@@ -2281,7 +2281,12 @@ class Humanities_Commons {
 			$identity_provider = '';
 			$identity_provider = $_SERVER['HTTP_SHIB_IDENTITY_PROVIDER'];
 
-			return $providers[$identity_provider];
+			if ( ! empty( $providers[$identity_provider] ) ) {
+				return $providers[$identity_provider];
+			} else {
+				return 'University';
+			}
+
 		}
 		return false;
 	}
