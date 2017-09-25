@@ -2281,10 +2281,10 @@ class Humanities_Commons {
 			$identity_provider = '';
 			$identity_provider = $_SERVER['HTTP_SHIB_IDENTITY_PROVIDER'];
 
-			if ( ! empty( $providers[$identity_provider] ) ) {
-				return $providers[$identity_provider];
-			} else {
+			if ( empty( $providers[$identity_provider] ) ) {
 				return 'University';
+			} else {
+				return $providers[$identity_provider];
 			}
 
 		}
@@ -2338,6 +2338,22 @@ class Humanities_Commons {
 		if ( function_exists( 'shibboleth_session_active' ) && shibboleth_session_active() ) {
 			$orcid = $_SERVER['HTTP_EDUPERSONORCID'];
 			return $orcid;
+		}
+		return false;
+	}
+
+	/**
+	 * Return EPPN from session
+	 *
+	 * @since HCommons
+	 *
+	 * @return string|bool $username
+	 */
+	public static function get_session_eppn() {
+
+		if ( function_exists( 'shibboleth_session_active' ) && shibboleth_session_active() ) {
+			$eppn = $_SERVER['HTTP_EPPN'];
+			return $eppn;
 		}
 		return false;
 	}
@@ -2407,4 +2423,7 @@ $mla_hcommons = new Mla_Hcommons;
 
 function hcommons_check_non_member_active_session() {
 	return Humanities_Commons::hcommons_non_member_active_session();
+}
+function hcommons_get_session_eppn() {
+	return Humanities_Commons::get_session_eppn();
 }
