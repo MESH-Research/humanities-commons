@@ -2231,18 +2231,14 @@ class Humanities_Commons {
 		if ( defined( 'MLA_LOGIN_METHOD_SCOPE' ) ) {
 			$methods[MLA_LOGIN_METHOD_SCOPE] = 'Legacy <em>MLA Commons</em>';
 		}
-		/* $methods = array (
-			'dev.mla.org' => 'Legacy <em>MLA Commons</em>',
-			'commons.mla.org' => 'Google',
-			'twitter-gateway.hcommons-dev.org' => 'Twitter',
-			'hcommons-test.mla.org' => 'HC ID',
-		); */
 		$user_login_methods = (array) maybe_unserialize( get_usermeta( $user_id, 'shib_uid', true ) );
 		$login_methods = array();
 		foreach( $user_login_methods as $user_login_method ) {
 			$user_method = explode( '@', $user_login_method );
 			if ( ! empty( $user_method[1] ) ) {
 				$login_methods[] = $methods[$user_method[1]];
+			} else {
+				$login_methods[] = 'University';
 			}
 		}
 		//hcommons_write_error_log( 'info', '**********************GET_USER_LOGIN_METHODS********************-' . $user_id . '-' . var_export( $user_login_methods, true ) );
