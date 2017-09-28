@@ -2329,7 +2329,7 @@ class Humanities_Commons {
 	 *
 	 * @return string|bool $orcid
 	 */
-	public static function hcommons_get_user_orcid() {
+	public static function get_session_orcid() {
 
 		if ( function_exists( 'shibboleth_session_active' ) && shibboleth_session_active() ) {
 			$orcid = $_SERVER['HTTP_EDUPERSONORCID'];
@@ -2422,4 +2422,7 @@ function hcommons_check_non_member_active_session() {
 }
 function hcommons_get_session_eppn() {
 	return Humanities_Commons::get_session_eppn();
+}
+function hcommons_get_session_orcid() {
+	return Humanities_Commons::get_session_orcid();
 }
