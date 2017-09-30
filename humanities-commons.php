@@ -43,6 +43,7 @@ function hcommons_write_error_log( $error_type, $error_message, $info = null ) {
 	}
 }
 
+require_once ( dirname( __FILE__ ) . '/society-settings.php' );
 require_once ( dirname( __FILE__ ) . '/wpmn-taxonomy-functions.php' );
 require_once ( dirname( __FILE__ ) . '/admin-toolbar.php' );
 require_once ( dirname( __FILE__ ) . '/class.comanage-api.php' );
@@ -83,8 +84,6 @@ class Humanities_Commons {
 
 		add_filter( 'bp_get_taxonomy_term_site_id', array( $this, 'hcommons_filter_bp_taxonomy_storage_site' ), 10, 2 );
 		add_filter( 'wpmn_get_taxonomy_term_site_id', array( $this, 'hcommons_filter_hc_taxonomy_storage_site' ), 10, 2 );
-		add_action( 'bp_register_member_types', array( $this, 'hcommons_register_member_types' ) );
-		add_action( 'bp_groups_register_group_types', array( $this, 'hcommons_register_group_types' ) );
 		add_action( 'bp_after_has_members_parse_args', array( $this, 'hcommons_set_members_query' ) );
 		add_filter( 'bp_before_has_groups_parse_args', array( $this, 'hcommons_set_groups_query_args' ) );
 		add_filter( 'groups_get_groups', array( $this, 'hcommons_groups_get_groups' ), 10, 2 );
@@ -409,132 +408,6 @@ class Humanities_Commons {
 			return $site_id;
 		}
 
-	}
-
-	public function hcommons_register_member_types() {
-
-		bp_register_member_type(
-			'up',
-			array(
-				'labels' => array(
-					'name' => 'UP',
-					'singular_name' => 'UP',
-				),
-				'has_directory' => 'up'
-			) );
-
-		bp_register_member_type(
-			'ajs',
-			array(
-				'labels' => array(
-					'name' => 'AJS',
-					'singular_name' => 'AJS',
-				),
-				'has_directory' => 'ajs'
-			) );
-
-		bp_register_member_type(
-			'aseees',
-			array(
-				'labels' => array(
-					'name' => 'ASEEES',
-					'singular_name' => 'ASEEES',
-				),
-				'has_directory' => 'aseees'
-			) );
-
-		bp_register_member_type(
-			'caa',
-			array(
-				'labels' => array(
-					'name' => 'CAA',
-					'singular_name' => 'CAA',
-				),
-				'has_directory' => 'caa'
-			) );
-
-		bp_register_member_type(
-			'hc',
-			array(
-				'labels' => array(
-					'name' => 'HC',
-					'singular_name' => 'HC',
-				),
-				'has_directory' => 'hc'
-			) );
-
-		bp_register_member_type(
-			'mla',
-			array(
-				'labels' => array(
-					'name' => 'MLA',
-					'singular_name' => 'MLA',
-				),
-				'has_directory' => 'mla'
-			) );
-	}
-
-	public function hcommons_register_group_types() {
-
-		bp_groups_register_group_type(
-			'up',
-			array(
-				'labels' => array(
-					'name' => 'UP',
-					'singular_name' => 'UP',
-				),
-				'has_directory' => 'up'
-			) );
-
-		bp_groups_register_group_type(
-			'ajs',
-			array(
-				'labels' => array(
-					'name' => 'AJS',
-					'singular_name' => 'AJS',
-				),
-				'has_directory' => 'ajs'
-			) );
-
-		bp_groups_register_group_type(
-			'aseees',
-			array(
-				'labels' => array(
-					'name' => 'ASEEES',
-					'singular_name' => 'ASEEES',
-				),
-				'has_directory' => 'aseees'
-			) );
-
-		bp_groups_register_group_type(
-			'caa',
-			array(
-				'labels' => array(
-					'name' => 'CAA',
-					'singular_name' => 'CAA',
-				),
-				'has_directory' => 'caa'
-			) );
-
-		bp_groups_register_group_type(
-			'hc',
-			array(
-				'labels' => array(
-					'name' => 'HC',
-					'singular_name' => 'HC',
-				),
-				'has_directory' => 'hc'
-			) );
-
-		bp_groups_register_group_type(
-			'mla',
-			array(
-				'labels' => array(
-					'name' => 'MLA',
-					'singular_name' => 'MLA',
-				),
-				'has_directory' => 'mla'
-			) );
 	}
 
 	public function hcommons_set_members_query( $args ) {
@@ -2414,8 +2287,6 @@ class Humanities_Commons {
 }
 
 $humanities_commons = new Humanities_Commons;
-$comanage_api = new comanageApi;
-$mla_hcommons = new Mla_Hcommons;
 
 function hcommons_check_non_member_active_session() {
 	return Humanities_Commons::hcommons_non_member_active_session();

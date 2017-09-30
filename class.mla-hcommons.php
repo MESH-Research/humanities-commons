@@ -181,3 +181,5 @@ class Mla_Hcommons {
 	}
 
 }
+
+$mla_hcommons = new Mla_Hcommons;
