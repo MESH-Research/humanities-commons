@@ -131,6 +131,8 @@ class Humanities_Commons {
 		add_filter( 'shibboleth_session_active', array( $this, 'hcommons_shibboleth_session_active' ) );
 		//add_action( 'login_init', array( $this, 'hcommons_login_init' ) );
 		add_action( 'init', array( $this, 'hcommons_shibboleth_autologout' ) );
+		add_filter( 'site_option_shibboleth_login_url', [ $this, 'hcommons_filter_site_option_shibboleth_urls' ] );
+		add_filter( 'site_option_shibboleth_logout_url', [ $this, 'hcommons_filter_site_option_shibboleth_urls' ] );
 
 		add_filter( 'bp_get_signup_page', array( $this, 'hcommons_register_url' ) );
 		add_action( 'pre_user_query', array( &$this, 'hcommons_filter_site_users_only' ) ); // do_action_ref_array() is used for pre_user_query
@@ -561,7 +563,7 @@ class Humanities_Commons {
 			return $args;
 		}
 
-		if ( 'hc' === self::$society_id && empty( $args['scope'] ) ) {
+		if ( 'hc' === self::$society_id && empty( $args['scope'] ) && ! self::backtrace_contains( 'class', 'EP_BP_API' ) ) {
 			$args['group_type'] = '';
 		} else {
 			$args['group_type'] = self::$society_id;
@@ -606,20 +608,10 @@ class Humanities_Commons {
 	 */
 	public function hcommons_groups_get_groups( $data, $r ) {
 
-		$context = debug_backtrace(); //TODO get proper filters in BuddyPress_Event_Organiser_EO, bpmfp_get_other_groups_for_user and get rid of backtrace.
-		//hcommons_write_error_log( 'info', '****FILTER_GROUPS_GET_GROUPS_QUERY****-'.var_export( $context, true ) );
-
 		if (
-			isset( $context[3] ) &&
-			(
-				( isset( $context[3]['class'] ) && 'BuddyPress_Event_Organiser_EO' == $context[3]['class'] ) ||
-				( isset( $context[3]['function'] ) && 'bpmfp_get_other_groups_for_user' == $context[3]['function'] )
-			)
+			self::backtrace_contains( 'class', 'BuddyPress_Event_Organiser_EO' ) ||
+			self::backtrace_contains( 'function', 'bpmfp_get_other_groups_for_user' )
 		) {
-
-			//hcommons_write_error_log( 'info', '****FILTER_GROUPS_GET_GROUPS_TRACE****-'.var_export( $context[3], true ) );
-			//hcommons_write_error_log( 'info', '****PRE_GROUPS_GET_GROUPS1****-' . var_export( $r, true ) );
-			//hcommons_write_error_log( 'info', '****PRE_GROUPS_GET_GROUPS0****-' . var_export( $data, true ) );
 
 			$new_groups = BP_Groups_Group::get( array(
 				'type'               => $r['type'],
@@ -700,8 +692,12 @@ class Humanities_Commons {
 			$result = bp_set_member_type( $user_id, $member_type, $append );
 			hcommons_write_error_log( 'info', '****SET_EACH_MEMBER_TYPE****-' . $user_id . '-' . $member_type . '-' . var_export( $result, true ) );
 		}
-		if ( 'caa' == self::$society_id ) {
-			foreach( $memberships['groups']['caa'] as $group_name ) {
+
+		//If site is a society we are mapping groups for and the user is member of the society, map any groups from comanage to wp.
+		//TODO add logic to remove groups the user is no longer a member of
+		if ( in_array( self::$society_id, array( 'ajs', 'aseees', 'caa' ) ) &&
+			in_array( self::$society_id, $memberships['societies'] ) ) {
+			foreach( $memberships['groups'][self::$society_id] as $group_name ) {
 				$group_id = $this->hcommons_lookup_society_group_id( self::$society_id, $group_name );
 				if ( ! groups_is_user_member( $user_id, $group_id ) ) {
 					$success = groups_join_group( $group_id, $user_id );
@@ -1013,7 +1009,13 @@ class Humanities_Commons {
 		$blog_ids = array();
 		$current_blog_id = get_current_blog_id();
 
-		if ( 'hc' !== self::$society_id && empty( $args['user_id'] ) && ! bp_is_current_action('my-sites') ) {
+
+		if (
+			'hc' !== self::$society_id &&
+			empty( $args['user_id'] ) &&
+			! bp_is_current_action('my-sites') &&
+			! bp_is_current_component('profile')
+		) {
 
 			$current_network = get_current_site();
 			$network_sites = wp_get_sites( array( 'network_id' => $current_network->id, 'limit' => 9999 ) );
@@ -1633,6 +1635,14 @@ class Humanities_Commons {
 	}
 
 	/**
+	 * filter shibboleth_login_url & shibboleth_logout_url to always use https
+	 */
+	function hcommons_filter_site_option_shibboleth_urls( $value ) {
+		$value = str_replace( 'http:', 'https:', $value );
+		return $value;
+	}
+
+	/**
 	 * Require shibboleth login rather than allowing vanilla wp-login.
 	 *
 	 * @since HCommons
@@ -1808,7 +1818,7 @@ class Humanities_Commons {
 	public function hcommons_reply_admin_links( $array, $id ) {
 
 		$cap = groups_filter_bbpress_caps('bp_moderate');
-		
+
 		if( $cap == true && bbp_get_current_user_id() !== bbp_get_reply_author_id( bbp_get_reply_id() ) ) {
 			unset( $array['edit'] );
 		}
@@ -2380,6 +2390,26 @@ class Humanities_Commons {
                 return $managed_group_names[$group_name];
 
         }
+
+	/**
+	 * helper function to facilitate conditions where caller can be identified by function/class name
+	 *
+	 * @param string $key a key in the backtrace to check, e.g. 'function' or 'class'
+	 * @param string $value the value of $key to look for, i.e. the function/class name
+	 * @return bool does debug_backtrace() contain the specified key/value pair?
+	 */
+	public static function backtrace_contains( $key, $value ) {
+		$retval = false;
+
+		foreach ( debug_backtrace() as $bt ) {
+			if ( isset( $bt[ $key ] ) && $value === $bt[ $key ] ) {
+				$retval = true;
+				break;
+			}
+		}
+
+		return $retval;
+	}
 }
 
 $humanities_commons = new Humanities_Commons;
