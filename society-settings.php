@@ -15,7 +15,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
         function hcommons_register_member_types() {
 
-hcommons_write_error_log( 'info', '****REGISTER_MEMBER_TYPES****-' . $_SERVER['HTTP_HOST'] . '-' . var_export( $user->user_login, true ) );
                 bp_register_member_type(
                         'ajs',
                         array(
