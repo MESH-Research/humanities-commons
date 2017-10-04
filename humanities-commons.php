@@ -637,8 +637,20 @@ class Humanities_Commons {
 		$result = update_user_meta( $user_id, 'shib_login_host', $login_host );
 
 		$shib_orcid = $_SERVER['HTTP_EDUPERSONORCID'];
-		if ( ! empty( $_SERVER['HTTP_EDUPERSONORCID'] ) ) {
-			$result = update_user_meta( $user_id, 'shib_orcid', $shib_orcid );
+		if ( ! empty( $shib_orcid ) ) {
+			if ( false === strpos( $shib_orcid, ';' ) ) {
+				$shib_orcid_updated = str_replace( array( 'https://orcid.org/', 'http://orcid.org/' ), '', $shib_orcid );
+				$result = update_user_meta( $user_id, 'shib_orcid', $shib_orcid_updated );
+			} else {
+				$shib_orcid_updated = array();
+				$shib_orcids = explode( ';', $shib_orcid );
+				foreach( $shib_orcids as $each_orcid ) {
+					if ( ! empty( $each_orcid ) ) {
+						$shib_orcid_updated[] = str_replace( array( 'https://orcid.org/', 'http://orcid.org/' ), '', $each_orcid );
+					}
+				}
+				$result = update_user_meta( $user_id, 'shib_orcid', $shib_orcid_updated[0] );
+			}
 		}
 
 		$shib_org = $_SERVER['HTTP_O'];
@@ -720,12 +732,12 @@ class Humanities_Commons {
 		hcommons_write_error_log( 'info', '****SYNC_BP_PROFILE****-'.var_export( $user->ID, true ) );
 
 		$current_name = xprofile_get_field_data( 'Name', $user->ID );
-                if ( empty( $current_name ) ) {
+		if ( empty( $current_name ) ) {
 			$name = $_SERVER['HTTP_DISPLAYNAME']; // user record maybe not fully populated for first time users.
-                        if ( ! empty( $name ) ) {
-                                xprofile_set_field_data( 'Name', $user->ID, $name );
-                        }
-                }
+			if ( ! empty( $name ) ) {
+				xprofile_set_field_data( 'Name', $user->ID, $name );
+			}
+		}
 
 		$current_title = xprofile_get_field_data( 'Title', $user->ID );
 		if ( empty( $current_title ) ) {
@@ -1632,14 +1644,14 @@ class Humanities_Commons {
 	 */
 	public function hcommons_password_protect_message( $title ) {
 
-		if ( 'caa' === self::$society_id ) {
+		if ( 'up' === self::$society_id ) {
 			echo '<style type="text/css">body.login { background-color: #ffffff !important; } ' .
 				' body.login h1 a { color: #000000 !important; ' .
 				'   font-family: lexia,serif; font-weight: 300; text-transform: unset !important; line-height: 1.2;} ' .
 				' #entry-content p { line-height: 1.5; margin-top: 12px !important; } ' .
 				' #login form p.submit input { background-color: #0085ba !important; } ' .
 				' .login form { margin-top: 0px; !important; }</style>';
-			echo '<div class="entry-content entry-summary"><p>Welcome to the future home of CAA Commons. Please forgive our appearance while we get ready for our big debut in early 2017.</p></div>';
+			echo '<div class="entry-content entry-summary"><p>Welcome to the future home of UP Commons. Please forgive our appearance while we get ready for our big debut.</p></div>';
 		}
 	}
 
@@ -2205,8 +2217,25 @@ class Humanities_Commons {
 	public static function get_session_orcid() {
 
 		if ( function_exists( 'shibboleth_session_active' ) && shibboleth_session_active() ) {
-			$orcid = $_SERVER['HTTP_EDUPERSONORCID'];
-			return $orcid;
+			$shib_orcid = $_SERVER['HTTP_EDUPERSONORCID'];
+			if ( ! empty( $shib_orcid ) ) {
+				if ( false === strpos( $shib_orcid, ';' ) ) {
+					$shib_orcid_updated = str_replace( array( 'https://orcid.org/', 'http://orcid.org/' ), '', $shib_orcid );
+					return $shib_orcid_updated;
+				} else {
+					$shib_orcid_updated = array();
+					$shib_orcids = explode( ';', $shib_orcid );
+					foreach( $shib_orcids as $each_orcid ) {
+						if ( ! empty( $each_orcid ) ) {
+							$shib_orcid_updated[] = str_replace(
+									array( 'https://orcid.org/', 'http://orcid.org/' ),
+									'', $each_orcid );
+						}
+					}
+					return $shib_orcid_updated[0];
+				}
+			}
+			return;
 		}
 		return false;
 	}
