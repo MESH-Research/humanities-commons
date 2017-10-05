@@ -43,6 +43,7 @@ function hcommons_write_error_log( $error_type, $error_message, $info = null ) {
 	}
 }
 
+require_once ( dirname( __FILE__ ) . '/society-settings.php' );
 require_once ( dirname( __FILE__ ) . '/wpmn-taxonomy-functions.php' );
 require_once ( dirname( __FILE__ ) . '/admin-toolbar.php' );
 require_once ( dirname( __FILE__ ) . '/class.comanage-api.php' );
@@ -83,8 +84,6 @@ class Humanities_Commons {
 
 		add_filter( 'bp_get_taxonomy_term_site_id', array( $this, 'hcommons_filter_bp_taxonomy_storage_site' ), 10, 2 );
 		add_filter( 'wpmn_get_taxonomy_term_site_id', array( $this, 'hcommons_filter_hc_taxonomy_storage_site' ), 10, 2 );
-		add_action( 'bp_register_member_types', array( $this, 'hcommons_register_member_types' ) );
-		add_action( 'bp_groups_register_group_types', array( $this, 'hcommons_register_group_types' ) );
 		add_action( 'bp_after_has_members_parse_args', array( $this, 'hcommons_set_members_query' ) );
 		add_filter( 'bp_before_has_groups_parse_args', array( $this, 'hcommons_set_groups_query_args' ) );
 		add_filter( 'groups_get_groups', array( $this, 'hcommons_groups_get_groups' ), 10, 2 );
@@ -411,132 +410,6 @@ class Humanities_Commons {
 
 	}
 
-	public function hcommons_register_member_types() {
-
-		bp_register_member_type(
-			'up',
-			array(
-				'labels' => array(
-					'name' => 'UP',
-					'singular_name' => 'UP',
-				),
-				'has_directory' => 'up'
-			) );
-
-		bp_register_member_type(
-			'ajs',
-			array(
-				'labels' => array(
-					'name' => 'AJS',
-					'singular_name' => 'AJS',
-				),
-				'has_directory' => 'ajs'
-			) );
-
-		bp_register_member_type(
-			'aseees',
-			array(
-				'labels' => array(
-					'name' => 'ASEEES',
-					'singular_name' => 'ASEEES',
-				),
-				'has_directory' => 'aseees'
-			) );
-
-		bp_register_member_type(
-			'caa',
-			array(
-				'labels' => array(
-					'name' => 'CAA',
-					'singular_name' => 'CAA',
-				),
-				'has_directory' => 'caa'
-			) );
-
-		bp_register_member_type(
-			'hc',
-			array(
-				'labels' => array(
-					'name' => 'HC',
-					'singular_name' => 'HC',
-				),
-				'has_directory' => 'hc'
-			) );
-
-		bp_register_member_type(
-			'mla',
-			array(
-				'labels' => array(
-					'name' => 'MLA',
-					'singular_name' => 'MLA',
-				),
-				'has_directory' => 'mla'
-			) );
-	}
-
-	public function hcommons_register_group_types() {
-
-		bp_groups_register_group_type(
-			'up',
-			array(
-				'labels' => array(
-					'name' => 'UP',
-					'singular_name' => 'UP',
-				),
-				'has_directory' => 'up'
-			) );
-
-		bp_groups_register_group_type(
-			'ajs',
-			array(
-				'labels' => array(
-					'name' => 'AJS',
-					'singular_name' => 'AJS',
-				),
-				'has_directory' => 'ajs'
-			) );
-
-		bp_groups_register_group_type(
-			'aseees',
-			array(
-				'labels' => array(
-					'name' => 'ASEEES',
-					'singular_name' => 'ASEEES',
-				),
-				'has_directory' => 'aseees'
-			) );
-
-		bp_groups_register_group_type(
-			'caa',
-			array(
-				'labels' => array(
-					'name' => 'CAA',
-					'singular_name' => 'CAA',
-				),
-				'has_directory' => 'caa'
-			) );
-
-		bp_groups_register_group_type(
-			'hc',
-			array(
-				'labels' => array(
-					'name' => 'HC',
-					'singular_name' => 'HC',
-				),
-				'has_directory' => 'hc'
-			) );
-
-		bp_groups_register_group_type(
-			'mla',
-			array(
-				'labels' => array(
-					'name' => 'MLA',
-					'singular_name' => 'MLA',
-				),
-				'has_directory' => 'mla'
-			) );
-	}
-
 	public function hcommons_set_members_query( $args ) {
 
 		if ( ! bp_is_members_directory() || ( isset( $args['scope'] ) && 'society' === $args['scope'] ) ) {
@@ -764,8 +637,20 @@ class Humanities_Commons {
 		$result = update_user_meta( $user_id, 'shib_login_host', $login_host );
 
 		$shib_orcid = $_SERVER['HTTP_EDUPERSONORCID'];
-		if ( ! empty( $_SERVER['HTTP_EDUPERSONORCID'] ) ) {
-			$result = update_user_meta( $user_id, 'shib_orcid', $shib_orcid );
+		if ( ! empty( $shib_orcid ) ) {
+			if ( false === strpos( $shib_orcid, ';' ) ) {
+				$shib_orcid_updated = str_replace( array( 'https://orcid.org/', 'http://orcid.org/' ), '', $shib_orcid );
+				$result = update_user_meta( $user_id, 'shib_orcid', $shib_orcid_updated );
+			} else {
+				$shib_orcid_updated = array();
+				$shib_orcids = explode( ';', $shib_orcid );
+				foreach( $shib_orcids as $each_orcid ) {
+					if ( ! empty( $each_orcid ) ) {
+						$shib_orcid_updated[] = str_replace( array( 'https://orcid.org/', 'http://orcid.org/' ), '', $each_orcid );
+					}
+				}
+				$result = update_user_meta( $user_id, 'shib_orcid', $shib_orcid_updated[0] );
+			}
 		}
 
 		$shib_org = $_SERVER['HTTP_O'];
@@ -847,12 +732,12 @@ class Humanities_Commons {
 		hcommons_write_error_log( 'info', '****SYNC_BP_PROFILE****-'.var_export( $user->ID, true ) );
 
 		$current_name = xprofile_get_field_data( 'Name', $user->ID );
-                if ( empty( $current_name ) ) {
+		if ( empty( $current_name ) ) {
 			$name = $_SERVER['HTTP_DISPLAYNAME']; // user record maybe not fully populated for first time users.
-                        if ( ! empty( $name ) ) {
-                                xprofile_set_field_data( 'Name', $user->ID, $name );
-                        }
-                }
+			if ( ! empty( $name ) ) {
+				xprofile_set_field_data( 'Name', $user->ID, $name );
+			}
+		}
 
 		$current_title = xprofile_get_field_data( 'Title', $user->ID );
 		if ( empty( $current_title ) ) {
@@ -1759,14 +1644,14 @@ class Humanities_Commons {
 	 */
 	public function hcommons_password_protect_message( $title ) {
 
-		if ( 'caa' === self::$society_id ) {
+		if ( 'up' === self::$society_id ) {
 			echo '<style type="text/css">body.login { background-color: #ffffff !important; } ' .
 				' body.login h1 a { color: #000000 !important; ' .
 				'   font-family: lexia,serif; font-weight: 300; text-transform: unset !important; line-height: 1.2;} ' .
 				' #entry-content p { line-height: 1.5; margin-top: 12px !important; } ' .
 				' #login form p.submit input { background-color: #0085ba !important; } ' .
 				' .login form { margin-top: 0px; !important; }</style>';
-			echo '<div class="entry-content entry-summary"><p>Welcome to the future home of CAA Commons. Please forgive our appearance while we get ready for our big debut in early 2017.</p></div>';
+			echo '<div class="entry-content entry-summary"><p>Welcome to the future home of UP Commons. Please forgive our appearance while we get ready for our big debut.</p></div>';
 		}
 	}
 
@@ -2231,18 +2116,14 @@ class Humanities_Commons {
 		if ( defined( 'MLA_LOGIN_METHOD_SCOPE' ) ) {
 			$methods[MLA_LOGIN_METHOD_SCOPE] = 'Legacy <em>MLA Commons</em>';
 		}
-		/* $methods = array (
-			'dev.mla.org' => 'Legacy <em>MLA Commons</em>',
-			'commons.mla.org' => 'Google',
-			'twitter-gateway.hcommons-dev.org' => 'Twitter',
-			'hcommons-test.mla.org' => 'HC ID',
-		); */
 		$user_login_methods = (array) maybe_unserialize( get_usermeta( $user_id, 'shib_uid', true ) );
 		$login_methods = array();
 		foreach( $user_login_methods as $user_login_method ) {
 			$user_method = explode( '@', $user_login_method );
 			if ( ! empty( $user_method[1] ) ) {
 				$login_methods[] = $methods[$user_method[1]];
+			} else {
+				$login_methods[] = 'University';
 			}
 		}
 		//hcommons_write_error_log( 'info', '**********************GET_USER_LOGIN_METHODS********************-' . $user_id . '-' . var_export( $user_login_methods, true ) );
@@ -2281,7 +2162,12 @@ class Humanities_Commons {
 			$identity_provider = '';
 			$identity_provider = $_SERVER['HTTP_SHIB_IDENTITY_PROVIDER'];
 
-			return $providers[$identity_provider];
+			if ( empty( $providers[$identity_provider] ) ) {
+				return 'University';
+			} else {
+				return $providers[$identity_provider];
+			}
+
 		}
 		return false;
 	}
@@ -2328,11 +2214,44 @@ class Humanities_Commons {
 	 *
 	 * @return string|bool $orcid
 	 */
-	public static function hcommons_get_user_orcid() {
+	public static function get_session_orcid() {
 
 		if ( function_exists( 'shibboleth_session_active' ) && shibboleth_session_active() ) {
-			$orcid = $_SERVER['HTTP_EDUPERSONORCID'];
-			return $orcid;
+			$shib_orcid = $_SERVER['HTTP_EDUPERSONORCID'];
+			if ( ! empty( $shib_orcid ) ) {
+				if ( false === strpos( $shib_orcid, ';' ) ) {
+					$shib_orcid_updated = str_replace( array( 'https://orcid.org/', 'http://orcid.org/' ), '', $shib_orcid );
+					return $shib_orcid_updated;
+				} else {
+					$shib_orcid_updated = array();
+					$shib_orcids = explode( ';', $shib_orcid );
+					foreach( $shib_orcids as $each_orcid ) {
+						if ( ! empty( $each_orcid ) ) {
+							$shib_orcid_updated[] = str_replace(
+									array( 'https://orcid.org/', 'http://orcid.org/' ),
+									'', $each_orcid );
+						}
+					}
+					return $shib_orcid_updated[0];
+				}
+			}
+			return;
+		}
+		return false;
+	}
+
+	/**
+	 * Return EPPN from session
+	 *
+	 * @since HCommons
+	 *
+	 * @return string|bool $username
+	 */
+	public static function get_session_eppn() {
+
+		if ( function_exists( 'shibboleth_session_active' ) && shibboleth_session_active() ) {
+			$eppn = $_SERVER['HTTP_EPPN'];
+			return $eppn;
 		}
 		return false;
 	}
@@ -2397,9 +2316,13 @@ class Humanities_Commons {
 }
 
 $humanities_commons = new Humanities_Commons;
-$comanage_api = new comanageApi;
-$mla_hcommons = new Mla_Hcommons;
 
 function hcommons_check_non_member_active_session() {
 	return Humanities_Commons::hcommons_non_member_active_session();
+}
+function hcommons_get_session_eppn() {
+	return Humanities_Commons::get_session_eppn();
+}
+function hcommons_get_session_orcid() {
+	return Humanities_Commons::get_session_orcid();
 }

@@ -1,4 +1,12 @@
 <?php
+/**
+ * COmanage API
+ *
+ * A limited set of functions to access the COmanage REST API from Humanities Commons
+ *
+ * @package Humanities Commons
+ * @subpackage Configuration
+ */
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -202,10 +210,11 @@ class comanageApi {
 	public function get_cous( $society_id = '' ) {
 
 
-		$req = get_transient( 'comanage_cous' . $society_id );
+		$req = wp_cache_get( 'comanage_cous', 'hcommons_settings' );
 
 		if ( ! $req ) {
 
+			//Hard code COU values becasue REST API call gets a memory error on COmanage - PMO bug #329
 			$temp_cous = array();
 			$temp_cous['Cous'][] = [ 'Id' => '1', 'Name' => 'MLA',
 						'Description' => 'Modern Language Association' ];
@@ -219,10 +228,10 @@ class comanageApi {
 						'Description' => 'Humanities Commons' ];
 			$temp_cous['Cous'][] = [ 'Id' => '6', 'Name' => 'UP',
 						'Description' => 'Association of American University Presses' ];
-
 			$req['body'] = json_encode( $temp_cous );
-			//$req = wp_remote_get( $this->url . '/cous.' . $this->format, $this->api_args );
-			set_transient( 'comanage_cous' . $society_id, $req, 24 * HOUR_IN_SECONDS );
+
+			//$req = wp_remote_get( $this->url . '/cous.' . $this->format . '?coid=2', $this->api_args );
+			wp_cache_set( 'comanage_cous', $req, 'hcommons_settings', 24 * HOUR_IN_SECONDS );
 		}
 
 		//json_decode the data from the request
@@ -303,3 +312,5 @@ class comanageApi {
 	}
 
 }
+
+$comanage_api = new comanageApi;
