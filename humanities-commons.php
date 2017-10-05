@@ -167,6 +167,7 @@ class Humanities_Commons {
 		add_filter( 'eventorganiser_options', array( $this, 'hcommons_eventoragniser_options' ) );
 		add_filter( 'bp_docs_map_meta_caps', array( $this, 'hcommons_check_docs_new_member_caps' ), 10, 4 );
 		add_filter( 'wpmu_active_signup', array( $this, 'hcommons_check_sites_new_member_status' ) );
+		add_shortcode( 'hcommons_society_page', array( $this, 'hcommons_get_society_page_by_slug' ) );
 
 	}
 
@@ -2009,6 +2010,45 @@ class Humanities_Commons {
 		} else {
 			return $active_signup;
 		}
+	}
+
+	/**
+	 * Get page content from a page on given society network
+	 *
+	 * @return string
+	 */
+	public static function hcommons_get_society_page_by_slug( $atts ) {
+
+		$atts = shortcode_atts( array( 'society_id' => 'hc', 'slug' => '' ), $atts, 'hcommons_society_page' );
+		if ( empty( $atts['slug'] ) ) {
+			return;
+		}
+
+		$switched = false;
+		if ( defined( strtoupper( $atts['society_id'] ) . '_ROOT_BLOG_ID' ) ) {
+			$society_blog_id = (int) constant( strtoupper( $atts['society_id'] ) . '_ROOT_BLOG_ID' );
+			if ( $society_blog_id !== get_current_blog_id() ) {
+				switch_to_blog( $society_blog_id );
+				$switched = true;
+			}
+		} else {
+			return;
+		}
+
+		$society_page = get_page_by_path( $atts['slug'] );
+		if ( empty( $society_page ) ) {
+			if ( $switched ) {
+				restore_current_blog();
+			}
+			return;
+		}
+		$page_content = apply_filters( 'the_content', $society_page->post_content );
+
+		if ( $switched ) {
+			restore_current_blog();
+		}
+		return $page_content;
+
 	}
 
 	/**
