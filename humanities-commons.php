@@ -2073,8 +2073,7 @@ class Humanities_Commons {
 		$timeDiff = time() - strtotime( $current_user->user_registered );
 
 		if ( $timeDiff < ( 60 * 60 * 48 ) ) {
-			//return false;
-			return true; // disable spammer check for now
+			return false;
 		} else {
 			return true;
 		}
