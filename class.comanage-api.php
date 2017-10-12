@@ -177,7 +177,10 @@ class comanageApi {
 		//$req = wp_remote_get( $this->url . '/co_people.' . $this->format . '?coid=2&search.identifier=tester8', $this->api_args );
 		//$req = wp_remote_get( $this->url . '/co_people.' . $this->format . '?coid=2&search.identifier=tester', $this->api_args );
 		$req = wp_remote_get( $this->url . '/co_people.' . $this->format . '?coid=2&search.identifier=' . $username, $this->api_args );
-		
+		if ( is_wp_error( $req ) ) {
+			return false;
+		}
+
 		$data = json_decode( $req['body'] );
 
 		return $data;
@@ -195,6 +198,7 @@ class comanageApi {
 		
 		//GET /co_person_roles.<format>?copersonid=
 		$req = wp_remote_get( $this->url . '/co_person_roles.' . $this->format . '?copersonid=' . $co_person_id,  $this->api_args );
+
 		$data = json_decode( $req['body'] );
 		
 		return $data;
@@ -268,6 +272,9 @@ class comanageApi {
 		//lets get the ID in comanage for the current logged in user
 		$co_person = $this->get_co_person( $wordpress_username );
 		
+		if ( false === $co_person ) {
+			return false;
+		}
 		//multiple records - find first active
 		foreach( $co_person as $person_record ) {
 			if ( $person_record[0]->CoId == "2" && $person_record[0]->Status == 'Active' ) {
