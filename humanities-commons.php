@@ -201,18 +201,19 @@ class Humanities_Commons {
 		if( $action == 'save' ) {
 
 			//is the new value set?
-			if( isset( $_POST['manage_membership'] ) ) {
+			if( isset( $_POST['autopopulate'] ) ) {
 
 				//grabs group_id from get and sanitizes it
 				$group_id = filter_var( $_GET['gid'], FILTER_SANITIZE_NUMBER_INT );
 
-				$manage_membership = filter_var( $_POST['manage_membership'], FILTER_SANITIZE_STRIPPED );
-				$manage_membership_meta = groups_get_groupmeta( $group_id, 'manage_membership', true );
+				$autopopulate = filter_var( $_POST['autopopulate'], FILTER_SANITIZE_STRIPPED );
+				$autopopulate_meta = groups_get_groupmeta( $group_id, 'autopopulate', true );
 
 				//lets update the group meta for manage membership
-				if( $manage_membership !== $manage_membership_meta ) {
+				if( $autopopulate !== $autopopulate_meta ) {
 
-					groups_update_groupmeta( $group_id, 'manage_membership', $manage_membership );
+					groups_update_groupmeta( $group_id, 'autopopulate', $autopopulate );
+					wp_cache_delete( self::$society_id. '_managed_group_names', 'hcommons_settings' );
 
 				}
 
@@ -253,15 +254,15 @@ class Humanities_Commons {
 
 		//grabs group_id from get and sanitizes it
 		$group_id = filter_var( $_GET['gid'], FILTER_SANITIZE_NUMBER_INT );
-		$manage_membership_meta = groups_get_groupmeta( $group_id, 'manage_membership', true );
+		$autopopulate_meta = groups_get_groupmeta( $group_id, 'autopopulate', true );
 ?>
 
 		<label>
-			<input type="radio" name="manage_membership" value="yes" <?php echo ( $manage_membership_meta == 'yes' ) ? 'checked' : '' ; ?> />Yes
+			<input type="radio" name="autopopulate" value="Y" <?php echo ( $autopopulate_meta == 'Y' ) ? 'checked' : '' ; ?> />Yes
 		</label>
 		<br />
 		<label>
-			<input type="radio" name="manage_membership" value="no" <?php echo ( $manage_membership_meta == 'no' ) ? 'checked' : '' ; ?> />No
+			<input type="radio" name="autopopulate" value="N" <?php echo ( $autopopulate_meta == 'N' ) ? 'checked' : '' ; ?> />No
 		</label>
 
 <?php
@@ -568,7 +569,7 @@ class Humanities_Commons {
 
 		//If site is a society we are mapping groups for and the user is member of the society, map any groups from comanage to wp.
 		//TODO add logic to remove groups the user is no longer a member of
-		if ( in_array( self::$society_id, array( 'ajs', 'aseees', 'caa' ) ) &&
+		if ( in_array( self::$society_id, array( 'ajs', 'aseees', 'caa', 'mla', 'up' ) ) &&
 			in_array( self::$society_id, $memberships['societies'] ) ) {
 			foreach( $memberships['groups'][self::$society_id] as $group_name ) {
 				$group_id = $this->hcommons_lookup_society_group_id( self::$society_id, $group_name );
@@ -2307,7 +2308,7 @@ class Humanities_Commons {
          */
         public function hcommons_lookup_society_group_id( $society_id, $group_name ) {
 
-                $managed_group_names = get_transient( $society_id . '_managed_group_names' );
+                $managed_group_names = wp_cache_get( $society_id . '_managed_group_names', 'hcommons_settings' );
 
                 if ( false === $managed_group_names || empty( $managed_group_names ) ) {
 
@@ -2327,7 +2328,7 @@ class Humanities_Commons {
                                 }
 
                         }
-                        set_transient( $society_id . '_managed_group_names', $managed_group_names, 24 * HOUR_IN_SECONDS );
+                        wp_cache_set( $society_id . '_managed_group_names', $managed_group_names, 'hcommons_settings', 24 * HOUR_IN_SECONDS );
                 }
 		//hcommons_write_error_log( 'info', '****DUMP_LOOKUP_TRANSIENT***-' . var_export( $managed_group_names, true ) );
                 return $managed_group_names[$group_name];
