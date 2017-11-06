@@ -168,6 +168,7 @@ class Humanities_Commons {
 		add_filter( 'bp_docs_map_meta_caps', array( $this, 'hcommons_check_docs_new_member_caps' ), 10, 4 );
 		add_filter( 'wpmu_active_signup', array( $this, 'hcommons_check_sites_new_member_status' ) );
 		add_shortcode( 'hcommons_society_page', array( $this, 'hcommons_get_society_page_by_slug' ) );
+		add_shortcode( 'hcommons_env_variable', array( $this, 'hcommons_get_env_variable' ) );
 
 	}
 
@@ -2053,6 +2054,25 @@ class Humanities_Commons {
 	}
 
 	/**
+	 * Shortcode to get variable from the server environment
+	 *
+	 * @return string
+	 */
+	public static function hcommons_get_env_variable( $atts ) {
+
+		$atts = shortcode_atts( array( 'var' => '' ), $atts, 'hcommons_env_variable' );
+		if ( empty( $atts['var'] ) ) {
+			return;
+		}
+		//TODO whitelist the allowed values
+
+		$env_variable = $_SERVER[$atts['var']];
+
+		return $env_variable;
+
+	}
+
+	/**
 	 * Functions not tied to any filter or action.
 	 */
 
@@ -2224,7 +2244,7 @@ class Humanities_Commons {
 
 		if ( function_exists( 'shibboleth_session_active' ) && shibboleth_session_active() ) {
 			$user_memberships = self::hcommons_get_user_memberships();
-			if ( ! in_array( self::$society_id, $user_memberships['societies'] ) ) {
+			if ( ! empty( $user_memberships ) && ! in_array( self::$society_id, $user_memberships['societies'] ) ) {
 				return true;
 			}
 			return false;
@@ -2297,6 +2317,22 @@ class Humanities_Commons {
 		return false;
 	}
 
+	/**
+	 * Return Meta Display Name from session
+	 *
+	 * @since HCommons
+	 *
+	 * @return string|bool $username
+	 */
+	public static function get_session_meta_displayname() {
+
+		if ( function_exists( 'shibboleth_session_active' ) && shibboleth_session_active() ) {
+			$meta_displayname = $_SERVER['HTTP_META_DISPLAYNAME'];
+			return $meta_displayname;
+		}
+		return false;
+	}
+
         /**
          * Lookup society group id by name.
 	 *
@@ -2361,9 +2397,12 @@ $humanities_commons = new Humanities_Commons;
 function hcommons_check_non_member_active_session() {
 	return Humanities_Commons::hcommons_non_member_active_session();
 }
+function hcommons_get_session_orcid() {
+	return Humanities_Commons::get_session_orcid();
+}
 function hcommons_get_session_eppn() {
 	return Humanities_Commons::get_session_eppn();
 }
-function hcommons_get_session_orcid() {
-	return Humanities_Commons::get_session_orcid();
+function hcommons_get_session_meta_displayname() {
+	return Humanities_Commons::get_session_meta_displayname();
 }
