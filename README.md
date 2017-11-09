@@ -6,9 +6,8 @@ This is a WordPress plugin to implement BuddyPress functions, filters and action
 
 ## Required Dependencies
 
-These are absolultely required, but probably not all you will need.
-
-[Shibboleth](https://github.com/mlaa/shibboleth) HC maintains a fork of mitcho's shibboleth plugin.
+[Shibboleth](https://github.com/mlaa/shibboleth)
+[Commons In A Box](https://github.com/cuny-academic-commons/commons-in-a-box)
 
 ## Other Dependencies
 
