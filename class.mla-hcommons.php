@@ -104,30 +104,32 @@ class Mla_Hcommons {
 	}
 
 	/**
-	 * Lookup group id by name.
+	 * Lookup member data
 	 */
-	public function lookup_mla_member_id( $user, $full_check = false ) {
+	public function lookup_mla_member_data( $user_id, $full_check = false ) {
 
 		$request_body = '';
-                $member_types = (array)bp_get_member_type( $user->ID, false );
-		if ( ! in_array( 'mla', $member_types ) ) {
+                $member_types = (array)bp_get_member_type( $user_id, false );
+		if ( ! in_array( 'mla', $member_types ) && ! $full_check ) {
 			return false;
 		}
-                $mla_oid = get_user_meta( $user->ID, 'mla_oid', true );
+                $mla_oid = get_user_meta( $user_id, 'mla_oid', true );
                 if ( ! empty( $mla_oid ) && ! $full_check ) {
                         return array( 'mla_member_id' => $mla_oid );
                 }
-                $api_base_url = $this->api_url . 'members/' . $user->user_login; // add username
-                // Generate a "signed" request URL.
-                $api_request_url = generateRequest( 'GET', $api_base_url, $this->api_secret, $this->api_parameters );
-                // Initiate request.
-                $api_response = sendRequest( 'GET', $api_request_url, $request_body );
-                //echo var_export( $api_response, true ), "\n";
-                // Server response.
-                $json_response = json_decode( $api_response['body'], true );
-                $request_status = $json_response['meta']['code'];
-                if ( 'API-2100' === $request_status ) {
-                        $user_emails = (array)maybe_unserialize( get_user_meta( $user->ID, 'shib_email', true ) );
+		if ( ! empty( $mla_oid ) ) {
+			$api_base_url = $this->api_url . 'members/' . $mla_oid; // add username
+			// Generate a "signed" request URL.
+			$api_request_url = generateRequest( 'GET', $api_base_url, $this->api_secret, $this->api_parameters );
+			// Initiate request.
+			$api_response = sendRequest( 'GET', $api_request_url, $request_body );
+			//echo var_export( $api_response, true ), "\n";
+			// Server response.
+			$json_response = json_decode( $api_response['body'], true );
+			$request_status = $json_response['meta']['code'];
+		}
+                if ( empty( $mla_oid ) || 'API-2100' === $request_status ) {
+                        $user_emails = (array)maybe_unserialize( get_user_meta( $user_id, 'shib_email', true ) );
                         if ( empty( $user_emails ) ) {
                                 $user_emails = array();
                                 $user_emails[] = $user->user_email;
@@ -170,16 +172,25 @@ class Mla_Hcommons {
 		$mla_membership_status = $json_response['data'][0]['authentication']['membership_status'];
 		$mla_expiring_date = $json_response['data'][0]['membership']['expiring_date'];
 		$mla_joined_commons = $json_response['data'][0]['general']['joined_commons'];
-		//echo $mla_member_id, ',', $mla_username, ',', $mla_membership_status, ',', $mla_expiring_date, ',', $mla_joined_commons;
+		$member_term = wpmn_get_terms( array( 'taxonomy' => 'hcommons_society_member_id', 'name' => 'mla_' . $mla_member_id ) );
+		//echo var_export( $member_term, true );
+		$ref_user_id = '';
+		$mla_ref_user_id = '';
+		if ( ! empty( $member_term ) ) {
+			$ref_user_id = wpmn_get_objects_in_term( $member_term[0]->term_id, 'hcommons_society_member_id' );
+		}
+		if ( ! empty( $ref_user_id ) ) {
+			$mla_ref_user_id = $ref_user_id[0];
+		}
+		//echo $mla_member_id, ',', $mla_username, ',', $mla_membership_status, ',', $mla_expiring_date, ',', $mla_crossref_user_id, ',', $mla_joined_commons;
 		return array( 'mla_member_id' => $mla_member_id,
 				'mla_username' => $mla_username,
 				'mla_email' => $mla_email,
 				'mla_membership_status' => $mla_membership_status,
 				'mla_expiring_date' => $mla_expiring_date,
-				'mla_joined_commons' => $mla_joined_commons );
+				'mla_joined_commons' => $mla_joined_commons,
+				'mla_ref_user_id' => $mla_ref_user_id );
 
 	}
 
 }
-
-$mla_hcommons = new Mla_Hcommons;
