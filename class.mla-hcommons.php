@@ -168,9 +168,13 @@ class Mla_Hcommons {
 		}
 		$mla_member_id = $json_response['data'][0]['id'];
 		$mla_username = $json_response['data'][0]['authentication']['username'];
-		$mla_email = $json_response['data'][0]['general']['email'];
 		$mla_membership_status = $json_response['data'][0]['authentication']['membership_status'];
 		$mla_expiring_date = $json_response['data'][0]['membership']['expiring_date'];
+		$mla_title = $json_response['data'][0]['general']['title'];
+		$mla_first_name = $json_response['data'][0]['general']['first_name'];
+		$mla_last_name = $json_response['data'][0]['general']['last_name'];
+		$mla_suffix = $json_response['data'][0]['general']['suffix'];
+		$mla_email = $json_response['data'][0]['general']['email'];
 		$mla_joined_commons = $json_response['data'][0]['general']['joined_commons'];
 		$member_term = wpmn_get_terms( array( 'taxonomy' => 'hcommons_society_member_id', 'name' => 'mla_' . $mla_member_id ) );
 		//echo var_export( $member_term, true );
@@ -185,9 +189,13 @@ class Mla_Hcommons {
 		//echo $mla_member_id, ',', $mla_username, ',', $mla_membership_status, ',', $mla_expiring_date, ',', $mla_crossref_user_id, ',', $mla_joined_commons;
 		return array( 'mla_member_id' => $mla_member_id,
 				'mla_username' => $mla_username,
-				'mla_email' => $mla_email,
 				'mla_membership_status' => $mla_membership_status,
 				'mla_expiring_date' => $mla_expiring_date,
+				'mla_title' => $mla_title,
+				'mla_first_name' => $mla_first_name,
+				'mla_last_name' => $mla_last_name,
+				'mla_suffix' => $mla_suffix,
+				'mla_email' => $mla_email,
 				'mla_joined_commons' => $mla_joined_commons,
 				'mla_ref_user_id' => $mla_ref_user_id );
 
