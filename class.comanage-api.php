@@ -1,4 +1,12 @@
 <?php
+/**
+ * COmanage API
+ *
+ * A limited set of functions to access the COmanage REST API from Humanities Commons
+ *
+ * @package Humanities Commons
+ * @subpackage Configuration
+ */
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -169,7 +177,10 @@ class comanageApi {
 		//$req = wp_remote_get( $this->url . '/co_people.' . $this->format . '?coid=2&search.identifier=tester8', $this->api_args );
 		//$req = wp_remote_get( $this->url . '/co_people.' . $this->format . '?coid=2&search.identifier=tester', $this->api_args );
 		$req = wp_remote_get( $this->url . '/co_people.' . $this->format . '?coid=2&search.identifier=' . $username, $this->api_args );
-		
+		if ( is_wp_error( $req ) ) {
+			return false;
+		}
+
 		$data = json_decode( $req['body'] );
 
 		return $data;
@@ -187,6 +198,7 @@ class comanageApi {
 		
 		//GET /co_person_roles.<format>?copersonid=
 		$req = wp_remote_get( $this->url . '/co_person_roles.' . $this->format . '?copersonid=' . $co_person_id,  $this->api_args );
+
 		$data = json_decode( $req['body'] );
 		
 		return $data;
@@ -202,10 +214,11 @@ class comanageApi {
 	public function get_cous( $society_id = '' ) {
 
 
-		$req = get_transient( 'comanage_cous' . $society_id );
+		$req = wp_cache_get( 'comanage_cous', 'hcommons_settings' );
 
 		if ( ! $req ) {
 
+			//Hard code COU values becasue REST API call gets a memory error on COmanage - PMO bug #329
 			$temp_cous = array();
 			$temp_cous['Cous'][] = [ 'Id' => '1', 'Name' => 'MLA',
 						'Description' => 'Modern Language Association' ];
@@ -219,10 +232,10 @@ class comanageApi {
 						'Description' => 'Humanities Commons' ];
 			$temp_cous['Cous'][] = [ 'Id' => '6', 'Name' => 'UP',
 						'Description' => 'Association of American University Presses' ];
-
 			$req['body'] = json_encode( $temp_cous );
-			//$req = wp_remote_get( $this->url . '/cous.' . $this->format, $this->api_args );
-			set_transient( 'comanage_cous' . $society_id, $req, 24 * HOUR_IN_SECONDS );
+
+			//$req = wp_remote_get( $this->url . '/cous.' . $this->format . '?coid=2', $this->api_args );
+			wp_cache_set( 'comanage_cous', $req, 'hcommons_settings', 24 * HOUR_IN_SECONDS );
 		}
 
 		//json_decode the data from the request
@@ -259,6 +272,9 @@ class comanageApi {
 		//lets get the ID in comanage for the current logged in user
 		$co_person = $this->get_co_person( $wordpress_username );
 		
+		if ( false === $co_person ) {
+			return false;
+		}
 		//multiple records - find first active
 		foreach( $co_person as $person_record ) {
 			if ( $person_record[0]->CoId == "2" && $person_record[0]->Status == 'Active' ) {
@@ -303,3 +319,5 @@ class comanageApi {
 	}
 
 }
+
+$comanage_api = new comanageApi;
