@@ -1585,19 +1585,14 @@ class Humanities_Commons {
 	}
 
 	/**
-	 * Action to remove BPGES digest actions from all networks except HC
+	 * Action to remove BPGES digest actions since they run via crontab instead.
 	 *
 	 * @since HCommons
 	 *
 	 */
 	public function hcommons_remove_bpges_actions() {
-
-		// BPGES is not multi-network aware, Let's run BPGES digests from HC only.
-		if ( 'hc' !== self::$society_id ) {
-			remove_action( 'ass_digest_event', 'ass_daily_digest_fire' );
-			remove_action( 'ass_digest_event_weekly', 'ass_weekly_digest_fire' );
-		}
-
+		remove_action( 'ass_digest_event', 'ass_daily_digest_fire' );
+		remove_action( 'ass_digest_event_weekly', 'ass_weekly_digest_fire' );
 	}
 
 	/**
