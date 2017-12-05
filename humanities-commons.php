@@ -1284,6 +1284,14 @@ class Humanities_Commons {
 	 * @return array $network_blogs
 	 */
 	public function hcommons_filter_get_blogs_of_user( $blogs, $user_id, $all ) {
+		// Remove root blogs (of any network).
+		foreach ( $blogs as $i => $blog ) {
+			foreach ( get_networks() as $network ) {
+				if ( $blog->domain === $network->domain ) {
+					unset( $blogs[ $i ] );
+				}
+			}
+		}
 
 		if ( 'hc' !== self::$society_id && ! bp_is_current_action('my-sites') ) {
 
@@ -1300,12 +1308,10 @@ class Humanities_Commons {
 			}
 
 			//hcommons_write_error_log( 'info', '****GET_BLOGS_OF_USER****-'.var_export( $user_id, true ) );
-			return $network_blogs;
-
-		} else {
-			return $blogs;
+			$blogs = $network_blogs;
 		}
 
+		return $blogs;
 	}
 
 	/**
