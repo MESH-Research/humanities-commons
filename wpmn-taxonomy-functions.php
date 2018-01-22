@@ -19,10 +19,12 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since x.x.x
  */
-function wpmn_register_taxonomies() {
+if ( ! function_exists( 'wpmn_register_taxonomies' ) ) {
+	function wpmn_register_taxonomies() {
 
-	do_action( 'wpmn_register_taxonomies' );
+		do_action( 'wpmn_register_taxonomies' );
 
+	}
 }
 //add_action( 'wpmn_register_taxonomies', 'wpmn_register_taxonomies' );
 
@@ -35,20 +37,22 @@ function wpmn_register_taxonomies() {
  *
  * @return int
  */
-function wpmn_get_taxonomy_term_site_id( $taxonomy = '' ) {
+if ( ! function_exists( 'wpmn_get_taxonomy_term_site_id' ) ) {
+	function wpmn_get_taxonomy_term_site_id( $taxonomy = '' ) {
 
-	global $wpdb;
-	$site_id = $wpdb->blogid;
+		global $wpdb;
+		$site_id = $wpdb->blogid;
 
-	/**
-	 * Filters the ID of the site where we should store taxonomy terms.
-	 *
-	 * @since x.x.x
-	 *
-	 * @param int    $site_id
-	 * @param string $taxonomy
-	 */
-	return (int) apply_filters( 'wpmn_get_taxonomy_term_site_id', $site_id, $taxonomy );
+		/**
+		 * Filters the ID of the site where we should store taxonomy terms.
+		 *
+		 * @since x.x.x
+		 *
+		 * @param int    $site_id
+		 * @param string $taxonomy
+		 */
+		return (int) apply_filters( 'wpmn_get_taxonomy_term_site_id', $site_id, $taxonomy );
+	}
 }
 
 /**
@@ -64,23 +68,25 @@ function wpmn_get_taxonomy_term_site_id( $taxonomy = '' ) {
  * @param bool         $append    Optional. True to append terms to existing terms. Default: false.
  * @return array Array of term taxonomy IDs.
  */
-function wpmn_set_object_terms( $object_id, $terms, $taxonomy, $append = false ) {
-	$site_id = wpmn_get_taxonomy_term_site_id( $taxonomy );
+if ( ! function_exists( 'wpmn_set_object_terms' ) ) {
+	function wpmn_set_object_terms( $object_id, $terms, $taxonomy, $append = false ) {
+		$site_id = wpmn_get_taxonomy_term_site_id( $taxonomy );
 
-	$switched = false;
-	if ( $site_id !== get_current_blog_id() ) {
-		switch_to_blog( $site_id );
-		wpmn_register_taxonomies();
-		$switched = true;
+		$switched = false;
+		if ( get_current_blog_id() !== $site_id ) {
+			switch_to_blog( $site_id );
+			wpmn_register_taxonomies();
+			$switched = true;
+		}
+
+		$retval = wp_set_object_terms( $object_id, $terms, $taxonomy, $append );
+
+		if ( $switched ) {
+			restore_current_blog();
+		}
+
+		return $retval;
 	}
-
-	$retval = wp_set_object_terms( $object_id, $terms, $taxonomy, $append );
-
-	if ( $switched ) {
-		restore_current_blog();
-	}
-
-	return $retval;
 }
 
 /**
@@ -95,33 +101,35 @@ function wpmn_set_object_terms( $object_id, $terms, $taxonomy, $append = false )
  * @param array        $args       See {@see wp_get_object_terms()}.
  * @return array
  */
-function wpmn_get_object_terms( $object_ids, $taxonomies, $args = array() ) {
-	// Different taxonomies must be stored on different sites.
-	$taxonomy_site_map = array();
-	foreach ( (array) $taxonomies as $taxonomy ) {
-		$taxonomy_site_id = wpmn_get_taxonomy_term_site_id( $taxonomy );
-		$taxonomy_site_map[ $taxonomy_site_id ][] = $taxonomy;
-	}
-
-	$retval = array();
-	foreach ( $taxonomy_site_map as $taxonomy_site_id => $site_taxonomies ) {
-		$switched = false;
-		if ( $taxonomy_site_id !== get_current_blog_id() ) {
-			switch_to_blog( $taxonomy_site_id );
-			wpmn_register_taxonomies();
-			$switched = true;
+if ( ! function_exists( 'wpmn_get_object_terms' ) ) {
+	function wpmn_get_object_terms( $object_ids, $taxonomies, $args = array() ) {
+		// Different taxonomies must be stored on different sites.
+		$taxonomy_site_map = array();
+		foreach ( (array) $taxonomies as $taxonomy ) {
+			$taxonomy_site_id                         = wpmn_get_taxonomy_term_site_id( $taxonomy );
+			$taxonomy_site_map[ $taxonomy_site_id ][] = $taxonomy;
 		}
 
-		$site_terms = wp_get_object_terms( $object_ids, $site_taxonomies, $args );
-		$retval     = array_merge( $retval, $site_terms );
-		//TODO Handle taxonomy error.
+		$retval = array();
+		foreach ( $taxonomy_site_map as $taxonomy_site_id => $site_taxonomies ) {
+			$switched = false;
+			if ( get_current_blog_id() !== $site_id ) {
+				switch_to_blog( $taxonomy_site_id );
+				wpmn_register_taxonomies();
+				$switched = true;
+			}
 
-		if ( $switched ) {
-			restore_current_blog();
+			$site_terms = wp_get_object_terms( $object_ids, $site_taxonomies, $args );
+			$retval     = array_merge( $retval, $site_terms );
+			//TODO Handle taxonomy error.
+
+			if ( $switched ) {
+				restore_current_blog();
+			}
 		}
-	}
 
-	return $retval;
+		return $retval;
+	}
 }
 
 /**
@@ -136,23 +144,25 @@ function wpmn_get_object_terms( $object_ids, $taxonomies, $args = array() ) {
  * @param string       $taxonomy  Taxonomy name.
  * @return bool|WP_Error True on success, false or WP_Error on failure.
  */
-function wpmn_remove_object_terms( $object_id, $terms, $taxonomy ) {
-	$site_id = wpmn_get_taxonomy_term_site_id( $taxonomy );
+if ( ! function_exists( 'wpmn_remove_object_terms' ) ) {
+	function wpmn_remove_object_terms( $object_id, $terms, $taxonomy ) {
+		$site_id = wpmn_get_taxonomy_term_site_id( $taxonomy );
 
-	$switched = false;
-	if ( $site_id !== get_current_blog_id() ) {
-		switch_to_blog( $site_id );
-		wpmn_register_taxonomies();
-		$switched = true;
+		$switched = false;
+		if ( get_current_blog_id() !== $site_id ) {
+			switch_to_blog( $site_id );
+			wpmn_register_taxonomies();
+			$switched = true;
+		}
+
+		$retval = wp_remove_object_terms( $object_id, $terms, $taxonomy );
+
+		if ( $switched ) {
+			restore_current_blog();
+		}
+
+		return $retval;
 	}
-
-	$retval = wp_remove_object_terms( $object_id, $terms, $taxonomy );
-
-	if ( $switched ) {
-		restore_current_blog();
-	}
-
-	return $retval;
 }
 
 /**
@@ -166,45 +176,47 @@ function wpmn_remove_object_terms( $object_id, $terms, $taxonomy ) {
  * @param array        $deprecated       Args the old way.
  * @return array
  */
-function wpmn_get_terms( $args = array(), $deprecated = array() ) {
+if ( ! function_exists( 'wpmn_get_terms' ) ) {
+	function wpmn_get_terms( $args = array(), $deprecated = array() ) {
 
-	$key_intersect  = array_intersect_key( array( 'taxonomy' => null), (array) $args );
-	$is_legacy_args = $deprecated || empty( $key_intersect );
-	if ( $is_legacy_args ) {
-		$taxonomies = $args;
-		$wp_args = $deprecated;
-	} else {
-		$taxonomies = $args['taxonomy'];
-		$wp_args = $args;
-		unset( $wp_args['taxonomy'] );
-	}
-
-	// Different taxonomies must be stored on different sites.
-	$taxonomy_site_map = array();
-	foreach ( (array) $taxonomies as $taxonomy ) {
-		$taxonomy_site_id = wpmn_get_taxonomy_term_site_id( $taxonomy );
-		$taxonomy_site_map[ $taxonomy_site_id ][] = $taxonomy;
-	}
-
-	$retval = array();
-	foreach ( $taxonomy_site_map as $taxonomy_site_id => $site_taxonomies ) {
-		$switched = false;
-		if ( $taxonomy_site_id !== get_current_blog_id() ) {
-			switch_to_blog( $taxonomy_site_id );
-			wpmn_register_taxonomies();
-			$switched = true;
+		$key_intersect  = array_intersect_key( array( 'taxonomy' => null ), (array) $args );
+		$is_legacy_args = $deprecated || empty( $key_intersect );
+		if ( $is_legacy_args ) {
+			$taxonomies = $args;
+			$wp_args    = $deprecated;
+		} else {
+			$taxonomies = $args['taxonomy'];
+			$wp_args    = $args;
+			unset( $wp_args['taxonomy'] );
 		}
 
-		$wp_args['taxonomy'] = $site_taxonomies;
-		$site_terms = get_terms( $wp_args );
-		$retval     = array_merge( $retval, $site_terms );
-
-		if ( $switched ) {
-			restore_current_blog();
+		// Different taxonomies must be stored on different sites.
+		$taxonomy_site_map = array();
+		foreach ( (array) $taxonomies as $taxonomy ) {
+			$taxonomy_site_id                         = wpmn_get_taxonomy_term_site_id( $taxonomy );
+			$taxonomy_site_map[ $taxonomy_site_id ][] = $taxonomy;
 		}
-	}
 
-	return $retval;
+		$retval = array();
+		foreach ( $taxonomy_site_map as $taxonomy_site_id => $site_taxonomies ) {
+			$switched = false;
+			if ( get_current_blog_id() !== $taxonomy_site_id ) {
+				switch_to_blog( $taxonomy_site_id );
+				wpmn_register_taxonomies();
+				$switched = true;
+			}
+
+			$wp_args['taxonomy'] = $site_taxonomies;
+			$site_terms          = get_terms( $wp_args );
+			$retval              = array_merge( $retval, $site_terms );
+
+			if ( $switched ) {
+				restore_current_blog();
+			}
+		}
+
+		return $retval;
+	}
 }
 
 /**
@@ -220,26 +232,28 @@ function wpmn_get_terms( $args = array(), $deprecated = array() ) {
  * @param string      $filter    Optional. Default: raw.
  * @return array      Array of term taxonomy IDs.
  */
-function wpmn_get_term( $term, $taxonomy = '', $output = OBJECT, $filter = 'raw' ) {
+if ( ! function_exists( 'wpmn_get_term' ) ) {
+	function wpmn_get_term( $term, $taxonomy = '', $output = OBJECT, $filter = 'raw' ) {
 
-	$switched = false;
-	if ( ! empty( $taxonomy ) ) {
-		$site_id = wpmn_get_taxonomy_term_site_id( $taxonomy );
+		$switched = false;
+		if ( ! empty( $taxonomy ) ) {
+			$site_id = wpmn_get_taxonomy_term_site_id( $taxonomy );
 
-		if ( $site_id !== get_current_blog_id() ) {
-			switch_to_blog( $site_id );
-			wpmn_register_taxonomies();
-			$switched = true;
+			if ( get_current_blog_id() !== $site_id ) {
+				switch_to_blog( $site_id );
+				wpmn_register_taxonomies();
+				$switched = true;
+			}
 		}
+
+		$retval = get_term( $term, $taxonomy, $output, $filter );
+
+		if ( $switched ) {
+			restore_current_blog();
+		}
+
+		return $retval;
 	}
-
-	$retval = get_term( $term, $taxonomy, $output, $filter );
-
-	if ( $switched ) {
-		restore_current_blog();
-	}
-
-	return $retval;
 }
 
 /**
@@ -256,26 +270,28 @@ function wpmn_get_term( $term, $taxonomy = '', $output = OBJECT, $filter = 'raw'
  * @param string        $filter    Optional. Default: raw.
  * @return WP_Term|bool WP_Term instance on success.
  */
-function wpmn_get_term_by( $field, $value, $taxonomy = '', $output = OBJECT, $filter = 'raw' ) {
+if ( ! function_exists( 'wpmn_get_term_by' ) ) {
+	function wpmn_get_term_by( $field, $value, $taxonomy = '', $output = OBJECT, $filter = 'raw' ) {
 
-        $switched = false;
-        if ( ! empty( $taxonomy ) ) {
-                $site_id = wpmn_get_taxonomy_term_site_id( $taxonomy );
+		$switched = false;
+		if ( ! empty( $taxonomy ) ) {
+				$site_id = wpmn_get_taxonomy_term_site_id( $taxonomy );
 
-                if ( $site_id !== get_current_blog_id() ) {
-                        switch_to_blog( $site_id );
-                        wpmn_register_taxonomies();
-                        $switched = true;
-                }
-        }
+			if ( get_current_blog_id() !== $site_id ) {
+				switch_to_blog( $site_id );
+				wpmn_register_taxonomies();
+				$switched = true;
+			}
+		}
 
-        $retval = get_term_by( $field, $value, $taxonomy, $output, $filter );
+		$retval = get_term_by( $field, $value, $taxonomy, $output, $filter );
 
-        if ( $switched ) {
-                restore_current_blog();
-        }
+		if ( $switched ) {
+				restore_current_blog();
+		}
 
-        return $retval;
+		return $retval;
+	}
 }
 
 /**
@@ -290,33 +306,35 @@ function wpmn_get_term_by( $field, $value, $taxonomy = '', $output = OBJECT, $fi
  * @param array        $args       See {@see get_objects_in_term()}.
  * @return array
  */
-function wpmn_get_objects_in_term( $term_ids, $taxonomies, $args = array() ) {
-	// Different taxonomies may be stored on different sites.
-	$taxonomy_site_map = array();
-	foreach ( (array) $taxonomies as $taxonomy ) {
-		$taxonomy_site_id = wpmn_get_taxonomy_term_site_id( $taxonomy );
-		$taxonomy_site_map[ $taxonomy_site_id ][] = $taxonomy;
-	}
-
-	$retval = array();
-	foreach ( $taxonomy_site_map as $taxonomy_site_id => $site_taxonomies ) {
-		$switched = false;
-		if ( $taxonomy_site_id !== get_current_blog_id() ) {
-			switch_to_blog( $taxonomy_site_id );
-			wpmn_register_taxonomies();
-			$switched = true;
+if ( ! function_exists( 'wpmn_get_objects_in_term' ) ) {
+	function wpmn_get_objects_in_term( $term_ids, $taxonomies, $args = array() ) {
+		// Different taxonomies may be stored on different sites.
+		$taxonomy_site_map = array();
+		foreach ( (array) $taxonomies as $taxonomy ) {
+			$taxonomy_site_id                         = wpmn_get_taxonomy_term_site_id( $taxonomy );
+			$taxonomy_site_map[ $taxonomy_site_id ][] = $taxonomy;
 		}
 
-		$site_terms = get_objects_in_term( $term_ids, $site_taxonomies, $args );
-		$retval     = array_merge( $retval, $site_terms );
-		//TODO Handle taxonomy error.
+		$retval = array();
+		foreach ( $taxonomy_site_map as $taxonomy_site_id => $site_taxonomies ) {
+			$switched = false;
+			if ( get_current_blog_id() !== $taxonomy_site_id ) {
+				switch_to_blog( $taxonomy_site_id );
+				wpmn_register_taxonomies();
+				$switched = true;
+			}
 
-		if ( $switched ) {
-			restore_current_blog();
+			$site_terms = get_objects_in_term( $term_ids, $site_taxonomies, $args );
+			$retval     = array_merge( $retval, $site_terms );
+			//TODO Handle taxonomy error.
+
+			if ( $switched ) {
+				restore_current_blog();
+			}
 		}
-	}
 
-	return $retval;
+		return $retval;
+	}
 }
 
 /**
@@ -331,27 +349,29 @@ function wpmn_get_objects_in_term( $term_ids, $taxonomies, $args = array() ) {
  * @param int         $parent    Optional int. ID of parent term. Default: null.
  * @return mixed      Returns null, term ID or array of term ID and taxonomy.
  */
-function wpmn_term_exists( $term, $taxonomy = '', $parent = '' ) {
+if ( ! function_exists( 'wpmn_term_exists' ) ) {
+	function wpmn_term_exists( $term, $taxonomy = '', $parent = '' ) {
 
-	$switched = false;
-	if ( ! empty( $taxonomy ) ) {
-		$site_id = wpmn_get_taxonomy_term_site_id( $taxonomy );
+		$switched = false;
+		if ( ! empty( $taxonomy ) ) {
+			$site_id = wpmn_get_taxonomy_term_site_id( $taxonomy );
 
-		if ( $site_id !== get_current_blog_id() ) {
-			switch_to_blog( $site_id );
-			wpmn_register_taxonomies();
-			$switched = true;
+			if ( get_current_blog_id() !== $site_id ) {
+				switch_to_blog( $site_id );
+				wpmn_register_taxonomies();
+				$switched = true;
+			}
 		}
+
+		$retval = term_exists( $term, $taxonomy, $parent );
+
+		if ( $switched ) {
+			restore_current_blog();
+		}
+
+		return $retval;
+
 	}
-
-	$retval = term_exists( $term, $taxonomy, $parent );
-
-	if ( $switched ) {
-		restore_current_blog();
-	}
-
-	return $retval;
-
 }
 
 /**
@@ -366,23 +386,26 @@ function wpmn_term_exists( $term, $taxonomy = '', $parent = '' ) {
  * @param array        $args     Additional arguments.
  * @return array|WP_Error Array on success, WP_Error on failure.
  */
-function wpmn_insert_term( $term, $taxonomy, $args = array() ) {
-	$site_id = wpmn_get_taxonomy_term_site_id( $taxonomy );
+if ( ! function_exists( 'wpmn_insert_term' ) ) {
+	function wpmn_insert_term( $term, $taxonomy, $args = array() ) {
+		$site_id = wpmn_get_taxonomy_term_site_id( $taxonomy );
 
-	$switched = false;
-	if ( $site_id !== get_current_blog_id() ) {
-		switch_to_blog( $site_id );
-		wpmn_register_taxonomies();
-		$switched = true;
+		$switched = false;
+		if ( get_current_blog_id() !== $site_id ) {
+			switch_to_blog( $site_id );
+			wpmn_register_taxonomies();
+			$switched = true;
+		}
+
+		$args   = array();
+		$retval = wp_insert_term( $term, $taxonomy, $args );
+
+		if ( $switched ) {
+			restore_current_blog();
+		}
+
+		return $retval;
 	}
-
-	$retval = wp_insert_term( $term, $taxonomy, $args = array() );
-
-	if ( $switched ) {
-		restore_current_blog();
-	}
-
-	return $retval;
 }
 
 /**
@@ -397,24 +420,26 @@ function wpmn_insert_term( $term, $taxonomy, $args = array() ) {
  * @param bool         $append    Optional. True to append terms to existing terms. Default: false.
  * @return array Array of term taxonomy IDs.
  */
-function wpmn_clean_object_term_cache( $terms, $taxonomy ) {
-	$site_id = wpmn_get_taxonomy_term_site_id( $taxonomy );
+if ( ! function_exists( 'wpmn_clean_object_term_cache' ) ) {
+	function wpmn_clean_object_term_cache( $terms, $taxonomy ) {
+		$site_id = wpmn_get_taxonomy_term_site_id( $taxonomy );
 
-	$switched = false;
-	if ( $site_id !== get_current_blog_id() ) {
-		switch_to_blog( $site_id );
-		wpmn_register_taxonomies();
-		$switched = true;
+		$switched = false;
+		if ( get_current_blog_id() !== $site_id ) {
+			switch_to_blog( $site_id );
+			wpmn_register_taxonomies();
+			$switched = true;
+		}
+
+		$retval = clean_object_term_cache( $terms, $taxonomy );
+
+		if ( $switched ) {
+			restore_current_blog();
+		}
+
+		return $retval;
+
 	}
-
-	$retval = clean_object_term_cache( $terms, $taxonomy );
-
-	if ( $switched ) {
-		restore_current_blog();
-	}
-
-	return $retval;
-
 }
 
 /**
@@ -425,9 +450,12 @@ function wpmn_clean_object_term_cache( $terms, $taxonomy ) {
  *
  * @return string Primary network root blog site url
  */
-function wpmn_get_primary_network_root_domain() {
-	$main_network = wp_get_network( get_main_network_id() );
-	$scheme = ( is_ssl() ) ? 'https://' : 'http://';
-	return apply_filters( 'wpmn_get_primary_network_root_domain', rtrim( $scheme . $main_network->domain . $main_network->path, '/' ) );
+if ( ! function_exists( 'wpmn_get_primary_network_root_domain' ) ) {
+	function wpmn_get_primary_network_root_domain() {
+		$main_network = wp_get_network( get_main_network_id() );
+		$scheme       = ( is_ssl() ) ? 'https://' : 'http://';
+		return apply_filters( 'wpmn_get_primary_network_root_domain', rtrim( $scheme . $main_network->domain . $main_network->path, '/' ) );
+
+	}
 }
 
