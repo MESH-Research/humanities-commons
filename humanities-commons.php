@@ -1645,7 +1645,7 @@ class Humanities_Commons {
 
 		$user = wp_get_current_user();
 
-		if( $cap == true && bbp_get_current_user_id() !== bbp_get_topic_author_id( bbp_get_topic_id() ) ) {
+		if ( ! is_super_admin() && bbp_get_current_user_id() !== bbp_get_topic_author_id( bbp_get_topic_id() ) ) {
 			unset( $array['edit'] );
 		}
 		return $array;
@@ -1664,7 +1664,7 @@ class Humanities_Commons {
 
 		$cap = groups_filter_bbpress_caps('bp_moderate');
 
-		if( $cap == true && bbp_get_current_user_id() !== bbp_get_reply_author_id( bbp_get_reply_id() ) ) {
+		if ( ! is_super_admin() && bbp_get_current_user_id() !== bbp_get_reply_author_id( bbp_get_reply_id() ) ) {
 			unset( $array['edit'] );
 		}
 		return $array;
