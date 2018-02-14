@@ -83,6 +83,7 @@ class Humanities_Commons {
 		self::$main_site = get_site_by_path( self::$main_network->domain, self::$main_network->path );
 		self::$society_id = get_network_option( '', 'society_id' );
 
+        add_filter( 'bp_get_signup_page', array( $this, 'hcommons_register_url' ) );
 		add_filter( 'bp_get_taxonomy_term_site_id', array( $this, 'hcommons_filter_bp_taxonomy_storage_site' ), 10, 2 );
 		add_filter( 'wpmn_get_taxonomy_term_site_id', array( $this, 'hcommons_filter_hc_taxonomy_storage_site' ), 10, 2 );
 		add_action( 'bp_after_has_members_parse_args', array( $this, 'hcommons_set_members_query' ) );
@@ -225,6 +226,22 @@ class Humanities_Commons {
 				'core'
 			);
 
+		}
+	}
+
+	/**
+	 * Filter the register url to be society specific
+	 *
+	 * @since HCommons
+	 *
+	 * @param string $register_url
+	 * @return string $register_url Modified url.
+	 */
+	public function hcommons_register_url( $register_url ) {
+		if ( ! empty( self::$society_id ) && defined( strtoupper( self::$society_id ) . '_ENROLLMENT_URL' ) ) {
+			return constant( strtoupper( self::$society_id ) . '_ENROLLMENT_URL' );
+		} else {
+			return $register_url;
 		}
 	}
 
