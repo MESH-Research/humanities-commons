@@ -82,6 +82,7 @@ class Humanities_Commons {
 		self::$main_site = get_site_by_path( self::$main_network->domain, self::$main_network->path );
 		self::$society_id = get_network_option( '', 'society_id' );
 
+        add_filter( 'bp_get_signup_page', array( $this, 'hcommons_register_url' ) );
 		add_filter( 'bp_get_taxonomy_term_site_id', array( $this, 'hcommons_filter_bp_taxonomy_storage_site' ), 10, 2 );
 		add_filter( 'wpmn_get_taxonomy_term_site_id', array( $this, 'hcommons_filter_hc_taxonomy_storage_site' ), 10, 2 );
 		add_action( 'bp_after_has_members_parse_args', array( $this, 'hcommons_set_members_query' ) );
@@ -133,7 +134,6 @@ class Humanities_Commons {
 		add_filter( 'site_option_shibboleth_login_url', [ $this, 'hcommons_filter_site_option_shibboleth_urls' ] );
 		add_filter( 'site_option_shibboleth_logout_url', [ $this, 'hcommons_filter_site_option_shibboleth_urls' ] );
 
-		add_filter( 'bp_get_signup_page', array( $this, 'hcommons_register_url' ) );
 		add_action( 'pre_user_query', array( &$this, 'hcommons_filter_site_users_only' ) ); // do_action_ref_array() is used for pre_user_query
 		add_filter( 'invite_anyone_is_large_network', '__return_true' ); //hide invite anyone member list on create/edit group screen
 		add_action( 'bp_init',  array( $this, 'hcommons_remove_nav_items' ) );
@@ -225,6 +225,22 @@ class Humanities_Commons {
 				'core'
 			);
 
+		}
+	}
+
+	/**
+	 * Filter the register url to be society specific
+	 *
+	 * @since HCommons
+	 *
+	 * @param string $register_url
+	 * @return string $register_url Modified url.
+	 */
+	public function hcommons_register_url( $register_url ) {
+		if ( ! empty( self::$society_id ) && defined( strtoupper( self::$society_id ) . '_ENROLLMENT_URL' ) ) {
+			return constant( strtoupper( self::$society_id ) . '_ENROLLMENT_URL' );
+		} else {
+			return $register_url;
 		}
 	}
 
@@ -1551,24 +1567,6 @@ class Humanities_Commons {
 			self::$shib_session_id = $_SERVER['HTTP_SHIB_SESSION_ID'];
 		}
 		return $active;
-	}
-
-	/**
-	 * Filter the register url to be society specific
-	 *
-	 * @since HCommons
-	 *
-	 * @param string $register_url
-	 * @return string $register_url Modified url.
-	 */
-	public function hcommons_register_url( $register_url ) {
-
-		if ( ! empty( self::$society_id ) && defined( strtoupper( self::$society_id ) . '_ENROLLMENT_URL' ) ) {
-			return constant( strtoupper( self::$society_id ) . '_ENROLLMENT_URL' );
-		} else {
-			return $register_url;
-		}
-
 	}
 
 	/**
