@@ -47,7 +47,6 @@ require_once ( dirname( __FILE__ ) . '/society-settings.php' );
 require_once ( dirname( __FILE__ ) . '/wpmn-taxonomy-functions.php' );
 require_once ( dirname( __FILE__ ) . '/admin-toolbar.php' );
 require_once ( dirname( __FILE__ ) . '/class.comanage-api.php' );
-require_once ( dirname( __FILE__ ) . '/class.mla-hcommons.php' );
 require_once ( dirname( __FILE__ ) . '/class-logger.php' );
 
 class Humanities_Commons {
