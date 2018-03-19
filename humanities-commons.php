@@ -125,14 +125,14 @@ class Humanities_Commons {
 		add_filter( 'bp_get_group_join_button', array( $this, 'hcommons_check_bp_get_group_join_button' ), 10, 2 );
 
 		// these require shibboleth
-		add_action( 'wp_login_failed', array( $this, 'hcommons_login_failed' ) );
+		//add_action( 'wp_login_failed', array( $this, 'hcommons_login_failed' ) );
 		//add_filter( 'wp_safe_redirect_fallback', array( $this, 'hcommons_remove_admin_redirect' ) );
 		//add_filter( 'login_redirect', array( $this, 'hcommons_remove_admin_redirect' ) );
-		add_filter( 'shibboleth_session_active', array( $this, 'hcommons_shibboleth_session_active' ) );
+		//add_filter( 'shibboleth_session_active', array( $this, 'hcommons_shibboleth_session_active' ) );
 		//add_action( 'login_init', array( $this, 'hcommons_login_init' ) );
-		add_action( 'init', array( $this, 'hcommons_shibboleth_autologout' ) );
-		add_filter( 'site_option_shibboleth_login_url', [ $this, 'hcommons_filter_site_option_shibboleth_urls' ] );
-		add_filter( 'site_option_shibboleth_logout_url', [ $this, 'hcommons_filter_site_option_shibboleth_urls' ] );
+		//add_action( 'init', array( $this, 'hcommons_shibboleth_autologout' ) );
+		//add_filter( 'site_option_shibboleth_login_url', [ $this, 'hcommons_filter_site_option_shibboleth_urls' ] );
+		//add_filter( 'site_option_shibboleth_logout_url', [ $this, 'hcommons_filter_site_option_shibboleth_urls' ] );
 
 		add_action( 'pre_user_query', array( &$this, 'hcommons_filter_site_users_only' ) ); // do_action_ref_array() is used for pre_user_query
 		add_filter( 'invite_anyone_is_large_network', '__return_true' ); //hide invite anyone member list on create/edit group screen
