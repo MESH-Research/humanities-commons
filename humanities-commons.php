@@ -318,7 +318,7 @@ class Humanities_Commons {
 			//make sure user id is only numerical
 			$user_id = filter_var( $_GET['user_id'], FILTER_SANITIZE_NUMBER_INT );
 			$member_types = bp_get_member_type( $user_id, false );
-			$societies = ['MLA', 'ASEEES', 'AJS', 'UP', 'HC', 'CAA'];
+			$societies = bp_groups_get_group_types();
 
 			//triggers on submit button click
 			if( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
@@ -327,20 +327,21 @@ class Humanities_Commons {
 				bp_set_member_type( $user_id, '', false);
 
 				//now we add the updated member_type into the member_type array
-				foreach( $_POST['member_type'] as $society ) {
-					bp_set_member_type( $user_id, $society, true );
+				//we also sanitize the value of the checkbox just in case
+				foreach( $_POST['member_type'] as $s ) {
+					bp_set_member_type( $user_id, filter_var( $s, FILTER_SANITIZE_STRIPPED ), true );
 				}
 
 				//lets check if the current user exists in the list of global super admins and update checkboxes from
 				//POST data
 				if( in_array( wp_get_current_user()->user_nicename, $this->global_super_admins ) ) {
 
-					foreach( $societies as $society ) {
+					foreach( $societies as $key => $society ) {
 
-						if( in_array( strtolower( $society ), $member_types ) ) {
-							echo "<input type='checkbox' name='member_type[{$society}]' value='" . strtolower( $society ) . "' checked='checked' />" . $society . "<br />";
+						if( in_array( $society, $_POST['member_type'] ) ) {
+							echo "<input type='checkbox' name='member_type[{$society}]' value='{$society}' checked='checked' />" . strtoupper( $society ) . "<br />";
 						} else {
-							echo "<input type='checkbox' name='member_type[{$society}]' value='" . strtolower( $society ) . "' />" . $society . "<br />";
+							echo "<input type='checkbox' name='member_type[{$society}]' value='{$society}' />" . strtoupper( $society ) . "<br />";
 						}
 
 					}
@@ -351,6 +352,7 @@ class Humanities_Commons {
 
 					//we now output the read-only data to the user that is not part of the super_admins list
 					echo "<ul>";
+
 					foreach( $member_types as $type ) {
 						echo "<li>{$type}</li>";
 					}
@@ -368,10 +370,10 @@ class Humanities_Commons {
 
 					foreach( $societies as $society ) {
 
-						if( in_array( strtolower( $society ), $member_types ) ) {
-							echo "<input type='checkbox' name='member_type[{$society}]' value='" . strtolower( $society ) . "' checked='checked' />" . $society . "<br />";
+						if( in_array( $society, $member_types ) ) {
+							echo "<input type='checkbox' name='member_type[{$society}]' value='{$society}' checked='checked' />" . strtoupper( $society ) . "<br />";
 						} else {
-							echo "<input type='checkbox' name='member_type[{$society}]' value='" . strtolower( $society ) . "' />" . $society . "<br />";
+							echo "<input type='checkbox' name='member_type[{$society}]' value='{$society}' />" . strtoupper( $society ) . "<br />";
 						}
 
 					}
