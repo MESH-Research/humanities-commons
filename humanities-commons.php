@@ -71,6 +71,8 @@ class Humanities_Commons {
 	 */
 	public static $shib_session_id;
 
+	public $global_super_admins = array();
+
 	public function __construct() {
 
 		if ( defined( 'HC_SITE_ID' ) ) {
@@ -82,7 +84,11 @@ class Humanities_Commons {
 		self::$main_site = get_site_by_path( self::$main_network->domain, self::$main_network->path );
 		self::$society_id = get_network_option( '', 'society_id' );
 
-        add_filter( 'bp_get_signup_page', array( $this, 'hcommons_register_url' ) );
+		$global_super_admins = array();
+		$global_super_admin_list = constant( 'GLOBAL_SUPER_ADMINS' );
+		$this->global_super_admins = explode( ',', $global_super_admin_list );
+
+    add_filter( 'bp_get_signup_page', array( $this, 'hcommons_register_url' ) );
 		add_filter( 'bp_get_taxonomy_term_site_id', array( $this, 'hcommons_filter_bp_taxonomy_storage_site' ), 10, 2 );
 		add_filter( 'wpmn_get_taxonomy_term_site_id', array( $this, 'hcommons_filter_hc_taxonomy_storage_site' ), 10, 2 );
 		add_action( 'bp_after_has_members_parse_args', array( $this, 'hcommons_set_members_query' ) );
@@ -200,7 +206,6 @@ class Humanities_Commons {
 
 				}
 
-
 			}
 
 		}
@@ -276,7 +281,7 @@ class Humanities_Commons {
 	public function hcommons_remove_member_type_meta_boxes() {
 
 		if( is_admin() && $_GET['page'] == 'bp-profile-edit' ) {
-			remove_meta_box( 'bp_members_admin_member_type', 'users_page_bp-profile-edit-network', 'side' );
+			remove_meta_box( 'bp_members_admin_member_type', get_current_screen()->id, 'side' );
 		}
 
 	}
@@ -313,17 +318,81 @@ class Humanities_Commons {
 			//make sure user id is only numerical
 			$user_id = filter_var( $_GET['user_id'], FILTER_SANITIZE_NUMBER_INT );
 			$member_types = bp_get_member_type( $user_id, false );
+			$societies = ['MLA', 'ASEEES', 'AJS', 'UP', 'HC', 'CAA'];
 
-			echo "<ul>";
+			//triggers on submit button click
+			if( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 
-			//output member types user currently has
-			foreach( $member_types as $type ) {
+				//lets clean out the current member type to allow new data to come in
+				bp_set_member_type( $user_id, '', false);
 
-				echo "<li>" . strtoupper( $type ) . "</li>";
+				//now we add the updated member_type into the member_type array
+				foreach( $_POST['member_type'] as $society ) {
+					bp_set_member_type( $user_id, $society, true );
+				}
 
-			}
+				//lets check if the current user exists in the list of global super admins and update checkboxes from
+				//POST data
+				if( in_array( wp_get_current_user()->user_nicename, $this->global_super_admins ) ) {
 
-			echo "</ul>";
+					foreach( $societies as $society ) {
+
+						if( in_array( strtolower( $society ), $member_types ) ) {
+							echo "<input type='checkbox' name='member_type[{$society}]' value='" . strtolower( $society ) . "' checked='checked' />" . $society . "<br />";
+						} else {
+							echo "<input type='checkbox' name='member_type[{$society}]' value='" . strtolower( $society ) . "' />" . $society . "<br />";
+						}
+
+					}
+
+					echo "<br />";
+
+				} else {
+
+					//we now output the read-only data to the user that is not part of the super_admins list
+					echo "<ul>";
+					foreach( $member_types as $type ) {
+						echo "<li>{$type}</li>";
+					}
+
+					echo "</ul>";
+
+				}
+
+			} else {
+
+				echo "<br />";
+
+				//lets check if the current user exists in the list of global super admins
+				if( in_array( wp_get_current_user()->user_nicename, $this->global_super_admins ) ) {
+
+					foreach( $societies as $society ) {
+
+						if( in_array( strtolower( $society ), $member_types ) ) {
+							echo "<input type='checkbox' name='member_type[{$society}]' value='" . strtolower( $society ) . "' checked='checked' />" . $society . "<br />";
+						} else {
+							echo "<input type='checkbox' name='member_type[{$society}]' value='" . strtolower( $society ) . "' />" . $society . "<br />";
+						}
+
+					}
+
+					echo "<br />";
+
+				} else {
+
+					//we now output the read-only data to the user that is not part of the super_admins list
+					echo "<ul>";
+					foreach( $member_types as $type ) {
+						echo "<li>{$type}</li>";
+					}
+
+					echo "</ul>";
+
+				}
+
+			} //end $_POST REQUEST_METHOD check
+
+			echo "<button type='submit' class='button button-primary'>Submit</button>";
 
 		}
 
