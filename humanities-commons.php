@@ -1627,25 +1627,26 @@ class Humanities_Commons {
 	 * @return array $memberships
 	 */
 	public static function hcommons_get_user_memberships() {
-
 		$memberships = array();
-		$member_types = bp_get_member_types();
-		$membership_header = $_SERVER['HTTP_ISMEMBEROF'] . ';';
-		//hcommons_write_error_log( 'info', '**********************GET_MEMBERSHIPS********************-'.var_export( $membership_header, true ).'-'.var_export($member_types,true) );
 
-		foreach ( $member_types as $key=>$value ) {
+		if ( isset( $_SERVER['HTTP_ISMEMBEROF'] ) ) {
+			$membership_header = $_SERVER['HTTP_ISMEMBEROF'] . ';';
+			$member_types = bp_get_member_types();
 
-			$pattern = sprintf( '/Humanities Commons:%1$s:members_%1$s;/', strtoupper( $key ) );
-			if ( preg_match( $pattern, $membership_header, $matches ) ) {
-				$memberships['societies'][] = $key;
+			foreach ( $member_types as $key=>$value ) {
+
+				$pattern = sprintf( '/Humanities Commons:%1$s:members_%1$s;/', strtoupper( $key ) );
+				if ( preg_match( $pattern, $membership_header, $matches ) ) {
+					$memberships['societies'][] = $key;
+				}
+
+				$pattern = sprintf( '/Humanities Commons:%1$s_(.*?);/', strtoupper( $key ) );
+				if ( preg_match_all( $pattern, $membership_header, $matches ) ) {
+					//hcommons_write_error_log( 'info', '****GET_MATCHES****-'.$key.'-'.var_export( $matches, true ) );
+					$memberships['groups'][$key] = $matches[1];
+				}
+
 			}
-
-			$pattern = sprintf( '/Humanities Commons:%1$s_(.*?);/', strtoupper( $key ) );
-			if ( preg_match_all( $pattern, $membership_header, $matches ) ) {
-				//hcommons_write_error_log( 'info', '****GET_MATCHES****-'.$key.'-'.var_export( $matches, true ) );
-				$memberships['groups'][$key] = $matches[1];
-			}
-
 		}
 
 		return $memberships;
@@ -1740,14 +1741,9 @@ class Humanities_Commons {
 	 * @return bool $classes
 	 */
 	public static function hcommons_non_member_active_session() {
-
-		// TODO swap shib for simplesaml
-		if ( function_exists( 'shibboleth_session_active' ) && shibboleth_session_active() ) {
-			$user_memberships = self::hcommons_get_user_memberships();
-			if ( ! empty( $user_memberships ) && ! in_array( self::$society_id, $user_memberships['societies'] ) ) {
-				return true;
-			}
-			return false;
+		$user_memberships = self::hcommons_get_user_memberships();
+		if ( ! empty( $user_memberships ) && ! in_array( self::$society_id, $user_memberships['societies'] ) ) {
+			return true;
 		}
 		return false;
 	}
