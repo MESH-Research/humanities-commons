@@ -1627,7 +1627,12 @@ class Humanities_Commons {
 	 * @return array $memberships
 	 */
 	public static function hcommons_get_user_memberships() {
-		$memberships = array();
+		//$memberships = array();
+		// Legacy code expects these keys to be set.
+		$memberships = [
+			'societies' => [],
+			'groups' => [],
+		];
 
 		if ( isset( $_SERVER['HTTP_ISMEMBEROF'] ) ) {
 			$membership_header = $_SERVER['HTTP_ISMEMBEROF'] . ';';
@@ -1742,7 +1747,7 @@ class Humanities_Commons {
 	 */
 	public static function hcommons_non_member_active_session() {
 		$user_memberships = self::hcommons_get_user_memberships();
-		if ( ! empty( $user_memberships ) && ! in_array( self::$society_id, $user_memberships['societies'] ) ) {
+		if ( ! empty( $user_memberships['societies'] ) && ! in_array( self::$society_id, $user_memberships['societies'] ) ) {
 			return true;
 		}
 		return false;
