@@ -69,7 +69,6 @@ class Humanities_Commons {
 	/**
 	 * current shib session id
 	 */
-		// TODO swap shib for simplesaml
 	public static $shib_session_id;
 
 	public function __construct() {
@@ -825,16 +824,10 @@ class Humanities_Commons {
 	 * @return array $classes
 	 */
 	public function hcommons_society_body_class_name( $classes ) {
-
-		// TODO swap shib for simplesaml
-		if ( function_exists( 'shibboleth_session_active' ) ) {
-			if ( shibboleth_session_active() ) {
-				$classes[] = 'active-session';
-				$user_memberships = self::hcommons_get_user_memberships();
-				if ( ! in_array( self::$society_id, $user_memberships['societies'] ) ) {
-					$classes[] = 'non-member';
-				}
-			}
+		$classes[] = 'active-session';
+		$user_memberships = self::hcommons_get_user_memberships();
+		if ( ! in_array( self::$society_id, $user_memberships['societies'] ) ) {
+			$classes[] = 'non-member';
 		}
 		$classes[] = 'society-' . self::$society_id;
 		return $classes;
@@ -1603,7 +1596,6 @@ class Humanities_Commons {
 	 * @param   object $user  		user object to be passed
 	 * @return  array  $shib_email  array to be used
 	 */
-	// TODO swap shib for simplesaml
 	public static function hcommons_shib_email( $user ) {
 
 		$shib_email = maybe_unserialize( get_user_meta( $user->ID, 'shib_email', true ) );
@@ -1680,7 +1672,6 @@ class Humanities_Commons {
 		if ( defined( 'MLA_LOGIN_METHOD_SCOPE' ) ) {
 			$methods[MLA_LOGIN_METHOD_SCOPE] = 'Legacy <em>MLA Commons</em>';
 		}
-		// TODO swap shib for simplesaml
 		$user_login_methods = (array) maybe_unserialize( get_usermeta( $user_id, 'shib_uid', true ) );
 		$login_methods = array();
 		foreach( $user_login_methods as $user_login_method ) {
@@ -1705,9 +1696,7 @@ class Humanities_Commons {
 	 * @return string|bool $identity_provider
 	 */
 	public static function hcommons_get_identity_provider( $formatted = true ) {
-
-		// TODO swap shib for simplesaml
-		if ( function_exists( 'shibboleth_session_active' ) && shibboleth_session_active() ) {
+		if ( isset( $_SERVER['HTTP_SHIB_IDENTITY_PROVIDER'] ) ) {
 			//hcommons_write_error_log( 'info', '**********************GET_IDENTITY_PROVIDER********************-' . var_export( $identity_provider, true ) );
 			if ( ! $formatted ) {
 				return $_SERVER['HTTP_SHIB_IDENTITY_PROVIDER'];
@@ -1761,11 +1750,8 @@ class Humanities_Commons {
 	 * @return string|bool $username
 	 */
 	public function hcommons_get_session_username() {
-
-		// TODO swap shib for simplesaml
-		if ( function_exists( 'shibboleth_session_active' ) && shibboleth_session_active() ) {
-			$username = $_SERVER['HTTP_EMPLOYEENUMBER'];
-			return $username;
+		if ( isset( $_SERVER['HTTP_EMPLOYEENUMBER'] ) ) {
+			return $_SERVER['HTTP_EMPLOYEENUMBER'];
 		}
 		return false;
 	}
@@ -1778,9 +1764,7 @@ class Humanities_Commons {
 	 * @return string|bool $orcid
 	 */
 	public static function get_session_orcid() {
-
-		// TODO swap shib for simplesaml
-		if ( function_exists( 'shibboleth_session_active' ) && shibboleth_session_active() ) {
+		if ( isset( $_SERVER['HTTP_EDUPERSONORCID'] ) ) {
 			$shib_orcid = $_SERVER['HTTP_EDUPERSONORCID'];
 			if ( ! empty( $shib_orcid ) ) {
 				if ( false === strpos( $shib_orcid, ';' ) ) {
@@ -1812,9 +1796,7 @@ class Humanities_Commons {
 	 * @return string|bool $username
 	 */
 	public static function get_session_eppn() {
-
-		// TODO swap shib for simplesaml
-		if ( function_exists( 'shibboleth_session_active' ) && shibboleth_session_active() ) {
+		if ( isset( $_SERVER['HTTP_EPPN'] ) ) {
 			$eppn = $_SERVER['HTTP_EPPN'];
 			return $eppn;
 		}
@@ -1829,9 +1811,7 @@ class Humanities_Commons {
 	 * @return string|bool $username
 	 */
 	public static function get_session_meta_displayname() {
-
-		// TODO swap shib for simplesaml
-		if ( function_exists( 'shibboleth_session_active' ) && shibboleth_session_active() ) {
+		if ( isset( $_SERVER['HTTP_META_DISPLAYNAME'] ) ) {
 			$meta_displayname = $_SERVER['HTTP_META_DISPLAYNAME'];
 			return $meta_displayname;
 		}
