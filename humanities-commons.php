@@ -141,8 +141,6 @@ class Humanities_Commons {
 		add_filter( 'password_protected_login_headertitle', array( $this, 'hcommons_password_protect_title' ) );
 		add_filter( 'password_protected_login_headerurl', array( $this, 'hcommons_password_protect_url' ) );
 		add_action( 'password_protected_login_messages', array( $this, 'hcommons_password_protect_message' ) );
-		add_filter( 'bbp_topic_admin_links', array( $this, 'hcommons_topic_admin_links' ), 10, 2 );
-		add_filter( 'bbp_reply_admin_links', array( $this, 'hcommons_reply_admin_links' ), 10, 2 );
 		add_filter( 'bp_activity_time_since', array( $this, 'hcommons_filter_activity_time_since' ), 10, 2 );
 		add_filter( 'bp_attachments_cover_image_upload_dir', array( $this, 'hcommons_cover_image_upload_dir' ), 10, 2 );
 		//add_filter( 'bp_attachments_pre_cover_image_ajax_upload', array( $this, 'hcommons_cover_image_ajax_upload' ), 10, 4 );
@@ -1629,46 +1627,7 @@ class Humanities_Commons {
 	}
 
 	/**
-	 * Lets modify the admin links for a forum topic so admins cannot modify other users posts
-	 * and only their own on the front-end
-	 *
-	 * @param  array $array  array of the links to modify
-	 * @param  int 	 $id     id for admin links on the front-end
-	 * @return array $array  modified array of items
-	 */
-	public function hcommons_topic_admin_links( $array, $id ) {
-
-		$cap = groups_filter_bbpress_caps('bp_moderate');
-
-		$user = wp_get_current_user();
-
-		if( $cap == true && bbp_get_current_user_id() !== bbp_get_topic_author_id( bbp_get_topic_id() ) ) {
-			unset( $array['edit'] );
-		}
-		return $array;
-
-	}
-
-	/**
-	 * Lets modify the admin links for a forum reply so admins cannot modify other users posts
-	 * and only their own on the front-end
-	 *
-	 * @param  array $array  array of the links to modify
-	 * @param  int   $id     id for admin links on the front-end
-	 * @return array $array  modified array of items
-	 */
-	public function hcommons_reply_admin_links( $array, $id ) {
-
-		$cap = groups_filter_bbpress_caps('bp_moderate');
-
-		if( $cap == true && bbp_get_current_user_id() !== bbp_get_reply_author_id( bbp_get_reply_id() ) ) {
-			unset( $array['edit'] );
-		}
-		return $array;
-	}
-
-	/**
-	 * Lets modify the admin links for a forum topic so admins cannot modify other users posts
+	 * Filter activity times.
 	 *
 	 * @param  string $time_markup          preformatted time string
 	 * @param  object $activity             the activity
