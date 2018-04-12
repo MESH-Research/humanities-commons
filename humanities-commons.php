@@ -165,7 +165,47 @@ class Humanities_Commons {
 		add_filter( 'wpmu_active_signup', array( $this, 'hcommons_check_sites_new_member_status' ) );
 		add_shortcode( 'hcommons_society_page', array( $this, 'hcommons_get_society_page_by_slug' ) );
 		add_shortcode( 'hcommons_env_variable', array( $this, 'hcommons_get_env_variable' ) );
+		add_filter( 'bp_blogs_format_activity_action_new_blog_post', array( $this, 'hcommons_blogs_format_activity_new_blog_post' ),  10, 2 );
+		add_filter( 'bp_blogs_format_activity_action_new_blog_comment', array( $this, 'hcommons_blogs_format_activity_new_blog_comment' ), 10, 2 );
 
+	}
+
+
+	/**
+	 * For new blog comment posts in activity feed
+	 *
+	 * @param  string  $action    current bp_action the user is on in the loop
+	 * @param  object  $activity  current activity object in the loop
+	 *
+	 * @return string $action    corrected current action from activity object
+	 */
+	public function hcommons_blogs_format_activity_new_blog_comment( $action, $activity ) {
+
+		//force $action to contain the same $activity->type text to avoid issues with titles for comments
+		if( $activity->type == 'new_blog_comment' ) {
+			$action = $activity->action;
+		}
+
+		return $action;
+
+	}
+
+	/**
+	 * For new blog posts in activity feed
+	 *
+	 * @param  string  $action    current bp_action the user is on in the loop
+	 * @param  object  $activity  current activity object in the loop
+	 *
+	 * @return string $action    corrected current action from activity object
+	 */
+	public function hcommons_blogs_format_activity_new_blog_post( $action, $activity ) {
+
+		//force $action to contain the same $activity->type text to avoid issues with titles
+		if( $activity->type == 'new_blog_post' ) {
+			$action = $activity->action;
+		}
+
+		return $action;
 	}
 
 	/**
