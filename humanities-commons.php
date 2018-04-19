@@ -147,9 +147,6 @@ class Humanities_Commons {
 		add_filter( 'bp_attachments_uploads_dir_get', array( $this, 'hcommons_attachments_uploads_dir_get' ), 10, 2 );
 		add_filter( 'bp_attachment_upload_dir', array( $this, 'hcommons_attachment_upload_dir' ), 10, 2 );
 
-		// replace default bbp notification formatter with our own multinetwork-compatible version
-		remove_filter( 'bp_notifications_get_notifications_for_user', 'bbp_format_buddypress_notifications' );
-		add_filter( 'bp_notifications_get_notifications_for_user', array( $this, 'hcommons_bbp_format_buddypress_notifications' ), 10, 8 );
 		add_filter( 'bp_get_new_group_enable_forum', array( $this, 'hcommons_get_new_group_enable_forum' ) );
 		add_action( 'wp_ajax_hcommons_settings_general', array( $this, 'hcommons_settings_general_ajax' ) );
 		add_filter( 'bp_before_activity_get_parse_args', array( $this, 'hcommons_set_network_admin_activities_query' ) );
@@ -1789,66 +1786,6 @@ class Humanities_Commons {
 		//hcommons_write_error_log( 'info', '****BP_CORE_ATTACHMENTS_UPLOAD_DIR_AFTER****-'.var_export( $data, true ).'-'.var_export( $dir, true ) );
 
 		return $data;
-	}
-
-	/**
-	 * copied from bbp_format_buddypress_notifications()
-	 * added switch_to_blog logic for multinetwork compatibility
-	 */
-	public function hcommons_bbp_format_buddypress_notifications( $action, $item_id, $secondary_item_id, $total_items, $format = 'string', $component_action_name, $component_name, $notification_id ) {
-		$return = $action;
-
-		if( function_exists( 'bbp_format_buddypress_notifications' ) ) {
-
-			// New reply notifications
-			if ( 'bbp_new_reply' === $action ) {
-				$society_id = bp_notifications_get_meta( $notification_id, 'society_id', true );
-				$notification_blog_id = (int) constant( strtoupper( $society_id ) . '_ROOT_BLOG_ID' );
-				$switched = false;
-				if ( ! empty( $notification_blog_id ) && $notification_blog_id !== get_current_blog_id() ) {
-					switch_to_blog( $notification_blog_id );
-					$switched = true;
-				}
-
-				$topic_id    = bbp_get_reply_topic_id( $item_id );
-				$topic_title = bbp_get_topic_title( $topic_id );
-				$topic_link  = wp_nonce_url( add_query_arg( array( 'action' => 'bbp_mark_read', 'topic_id' => $topic_id ), bbp_get_reply_url( $item_id ) ), 'bbp_mark_topic_' . $topic_id );
-				$title_attr  = __( 'Topic Replies', 'bbpress' );
-
-				if ( (int) $total_items > 1 ) {
-					$text   = sprintf( __( 'You have %d new replies', 'bbpress' ), (int) $total_items );
-					$filter = 'bbp_multiple_new_subscription_notification';
-				} else {
-					if ( !empty( $secondary_item_id ) ) {
-						$text = sprintf( __( 'You have %d new reply to %2$s from %3$s', 'bbpress' ), (int) $total_items, $topic_title, bp_core_get_user_displayname( $secondary_item_id ) );
-					} else {
-						$text = sprintf( __( 'You have %d new reply to %s',             'bbpress' ), (int) $total_items, $topic_title );
-					}
-					$filter = 'bbp_single_new_subscription_notification';
-				}
-
-				// WordPress Toolbar
-				if ( 'string' === $format ) {
-					$return = apply_filters( $filter, '<a href="' . esc_url( $topic_link ) . '" title="' . esc_attr( $title_attr ) . '">' . esc_html( $text ) . '</a>', (int) $total_items, $text, $topic_link );
-
-					// Deprecated BuddyBar
-				} else {
-					$return = apply_filters( $filter, array(
-						'text' => $text,
-						'link' => $topic_link
-					), $topic_link, (int) $total_items, $text, $topic_title );
-				}
-
-				do_action( 'bbp_format_buddypress_notifications', $action, $item_id, $secondary_item_id, $total_items );
-
-				if ( $switched ) {
-					restore_current_blog();
-				}
-			}
-
-		}
-
-		return $return;
 	}
 
 	/**
