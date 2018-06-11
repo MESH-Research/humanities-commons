@@ -1064,7 +1064,7 @@ class Humanities_Commons {
 	public function hcommons_filter_activity_where_conditions( $args ) {
 		// BP_Activity_Activity::get() hardcodes this sql string only if $excluded_types is non-empty,
 		// so we can assume a non-empty value here means there is at least one type in the sql array
-		if ( ! empty( $args['excluded_types'] ) ) {
+		if ( ! bp_is_profile_component() && ! empty( $args['excluded_types'] ) ) {
 			// these are the types we intend to filter out in addition to whatever is passed to this filter
 			$not_in = [ 'joined_group', 'friendship_created' ];
 
