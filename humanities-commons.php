@@ -348,17 +348,38 @@ class Humanities_Commons {
 			//make sure user id is only numerical
 			$user_id = filter_var( $_GET['user_id'], FILTER_SANITIZE_NUMBER_INT );
 			$member_types = bp_get_member_type( $user_id, false );
+//
+//			echo "<ul>";
+//
+//			//output member types user currently has
+//			foreach( $member_types as $type ) {
+//
+//				echo "<li>" . strtoupper( $type ) . "</li>";
+//
+//			}
+//
+//			echo "</ul>";
 
-			echo "<ul>";
+            ?>
 
-			//output member types user currently has
-			foreach( $member_types as $type ) {
+            <div class="tagsdiv" id="post_tag">
+                <div class="jaxtag">
+                    <div class="nojs-tags hide-if-js">
+                        <label for="tax-input-post_tag">Add or remove tags</label>
+                        <p><textarea name="tax_input[post_tag]" rows="3" cols="20" class="the-tags" id="tax-input-post_tag" aria-describedby="new-tag-post_tag-desc"></textarea></p>
+                    </div>
+                    <div class="ajaxtag hide-if-no-js">
+                        <label class="screen-reader-text" for="new-tag-post_tag">Add New Tag</label>
+                        <p><input data-wp-taxonomy="post_tag" type="text" id="new-tag-post_tag" name="newtag[post_tag]" class="newtag form-input-tip ui-autocomplete-input" size="16" autocomplete="off" aria-describedby="new-tag-post_tag-desc" value="" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-owns="ui-id-1">
+                            <input type="button" class="button tagadd" value="Add"></p>
+                    </div>
+                    <p class="howto" id="new-tag-post_tag-desc">Separate tags with commas</p>
+                </div>
+                <ul class="tagchecklist" role="list"></ul>
+            </div>
+            <p class="hide-if-no-js"><button type="button" class="button-link tagcloud-link" id="link-post_tag" aria-expanded="false">Choose from the most used tags</button></p>
 
-				echo "<li>" . strtoupper( $type ) . "</li>";
-
-			}
-
-			echo "</ul>";
+            <?php
 
 		}
 
@@ -2151,7 +2172,7 @@ class Humanities_Commons {
 		if ( function_exists( 'shibboleth_session_active' ) && shibboleth_session_active() ) {
 			$user_memberships = self::hcommons_get_user_memberships();
 			if ( ! empty( $user_memberships ) && ! in_array( self::$society_id, $user_memberships['societies'] ) ) {
-				return true;
+			    return true;
 			}
 			return false;
 		}
