@@ -172,6 +172,7 @@ class Humanities_Commons
         add_filter('bp_blogs_format_activity_action_new_blog_post', array($this, 'hcommons_blogs_format_activity_new_blog_post'), 10, 2);
         add_filter('bp_blogs_format_activity_action_new_blog_comment', array($this, 'hcommons_blogs_format_activity_new_blog_comment'), 10, 2);
         add_action('admin_menu', array($this, 'hcommons_remove_bp_members_admin_member_type'));
+        add_action('show_user_profile', array($this, 'hcommons_remove_bp_members_admin_member_type'));
     }
 
 
@@ -326,8 +327,9 @@ class Humanities_Commons
     public function hcommons_remove_member_type_meta_boxes()
     {
 
-        if (is_admin() && $_GET['page'] == 'bp-profile-edit') {
+        if ($_GET['page'] === 'bp-profile-edit') {
             remove_meta_box('bp_members_admin_member_type', 'users_page_bp-profile-edit', 'side');
+            remove_meta_box('bp_members_admin_member_type', 'profile_page_bp-profile-edit', 'side');
         }
 
     }
@@ -339,7 +341,7 @@ class Humanities_Commons
      */
     public function hcommons_add_member_type_meta_box($profile, $user_id)
     {
-        if (is_admin() && $_GET['page'] == 'bp-profile-edit') {
+        if ($_GET['page'] == 'bp-profile-edit') {
             add_meta_box(
                 'hcommons_members_admin_member_type',
                 _x('Member Type', 'members user-admin edit screen', 'buddypress'),
@@ -449,9 +451,9 @@ class Humanities_Commons
     public function hcommons_member_type_meta_box_view()
     {
 
-        if (isset($_GET['user_id']) && is_admin()) {
+            //$this->write_log($GLOBALS);
             //make sure user id is only numerical
-            $user_id = filter_var($_GET['user_id'], FILTER_SANITIZE_NUMBER_INT);
+            $user_id = $this->get_user_id();
             $member_types = bp_get_member_type($user_id, false);
 
             //create a search index of the member type array for easier lookup.
@@ -620,7 +622,7 @@ class Humanities_Commons
                 <?php
                 wp_nonce_field('bp-member-type-change-' . $this->get_user_id(), 'bp-member-type-nonce');
             endif;
-        }
+
 
     }
 
