@@ -531,7 +531,7 @@ class Humanities_Commons {
 				'group_type__in'     => $r['group_type__in'],
 				'group_type__not_in' => $r['group_type__not_in'],
 				'meta_query'         => $r['meta_query'],
-				'show_hidden'        => FALSE,
+				'show_hidden'        => TRUE,
 				'per_page'           => $r['per_page'],
 				'page'               => $r['page'],
 				'populate_extras'    => $r['populate_extras'],
