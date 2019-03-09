@@ -120,17 +120,12 @@ class Humanities_Commons {
 		add_filter( 'password_protected_login_headertitle', array( $this, 'hcommons_password_protect_title' ) );
 		add_filter( 'password_protected_login_headerurl', array( $this, 'hcommons_password_protect_url' ) );
 		add_action( 'password_protected_login_messages', array( $this, 'hcommons_password_protect_message' ) );
-		add_filter( 'bbp_topic_admin_links', array( $this, 'hcommons_topic_admin_links' ), 10, 2 );
-		add_filter( 'bbp_reply_admin_links', array( $this, 'hcommons_reply_admin_links' ), 10, 2 );
 		add_filter( 'bp_activity_time_since', array( $this, 'hcommons_filter_activity_time_since' ), 10, 2 );
 		add_filter( 'bp_attachments_cover_image_upload_dir', array( $this, 'hcommons_cover_image_upload_dir' ), 10, 2 );
 		//add_filter( 'bp_attachments_pre_cover_image_ajax_upload', array( $this, 'hcommons_cover_image_ajax_upload' ), 10, 4 );
 		add_filter( 'bp_attachments_uploads_dir_get', array( $this, 'hcommons_attachments_uploads_dir_get' ), 10, 2 );
 		add_filter( 'bp_attachment_upload_dir', array( $this, 'hcommons_attachment_upload_dir' ), 10, 2 );
 
-		// replace default bbp notification formatter with our own multinetwork-compatible version
-		remove_filter( 'bp_notifications_get_notifications_for_user', 'bbp_format_buddypress_notifications' );
-		add_filter( 'bp_notifications_get_notifications_for_user', array( $this, 'hcommons_bbp_format_buddypress_notifications' ), 10, 8 );
 		add_filter( 'bp_get_new_group_enable_forum', array( $this, 'hcommons_get_new_group_enable_forum' ) );
 		add_action( 'wp_ajax_hcommons_settings_general', array( $this, 'hcommons_settings_general_ajax' ) );
 		add_filter( 'bp_before_activity_get_parse_args', array( $this, 'hcommons_set_network_admin_activities_query' ) );
@@ -146,7 +141,47 @@ class Humanities_Commons {
 		add_filter( 'wpmu_active_signup', array( $this, 'hcommons_check_sites_new_member_status' ) );
 		add_shortcode( 'hcommons_society_page', array( $this, 'hcommons_get_society_page_by_slug' ) );
 		add_shortcode( 'hcommons_env_variable', array( $this, 'hcommons_get_env_variable' ) );
+		add_filter( 'bp_blogs_format_activity_action_new_blog_post', array( $this, 'hcommons_blogs_format_activity_new_blog_post' ),  10, 2 );
+		add_filter( 'bp_blogs_format_activity_action_new_blog_comment', array( $this, 'hcommons_blogs_format_activity_new_blog_comment' ), 10, 2 );
 
+	}
+
+
+	/**
+	 * For new blog comment posts in activity feed
+	 *
+	 * @param  string  $action    current bp_action the user is on in the loop
+	 * @param  object  $activity  current activity object in the loop
+	 *
+	 * @return string $action    corrected current action from activity object
+	 */
+	public function hcommons_blogs_format_activity_new_blog_comment( $action, $activity ) {
+
+		//force $action to contain the same $activity->type text to avoid issues with titles for comments
+		if( $activity->type == 'new_blog_comment' ) {
+			$action = $activity->action;
+		}
+
+		return $action;
+
+	}
+
+	/**
+	 * For new blog posts in activity feed
+	 *
+	 * @param  string  $action    current bp_action the user is on in the loop
+	 * @param  object  $activity  current activity object in the loop
+	 *
+	 * @return string $action    corrected current action from activity object
+	 */
+	public function hcommons_blogs_format_activity_new_blog_post( $action, $activity ) {
+
+		//force $action to contain the same $activity->type text to avoid issues with titles
+		if( $activity->type == 'new_blog_post' ) {
+			$action = $activity->action;
+		}
+
+		return $action;
 	}
 
 	/**
@@ -400,7 +435,7 @@ class Humanities_Commons {
 
 	public function hcommons_set_groups_query_args( $args ) {
 		// profile loops per-type, leave as-is
-		if ( bp_is_user_profile() ) {
+		if ( bp_is_user_profile() || ( bp_is_settings_component() && bp_is_current_action( 'notifications' ) ) ) {
 			return $args;
 		}
 
@@ -475,7 +510,7 @@ class Humanities_Commons {
 				'group_type__in'     => $r['group_type__in'],
 				'group_type__not_in' => $r['group_type__not_in'],
 				'meta_query'         => $r['meta_query'],
-				'show_hidden'        => FALSE,
+				'show_hidden'        => TRUE,
 				'per_page'           => $r['per_page'],
 				'page'               => $r['page'],
 				'populate_extras'    => $r['populate_extras'],
@@ -745,7 +780,7 @@ class Humanities_Commons {
 	public function hcommons_filter_activity_where_conditions( $args ) {
 		// BP_Activity_Activity::get() hardcodes this sql string only if $excluded_types is non-empty,
 		// so we can assume a non-empty value here means there is at least one type in the sql array
-		if ( ! empty( $args['excluded_types'] ) ) {
+		if ( ! bp_is_profile_component() && ! empty( $args['excluded_types'] ) ) {
 			// these are the types we intend to filter out in addition to whatever is passed to this filter
 			$not_in = [ 'joined_group', 'friendship_created' ];
 
@@ -1148,46 +1183,7 @@ class Humanities_Commons {
 	}
 
 	/**
-	 * Lets modify the admin links for a forum topic so admins cannot modify other users posts
-	 * and only their own on the front-end
-	 *
-	 * @param  array $array  array of the links to modify
-	 * @param  int 	 $id     id for admin links on the front-end
-	 * @return array $array  modified array of items
-	 */
-	public function hcommons_topic_admin_links( $array, $id ) {
-
-		$cap = groups_filter_bbpress_caps('bp_moderate');
-
-		$user = wp_get_current_user();
-
-		if( $cap == true && bbp_get_current_user_id() !== bbp_get_topic_author_id( bbp_get_topic_id() ) ) {
-			unset( $array['edit'] );
-		}
-		return $array;
-
-	}
-
-	/**
-	 * Lets modify the admin links for a forum reply so admins cannot modify other users posts
-	 * and only their own on the front-end
-	 *
-	 * @param  array $array  array of the links to modify
-	 * @param  int   $id     id for admin links on the front-end
-	 * @return array $array  modified array of items
-	 */
-	public function hcommons_reply_admin_links( $array, $id ) {
-
-		$cap = groups_filter_bbpress_caps('bp_moderate');
-
-		if( $cap == true && bbp_get_current_user_id() !== bbp_get_reply_author_id( bbp_get_reply_id() ) ) {
-			unset( $array['edit'] );
-		}
-		return $array;
-	}
-
-	/**
-	 * Lets modify the admin links for a forum topic so admins cannot modify other users posts
+	 * Filter activity times.
 	 *
 	 * @param  string $time_markup          preformatted time string
 	 * @param  object $activity             the activity
@@ -1309,66 +1305,6 @@ class Humanities_Commons {
 		//hcommons_write_error_log( 'info', '****BP_CORE_ATTACHMENTS_UPLOAD_DIR_AFTER****-'.var_export( $data, true ).'-'.var_export( $dir, true ) );
 
 		return $data;
-	}
-
-	/**
-	 * copied from bbp_format_buddypress_notifications()
-	 * added switch_to_blog logic for multinetwork compatibility
-	 */
-	public function hcommons_bbp_format_buddypress_notifications( $action, $item_id, $secondary_item_id, $total_items, $format = 'string', $component_action_name, $component_name, $notification_id ) {
-		$return = $action;
-
-		if( function_exists( 'bbp_format_buddypress_notifications' ) ) {
-
-			// New reply notifications
-			if ( 'bbp_new_reply' === $action ) {
-				$society_id = bp_notifications_get_meta( $notification_id, 'society_id', true );
-				$notification_blog_id = (int) constant( strtoupper( $society_id ) . '_ROOT_BLOG_ID' );
-				$switched = false;
-				if ( ! empty( $notification_blog_id ) && $notification_blog_id !== get_current_blog_id() ) {
-					switch_to_blog( $notification_blog_id );
-					$switched = true;
-				}
-
-				$topic_id    = bbp_get_reply_topic_id( $item_id );
-				$topic_title = bbp_get_topic_title( $topic_id );
-				$topic_link  = wp_nonce_url( add_query_arg( array( 'action' => 'bbp_mark_read', 'topic_id' => $topic_id ), bbp_get_reply_url( $item_id ) ), 'bbp_mark_topic_' . $topic_id );
-				$title_attr  = __( 'Topic Replies', 'bbpress' );
-
-				if ( (int) $total_items > 1 ) {
-					$text   = sprintf( __( 'You have %d new replies', 'bbpress' ), (int) $total_items );
-					$filter = 'bbp_multiple_new_subscription_notification';
-				} else {
-					if ( !empty( $secondary_item_id ) ) {
-						$text = sprintf( __( 'You have %d new reply to %2$s from %3$s', 'bbpress' ), (int) $total_items, $topic_title, bp_core_get_user_displayname( $secondary_item_id ) );
-					} else {
-						$text = sprintf( __( 'You have %d new reply to %s',             'bbpress' ), (int) $total_items, $topic_title );
-					}
-					$filter = 'bbp_single_new_subscription_notification';
-				}
-
-				// WordPress Toolbar
-				if ( 'string' === $format ) {
-					$return = apply_filters( $filter, '<a href="' . esc_url( $topic_link ) . '" title="' . esc_attr( $title_attr ) . '">' . esc_html( $text ) . '</a>', (int) $total_items, $text, $topic_link );
-
-					// Deprecated BuddyBar
-				} else {
-					$return = apply_filters( $filter, array(
-						'text' => $text,
-						'link' => $topic_link
-					), $topic_link, (int) $total_items, $text, $topic_title );
-				}
-
-				do_action( 'bbp_format_buddypress_notifications', $action, $item_id, $secondary_item_id, $total_items );
-
-				if ( $switched ) {
-					restore_current_blog();
-				}
-			}
-
-		}
-
-		return $return;
 	}
 
 	/**
