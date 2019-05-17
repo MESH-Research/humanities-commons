@@ -185,8 +185,8 @@ class Humanities_Commons {
 			if(is_admin() && (! is_super_admin() || true)) {
                 ?>
                 <script type="text/javascript">
-                    jQuery(document).ready(function() {
-                        jQuery("#tnp-header").remove();
+                    $(document).ready(function() {
+                        $("#tnp-header").remove();
                     });
                 </script>
                 <?php
