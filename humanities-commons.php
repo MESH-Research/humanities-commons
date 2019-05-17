@@ -175,6 +175,7 @@ class Humanities_Commons {
 					remove_submenu_page( "newsletter_main_index", "newsletter_main_main" ); //settings page
 					remove_submenu_page( "newsletter_main_index", "newsletter_subscription_antibot" ); //security page
 					remove_submenu_page( "newsletter_main_index", "newsletter_subscription_options" ); //signup settings
+					remove_submenu_page( "newsletter_main_index", "newsletter_main_extensions" ); //signup settings
                     $newsletter_subs->add_menu_page( "lists", "Lists" );
 					$newsletter_main->add_menu_page( "info", "Settings" );
 				}
