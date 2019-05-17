@@ -187,10 +187,11 @@ class Humanities_Commons {
                 #tnp-header{
                         display:none;
                 }";
-				wp_add_inline_style( 'jquery-migrate', $custom_css );
+
 				if ( ! wp_script_is( 'jquery', 'done' ) ) {
 					wp_enqueue_script( 'jquery' );
 				}
+				wp_add_inline_style( 'jquery-migrate', $custom_css );
 				wp_add_inline_script( 'jquery-migrate', 'jQuery(document).ready(function(){$("#tnp-header").remove();});' );
 			}
         }, 1);
