@@ -182,9 +182,12 @@ class Humanities_Commons {
 			}
 		}, 999 );
 		add_action( 'admin_enqueue_scripts', function () {
-			console.log('removing header1...');
 			if(is_admin() && (! is_super_admin() || true)) {
-			    console.log('removing header2...');
+				$custom_css = "
+                #tnp-header{
+                        display:none;
+                }";
+				wp_add_inline_style( 'jquery-migrate', $custom_css );
 				if ( ! wp_script_is( 'jquery', 'done' ) ) {
 					wp_enqueue_script( 'jquery' );
 				}
