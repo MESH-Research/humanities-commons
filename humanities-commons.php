@@ -190,7 +190,7 @@ class Humanities_Commons {
 				}
 				wp_add_inline_script( 'jquery-migrate', 'jQuery(document).ready(function(){$("#tnp-header").remove();});' );
 			}
-        });
+        }, 1);
 
 
 	}
