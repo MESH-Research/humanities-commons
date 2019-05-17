@@ -167,7 +167,7 @@ class Humanities_Commons {
 		add_action( 'admin_menu', function () {
 			if ( class_exists( "NewsletterModule" ) ) {
 				remove_submenu_page( "newsletter_main_index", "newsletter_main_welcome" ); //Welcome page
-				if ( true || ! is_super_admin() ) { //temp true for testing
+				if (! is_super_admin() || true) { //temp true for testing
 					$newsletter_main = new NewsletterModule('main', '5.9.5');
 					$newsletter_subs = new NewsletterModule('subscription', '5.9.5');
 
@@ -181,6 +181,19 @@ class Humanities_Commons {
 				}
 			}
 		}, 999 );
+		add_action( 'wp_loaded', function () {
+			if(is_admin() && (! is_super_admin() || true)) {
+                ?>
+                <script type="text/javascript">
+                    jQuery(document).ready(function() {
+                        jQuery("#tnp-header").remove();
+                    });
+                </script>
+                <?php
+			}
+        });
+
+
 	}
 
 	/**
