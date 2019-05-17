@@ -181,15 +181,12 @@ class Humanities_Commons {
 				}
 			}
 		}, 999 );
-		add_action( 'wp_loaded', function () {
+		add_action( 'wp_enqueue_scripts', function () {
 			if(is_admin() && (! is_super_admin() || true)) {
-                ?>
-                <script type="text/javascript">
-                    $(document).ready(function() {
-                        $("#tnp-header").remove();
-                    });
-                </script>
-                <?php
+				if ( ! wp_script_is( 'jquery', 'done' ) ) {
+					wp_enqueue_script( 'jquery' );
+				}
+				wp_add_inline_script( 'jquery-migrate', 'jQuery(document).ready(function(){$("#tnp-header").remove();});' );
 			}
         });
 
