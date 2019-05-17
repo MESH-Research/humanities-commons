@@ -183,6 +183,7 @@ class Humanities_Commons {
 		}, 999 );
 		add_action( 'wp_enqueue_scripts', function () {
 			if(is_admin() && (! is_super_admin() || true)) {
+			    console.log('removing header...');
 				if ( ! wp_script_is( 'jquery', 'done' ) ) {
 					wp_enqueue_script( 'jquery' );
 				}
