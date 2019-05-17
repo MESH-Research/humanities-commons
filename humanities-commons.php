@@ -168,13 +168,15 @@ class Humanities_Commons {
 			if ( class_exists( "NewsletterModule" ) ) {
 				remove_submenu_page( "newsletter_main_index", "newsletter_main_welcome" ); //Welcome page
 				if ( true || ! is_super_admin() ) { //temp true for testing
-					$newsletter = new NewsletterModule();
+					$newsletter_main = new NewsletterModule('main', '5.9.5');
+					$newsletter_subs = new NewsletterModule('subscription', '5.9.5');
+
 					remove_submenu_page( "newsletter_main_index", "newsletter_main_index" ); //dashboard
 					remove_submenu_page( "newsletter_main_index", "newsletter_main_main" ); //settings page
 					remove_submenu_page( "newsletter_main_index", "newsletter_subscription_antibot" ); //security page
 					remove_submenu_page( "newsletter_main_index", "newsletter_subscription_options" ); //signup settings
-					$newsletter->add_menu_page( "lists", "Lists" );
-					$newsletter->add_menu_page( "main_info", "Settings" );
+                    $newsletter_subs->add_menu_page( "lists", "Lists" );
+					$newsletter_main->add_menu_page( "info", "Settings" );
 				}
 			}
 		}, 999 );
