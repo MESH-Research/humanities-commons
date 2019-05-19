@@ -113,7 +113,7 @@ if ( ! function_exists( 'wpmn_get_object_terms' ) ) {
 		$retval = array();
 		foreach ( $taxonomy_site_map as $taxonomy_site_id => $site_taxonomies ) {
 			$switched = false;
-			if ( get_current_blog_id() !== $site_id ) {
+			if ( get_current_blog_id() !== $taxonomy_site_id ) {
 				switch_to_blog( $taxonomy_site_id );
 				wpmn_register_taxonomies();
 				$switched = true;
