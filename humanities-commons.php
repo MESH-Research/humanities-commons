@@ -603,7 +603,7 @@ class Humanities_Commons {
 
 		//If site is a society we are mapping groups for and the user is member of the society, map any groups from comanage to wp.
 		//TODO add logic to remove groups the user is no longer a member of
-		if ( in_array( self::$society_id, array( 'ajs', 'aseees', 'caa', 'mla', 'up' ) ) &&
+		if ( in_array( self::$society_id, array( 'ajs', 'aseees', 'caa', 'mla', 'msu', 'up' ) ) &&
 			in_array( self::$society_id, $memberships['societies'] ) ) {
 			foreach( $memberships['groups'][self::$society_id] as $group_name ) {
 				$group_id = $this->hcommons_lookup_society_group_id( self::$society_id, $group_name );
