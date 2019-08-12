@@ -1652,14 +1652,14 @@ class Humanities_Commons {
 	 */
 	public function hcommons_password_protect_message( $title ) {
 
-		if ( 'up' === self::$society_id ) {
+		if ( 'msu' === self::$society_id ) {
 			echo '<style type="text/css">body.login { background-color: #ffffff !important; } ' .
 				' body.login h1 a { color: #000000 !important; ' .
 				'   font-family: lexia,serif; font-weight: 300; text-transform: unset !important; line-height: 1.2;} ' .
 				' #entry-content p { line-height: 1.5; margin-top: 12px !important; } ' .
 				' #login form p.submit input { background-color: #0085ba !important; } ' .
 				' .login form { margin-top: 0px; !important; }</style>';
-			echo '<div class="entry-content entry-summary"><p>Welcome to the future home of UP Commons. Please forgive our appearance while we get ready for our big debut.</p></div>';
+			echo '<div class="entry-content entry-summary"><p>Welcome to the future home of MSU Commons. Please forgive our appearance while we get ready for our big debut.</p></div>';
 		}
 	}
 
