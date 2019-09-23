@@ -714,6 +714,17 @@ class Humanities_Commons {
 		}
 		$result = update_user_meta( $user_id, 'shib_title', maybe_serialize( $shib_title_updated ) );
 
+                $login_method = self::hcommons_get_identity_provider( false );
+                if ( $login_method ) {
+                        $user_login_methods = (array) maybe_unserialize( get_usermeta( $user_id, 'saml_login_methods', true ) );
+                        if ( ! in_array( $_SERVER['HTTP_IDPDISPLAYNAME'], $user_login_methods ) ) {
+                                $user_login_methods[] = $_SERVER['HTTP_IDPDISPLAYNAME'];
+                                $result = update_user_meta( $user_id, 'saml_login_methods', maybe_serialize( $user_login_methods ) );
+                        }
+                } else {
+                        hcommons_write_error_log( 'info', '****HTTP_IDPDISPLAYNAME NOT SET****-' );
+                }
+
 		$shib_uid = $_SERVER['HTTP_UID'];
 		if ( false === strpos( $shib_uid, ';' ) ) {
 			$shib_uid_updated = $shib_uid;
@@ -2070,32 +2081,42 @@ class Humanities_Commons {
 	 */
 	public static function hcommons_get_user_login_methods( $user_id ) {
 
-		$methods = array ();
-		if ( defined( 'GOOGLE_LOGIN_METHOD_SCOPE' ) ) {
-			$methods[GOOGLE_LOGIN_METHOD_SCOPE] = 'Google';
-		}
-		if ( defined( 'TWITTER_LOGIN_METHOD_SCOPE' ) ) {
-			$methods[TWITTER_LOGIN_METHOD_SCOPE] = 'Twitter';
-		}
-		if ( defined( 'HC_LOGIN_METHOD_SCOPE' ) ) {
-			$methods[HC_LOGIN_METHOD_SCOPE] = 'HC ID';
-		}
-		if ( defined( 'MLA_LOGIN_METHOD_SCOPE' ) ) {
-			$methods[MLA_LOGIN_METHOD_SCOPE] = 'Legacy <em>MLA Commons</em>';
-		}
-		$user_login_methods = (array) maybe_unserialize( get_usermeta( $user_id, 'shib_uid', true ) );
-		$login_methods = array();
-		foreach( $user_login_methods as $user_login_method ) {
-			$user_method = explode( '@', $user_login_method );
-			if ( ! empty( $user_method[1] ) ) {
-				$login_methods[] = $methods[$user_method[1]];
-			} elseif ( ! empty( $user_login_method ) ) {
-				$login_methods[] = 'University';
-			}
-		}
-		//hcommons_write_error_log( 'info', '**********************GET_USER_LOGIN_METHODS********************-' . $user_id . '-' . var_export( $user_login_methods, true ) );
-
-		return $login_methods;
+                $user_login_methods = (array) maybe_unserialize( get_usermeta( $user_id, 'saml_login_methods', true ) );
+                //hcommons_write_error_log( 'info', '**********************GET_USER_LOGIN_METHODS********************-' . $user_id . '-' . var_export( $user_login_methods, true ) );
+                if ( ! empty( $user_login_methods ) ) {
+                        $login_methods = array();
+                        foreach( $user_login_methods as $user_login_method ) {
+                                if ( ! empty( $user_login_method ) ) {
+                                        $login_methods[] = $user_login_method;
+                                }
+                        }
+                        return $login_methods;
+                } else {
+                        $methods = array ();
+                        if ( defined( 'GOOGLE_LOGIN_METHOD_SCOPE' ) ) {
+                                $methods[GOOGLE_LOGIN_METHOD_SCOPE] = 'Google login';
+                        }
+                        if ( defined( 'TWITTER_LOGIN_METHOD_SCOPE' ) ) {
+                                $methods[TWITTER_LOGIN_METHOD_SCOPE] = 'Twitter login';
+                        }
+                        if ( defined( 'HC_LOGIN_METHOD_SCOPE' ) ) {
+                                $methods[HC_LOGIN_METHOD_SCOPE] = 'HC login';
+                        }
+                        if ( defined( 'MLA_LOGIN_METHOD_SCOPE' ) ) {
+                                $methods[MLA_LOGIN_METHOD_SCOPE] = 'Legacy MLA login';
+                        }
+                        $user_login_methods = (array) maybe_unserialize( get_usermeta( $user_id, 'shib_uid', true ) );
+                        $login_methods = array();
+                        foreach( $user_login_methods as $user_login_method ) {
+                                $user_method = explode( '@', $user_login_method );
+                                if ( ! empty( $user_method[1] ) ) {
+                                        $login_methods[] = $methods[$user_method[1]];
+                                } elseif ( ! empty( $user_login_method ) ) {
+                                        $login_methods[] = 'Unknown login';
+                                }
+                        }
+                        return $login_methods;
+                }
 
 	}
 
@@ -2108,6 +2129,14 @@ class Humanities_Commons {
 	 */
 	public static function hcommons_get_identity_provider( $formatted = true ) {
 
+                if ( ! empty( $_SERVER['HTTP_IDPENTITYID'] ) ) {
+                        if ( ! $formatted ) {
+                                return $_SERVER['HTTP_IDPENTITYID'];
+                        } else {
+                                return $_SERVER['HTTP_IDPDISPLAYNAME'];
+                        }
+                }
+
 		if ( function_exists( 'shibboleth_session_active' ) && shibboleth_session_active() ) {
 			//hcommons_write_error_log( 'info', '**********************GET_IDENTITY_PROVIDER********************-' . var_export( $identity_provider, true ) );
 			if ( ! $formatted ) {
@@ -2115,22 +2144,22 @@ class Humanities_Commons {
 			}
 			$providers = array ();
 			if ( defined( 'GOOGLE_IDENTITY_PROVIDER' ) ) {
-				$providers[GOOGLE_IDENTITY_PROVIDER] = 'Google';
+				$providers[GOOGLE_IDENTITY_PROVIDER] = 'Google login';
 			}
 			if ( defined( 'TWITTER_IDENTITY_PROVIDER' ) ) {
-				$providers[TWITTER_IDENTITY_PROVIDER] = 'Twitter';
+				$providers[TWITTER_IDENTITY_PROVIDER] = 'Twitter login';
 			}
 			if ( defined( 'HC_IDENTITY_PROVIDER' ) ) {
-				$providers[HC_IDENTITY_PROVIDER] = 'HC ID';
+				$providers[HC_IDENTITY_PROVIDER] = 'HC ID login';
 			}
 			if ( defined( 'MLA_IDENTITY_PROVIDER' ) ) {
-				$providers[MLA_IDENTITY_PROVIDER] = 'Legacy <em>MLA Commons</em>';
+				$providers[MLA_IDENTITY_PROVIDER] = 'Legacy MLA Commons login';
 			}
 			$identity_provider = '';
 			$identity_provider = $_SERVER['HTTP_SHIB_IDENTITY_PROVIDER'];
 
 			if ( empty( $providers[$identity_provider] ) ) {
-				return 'University';
+				return 'Unknown login';
 			} else {
 				return $providers[$identity_provider];
 			}
