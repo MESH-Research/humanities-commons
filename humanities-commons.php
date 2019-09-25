@@ -716,7 +716,7 @@ class Humanities_Commons {
 
                 $login_method = self::hcommons_get_identity_provider( false );
                 if ( $login_method ) {
-                        $user_login_methods = (array) maybe_unserialize( get_usermeta( $user_id, 'saml_login_methods', true ) );
+                        $user_login_methods = array_filter( (array) maybe_unserialize( get_usermeta( $user_id, 'saml_login_methods', true ) ) );
                         if ( ! in_array( $_SERVER['HTTP_IDPDISPLAYNAME'], $user_login_methods ) ) {
                                 $user_login_methods[] = $_SERVER['HTTP_IDPDISPLAYNAME'];
                                 $result = update_user_meta( $user_id, 'saml_login_methods', maybe_serialize( $user_login_methods ) );
@@ -2081,7 +2081,7 @@ class Humanities_Commons {
 	 */
 	public static function hcommons_get_user_login_methods( $user_id ) {
 
-                $user_login_methods = (array) maybe_unserialize( get_usermeta( $user_id, 'saml_login_methods', true ) );
+                $user_login_methods = array_filter( (array) maybe_unserialize( get_usermeta( $user_id, 'saml_login_methods', true ) ) );
                 //hcommons_write_error_log( 'info', '**********************GET_USER_LOGIN_METHODS********************-' . $user_id . '-' . var_export( $user_login_methods, true ) );
                 if ( ! empty( $user_login_methods ) ) {
                         $login_methods = array();
@@ -2105,7 +2105,7 @@ class Humanities_Commons {
                         if ( defined( 'MLA_LOGIN_METHOD_SCOPE' ) ) {
                                 $methods[MLA_LOGIN_METHOD_SCOPE] = 'Legacy MLA login';
                         }
-                        $user_login_methods = (array) maybe_unserialize( get_usermeta( $user_id, 'shib_uid', true ) );
+                        $user_login_methods = array_filter( (array) maybe_unserialize( get_usermeta( $user_id, 'shib_uid', true ) ) );
                         $login_methods = array();
                         foreach( $user_login_methods as $user_login_method ) {
                                 $user_method = explode( '@', $user_login_method );
