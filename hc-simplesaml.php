@@ -351,6 +351,19 @@ function hcommons_shibboleth_session_active( $active ) {
 // TODO this might need to use init instead, check
 add_filter( 'wp_saml_auth_existing_user_authenticated', 'hcommons_shibboleth_session_active' );
 
+/**
+ * Check for a saml session in a simplesamlphp environment
+ *
+ * @return bool $active
+ */
+function hcommons_saml_session_active() {
+
+        if ( ! WP_SAML_Auth::get_instance()->get_provider()->isAuthenticated() ) {
+                return false;
+        }
+	return true;
+}
+
 if ( class_exists( 'WP_SAML_Auth' ) ) {
 	add_filter( 'wp_saml_auth_option', 'hcommons_wpsa_filter_option', 10, 2 );
 

@@ -83,7 +83,7 @@ class Humanities_Commons {
 		self::$main_site = get_site_by_path( self::$main_network->domain, self::$main_network->path );
 		self::$society_id = get_network_option( '', 'society_id' );
 
-        add_filter( 'bp_get_signup_page', array( $this, 'hcommons_register_url' ) );
+		add_filter( 'bp_get_signup_page', array( $this, 'hcommons_register_url' ) );
 		add_filter( 'bp_get_taxonomy_term_site_id', array( $this, 'hcommons_filter_bp_taxonomy_storage_site' ), 10, 2 );
 		add_filter( 'wpmn_get_taxonomy_term_site_id', array( $this, 'hcommons_filter_hc_taxonomy_storage_site' ), 10, 2 );
 		add_action( 'bp_after_has_members_parse_args', array( $this, 'hcommons_set_members_query' ) );
@@ -101,6 +101,10 @@ class Humanities_Commons {
 		add_action( 'bp_notification_after_save', array( $this, 'hcommons_set_notification_society_meta' ) );
 		add_filter( 'bp_activity_get_permalink', array( $this, 'hcommons_filter_activity_permalink' ), 10, 2 );
 		add_filter( 'body_class', array( $this, 'hcommons_society_body_class_name' ) );
+		// this filter makes 'bp_xprofile_change_field_visibility' false which is required for profile plugin visibility controls
+		// doesn't work with local users without a member type, but also doesn't work when member type & blog_id don't match?
+		// should always return true for any logged-in user, since visibility controls on xprofile fields are not restricted
+		//add_filter( 'bp_current_user_can', array( $this, 'hcommons_check_site_member_can' ), 10, 4 );
 		add_filter( 'bp_get_groups_directory_permalink', array( $this, 'hcommons_set_groups_directory_permalink' ) );
 		add_filter( 'bp_get_group_permalink', array( $this, 'hcommons_set_group_permalink' ),10, 2 );
 		add_filter( 'bp_core_get_user_domain', array( $this, 'hcommons_set_members_directory_permalink' ),10, 4 );
@@ -860,10 +864,13 @@ class Humanities_Commons {
 	 * @return array $classes
 	 */
 	public function hcommons_society_body_class_name( $classes ) {
-		$classes[] = 'active-session';
-		$user_memberships = self::hcommons_get_user_memberships();
-		if ( ! in_array( self::$society_id, $user_memberships['societies'] ) ) {
-			$classes[] = 'non-member';
+
+		if ( hcommons_saml_session_active() ) {
+			$classes[] = 'active-session';
+			$user_memberships = self::hcommons_get_user_memberships();
+			if ( ! in_array( self::$society_id, $user_memberships['societies'] ) ) {
+				$classes[] = 'non-member';
+			}
 		}
 		$classes[] = 'society-' . self::$society_id;
 		return $classes;
@@ -1172,14 +1179,14 @@ class Humanities_Commons {
 	 */
 	public function hcommons_password_protect_message( $title ) {
 
-		if ( 'up' === self::$society_id ) {
+		if ( 'msu' === self::$society_id ) {
 			echo '<style type="text/css">body.login { background-color: #ffffff !important; } ' .
 				' body.login h1 a { color: #000000 !important; ' .
 				'   font-family: lexia,serif; font-weight: 300; text-transform: unset !important; line-height: 1.2;} ' .
 				' #entry-content p { line-height: 1.5; margin-top: 12px !important; } ' .
 				' #login form p.submit input { background-color: #0085ba !important; } ' .
 				' .login form { margin-top: 0px; !important; }</style>';
-			echo '<div class="entry-content entry-summary"><p>Welcome to the future home of UP Commons. Please forgive our appearance while we get ready for our big debut.</p></div>';
+			echo '<div class="entry-content entry-summary"><p>Welcome to the future home of MSU Commons. Please forgive our appearance while we get ready for our big debut.</p></div>';
 		}
 	}
 
@@ -1556,7 +1563,7 @@ class Humanities_Commons {
 	 * @return array $memberships
 	 */
 	public static function hcommons_get_user_memberships() {
-		//$memberships = array();
+
 		// Legacy code expects these keys to be set.
 		$memberships = [
 			'societies' => [],
@@ -1596,7 +1603,7 @@ class Humanities_Commons {
 	 */
 	public static function hcommons_get_user_login_methods( $user_id ) {
 
-		$user_login_methods = (array) maybe_unserialize( get_usermeta( $user_id, 'saml_login_methods', true ) );
+		$user_login_methods = array_filter( (array) maybe_unserialize( get_usermeta( $user_id, 'saml_login_methods', true ) ) );
 		//hcommons_write_error_log( 'info', '**********************GET_USER_LOGIN_METHODS********************-' . $user_id . '-' . var_export( $user_login_methods, true ) );
 		if ( ! empty( $user_login_methods ) ) {
 			$login_methods = array();
@@ -1620,7 +1627,7 @@ class Humanities_Commons {
 			if ( defined( 'MLA_LOGIN_METHOD_SCOPE' ) ) {
 				$methods[MLA_LOGIN_METHOD_SCOPE] = 'Legacy MLA login';
 			}
-			$user_login_methods = (array) maybe_unserialize( get_usermeta( $user_id, 'shib_uid', true ) );
+			$user_login_methods = array_filter( (array) maybe_unserialize( get_usermeta( $user_id, 'shib_uid', true ) ) );
 			$login_methods = array();
 			foreach( $user_login_methods as $user_login_method ) {
 				$user_method = explode( '@', $user_login_method );
@@ -1652,7 +1659,7 @@ class Humanities_Commons {
 			}
 		}
 
-		if ( function_exists( 'shibboleth_session_active' ) && shibboleth_session_active() ) {
+		if ( ! empty( $_SERVER['HTTP_SHIB_IDENTITY_PROVIDER'] ) ) {
 			//hcommons_write_error_log( 'info', '**********************GET_IDENTITY_PROVIDER********************-' . var_export( $identity_provider, true ) );
 			if ( ! $formatted ) {
 				return $_SERVER['HTTP_SHIB_IDENTITY_PROVIDER'];
@@ -1692,6 +1699,7 @@ class Humanities_Commons {
 	 * @return bool $classes
 	 */
 	public static function hcommons_non_member_active_session() {
+
 		$user_memberships = self::hcommons_get_user_memberships();
 		if ( ! empty( $user_memberships['societies'] ) && ! in_array( self::$society_id, $user_memberships['societies'] ) ) {
 			return true;
@@ -1707,6 +1715,7 @@ class Humanities_Commons {
 	 * @return string|bool $username
 	 */
 	public function hcommons_get_session_username() {
+
 		if ( isset( $_SERVER['HTTP_EMPLOYEENUMBER'] ) ) {
 			return $_SERVER['HTTP_EMPLOYEENUMBER'];
 		}
@@ -1721,6 +1730,7 @@ class Humanities_Commons {
 	 * @return string|bool $orcid
 	 */
 	public static function get_session_orcid() {
+
 		if ( isset( $_SERVER['HTTP_EDUPERSONORCID'] ) ) {
 			$shib_orcid = $_SERVER['HTTP_EDUPERSONORCID'];
 			if ( ! empty( $shib_orcid ) ) {
@@ -1753,6 +1763,7 @@ class Humanities_Commons {
 	 * @return string|bool $username
 	 */
 	public static function get_session_eppn() {
+
 		if ( isset( $_SERVER['HTTP_EPPN'] ) ) {
 			$eppn = $_SERVER['HTTP_EPPN'];
 			return $eppn;
@@ -1768,6 +1779,7 @@ class Humanities_Commons {
 	 * @return string|bool $username
 	 */
 	public static function get_session_meta_displayname() {
+
 		if ( isset( $_SERVER['HTTP_META_DISPLAYNAME'] ) ) {
 			$meta_displayname = $_SERVER['HTTP_META_DISPLAYNAME'];
 			return $meta_displayname;
