@@ -179,7 +179,7 @@ class Humanities_Commons {
 	public function hcommons_blogs_format_activity_new_blog_comment( $action, $activity ) {
 
 		//force $action to contain the same $activity->type text to avoid issues with titles for comments
-		if( $activity->type == 'new_blog_comment' ) {
+		if( $activity->type == 'new_blog_comment' && isset( $activity->action ) ) {
 			$action = $activity->action;
 		}
 
@@ -198,7 +198,8 @@ class Humanities_Commons {
 	public function hcommons_blogs_format_activity_new_blog_post( $action, $activity ) {
 
 		//force $action to contain the same $activity->type text to avoid issues with titles
-		if( $activity->type == 'new_blog_post' ) {
+		// Make sure there is action text as well.
+		if( $activity->type == 'new_blog_post' && isset( $activity->action ) ) {
 			$action = $activity->action;
 		}
 
