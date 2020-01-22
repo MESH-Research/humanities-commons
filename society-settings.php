@@ -25,6 +25,15 @@ if ( ! defined( 'ABSPATH' ) ) {
                                 'has_directory' => 'ajs'
                         ) );
                 bp_register_member_type(
+                        'arlisna',
+                        array(
+                                'labels' => array(
+                                        'name' => 'ARLISNA',
+                                        'singular_name' => 'ARLISNA',
+                                ),
+                                'has_directory' => 'arlisna'
+                        ) );
+                bp_register_member_type(
                         'aseees',
                         array(
                                 'labels' => array(
@@ -91,6 +100,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 					'singular_name' => 'AJS',
 				),
 				'has_directory' => 'ajs'
+			) );
+		bp_groups_register_group_type(
+			'arlisna',
+			array(
+				'labels' => array(
+					'name' => 'ARLISNA',
+					'singular_name' => 'ARLISNA',
+				),
+				'has_directory' => 'arlisna'
 			) );
 		bp_groups_register_group_type(
 			'aseees',

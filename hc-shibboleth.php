@@ -284,7 +284,7 @@ add_action( 'login_enqueue_scripts', 'hcommons_add_login_redirect_script' );
 
 		//If site is a society we are mapping groups for and the user is member of the society, map any groups from comanage to wp.
 		//TODO add logic to remove groups the user is no longer a member of
-		if ( in_array( Humanities_Commons::$society_id, array( 'ajs', 'aseees', 'caa', 'mla', 'msu', 'up' ) ) &&
+		if ( in_array( Humanities_Commons::$society_id, array( 'ajs', 'arlisna', 'aseees', 'caa', 'mla', 'msu', 'up' ) ) &&
 			in_array( Humanities_Commons::$society_id, $memberships['societies'] ) ) {
 			foreach( $memberships['groups'][Humanities_Commons::$society_id] as $group_name ) {
 				$group_id = Humanities_Commons::hcommons_lookup_society_group_id( Humanities_Commons::$society_id, $group_name );
