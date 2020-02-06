@@ -28,8 +28,8 @@ if ( ! defined( 'ABSPATH' ) ) {
                         'arlisna',
                         array(
                                 'labels' => array(
-                                        'name' => 'ARLISNA',
-                                        'singular_name' => 'ARLISNA',
+                                        'name' => 'ARLIS/NA',
+                                        'singular_name' => 'ARLIS/NA',
                                 ),
                                 'has_directory' => 'arlisna'
                         ) );
@@ -105,8 +105,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 			'arlisna',
 			array(
 				'labels' => array(
-					'name' => 'ARLISNA',
-					'singular_name' => 'ARLISNA',
+					'name' => 'ARLIS/NA',
+					'singular_name' => 'ARLIS/NA',
 				),
 				'has_directory' => 'arlisna'
 			) );

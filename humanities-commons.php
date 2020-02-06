@@ -83,7 +83,7 @@ class Humanities_Commons {
 		self::$main_site = get_site_by_path( self::$main_network->domain, self::$main_network->path );
 		self::$society_id = get_network_option( '', 'society_id' );
 
-		add_filter( 'bp_get_signup_page', array( $this, 'hcommons_register_url' ) );
+		add_filter( 'bp_get_signup_page', function() { return '/membership/'; } );
 		add_filter( 'bp_get_taxonomy_term_site_id', array( $this, 'hcommons_filter_bp_taxonomy_storage_site' ), 10, 2 );
 		add_filter( 'wpmn_get_taxonomy_term_site_id', array( $this, 'hcommons_filter_hc_taxonomy_storage_site' ), 10, 2 );
 		add_action( 'bp_after_has_members_parse_args', array( $this, 'hcommons_set_members_query' ) );
@@ -256,12 +256,12 @@ class Humanities_Commons {
 	 * @param string $register_url
 	 * @return string $register_url Modified url.
 	 */
-	public function hcommons_register_url( $register_url ) {
+	public static function hcommons_register_url( $register_url ) {
+
 		if ( ! empty( self::$society_id ) && defined( strtoupper( self::$society_id ) . '_ENROLLMENT_URL' ) ) {
-			return constant( strtoupper( self::$society_id ) . '_ENROLLMENT_URL' );
-		} else {
-			return $register_url;
+			$register_url = constant( strtoupper( self::$society_id ) . '_ENROLLMENT_URL' ) . '/done:core';
 		}
+		return apply_filters( 'hcommons_register_url', $register_url );
 	}
 
 	/**
@@ -1189,6 +1189,16 @@ class Humanities_Commons {
 				' .login form { margin-top: 0px; !important; }</style>';
 			echo '<div class="entry-content entry-summary"><p>Welcome to the future home of MSU Commons. Please forgive our appearance while we get ready for our big debut.</p></div>';
 		}
+                if ( 'arlisna' === self::$society_id ) {
+                        echo '<style type="text/css">body.login { background-color: #ffffff !important; } ' .
+                                ' body.login h1 a { color: #000000 !important; ' .
+                                '   font-family: lexia,serif; font-weight: 300; text-transform: unset !important; line-height: 1.2;} ' .
+                                ' #entry-content p { line-height: 1.5; margin-top: 12px !important; } ' .
+                                ' #login form p.submit input { background-color: #0085ba !important; } ' .
+                                ' .login form { margin-top: 0px; !important; }</style>';
+                        echo '<div class="entry-content entry-summary"><p>Welcome to the future home of ARLIS/NA Commons. Please forgive our appearance while we get ready for our big debut.</p></div>';
+                }
+
 	}
 
 	/**
