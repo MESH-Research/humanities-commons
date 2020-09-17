@@ -11,6 +11,7 @@ function hcommons_maybe_redirect_after_login() {
 			'/logged-out/',
 			'/not-a-member/',
 			'/wp-admin/admin-ajax.php',
+			'/jm-ajax/get_listings/',
 		];
 
 		return (
@@ -284,7 +285,7 @@ add_action( 'login_enqueue_scripts', 'hcommons_add_login_redirect_script' );
 
 		//If site is a society we are mapping groups for and the user is member of the society, map any groups from comanage to wp.
 		//TODO add logic to remove groups the user is no longer a member of
-		if ( in_array( Humanities_Commons::$society_id, array( 'ajs', 'arlisna', 'aseees', 'caa', 'mla', 'msu', 'up' ) ) &&
+		if ( in_array( Humanities_Commons::$society_id, array( 'ajs', 'arlisna', 'aseees', 'caa', 'mla', 'msu', 'sah', 'up' ) ) &&
 			in_array( Humanities_Commons::$society_id, $memberships['societies'] ) ) {
 			foreach( $memberships['groups'][Humanities_Commons::$society_id] as $group_name ) {
 				$group_id = Humanities_Commons::hcommons_lookup_society_group_id( Humanities_Commons::$society_id, $group_name );

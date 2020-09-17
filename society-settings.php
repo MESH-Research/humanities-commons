@@ -79,6 +79,15 @@ if ( ! defined( 'ABSPATH' ) ) {
                                 'has_directory' => 'msu'
                         ) );
                 bp_register_member_type(
+                        'sah',
+                        array(
+                                'labels' => array(
+                                        'name' => 'SAH',
+                                        'singular_name' => 'SAH',
+                                ),
+                                'has_directory' => 'sah'
+                        ) );
+                bp_register_member_type(
                         'up',
                         array(
                                 'labels' => array(
@@ -154,6 +163,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 					'singular_name' => 'MSU',
 				),
 				'has_directory' => 'msu'
+			) );
+		bp_groups_register_group_type(
+			'sah',
+			array(
+				'labels' => array(
+					'name' => 'SAH',
+					'singular_name' => 'SAH',
+				),
+				'has_directory' => 'sah'
 			) );
 		bp_groups_register_group_type(
 			'up',

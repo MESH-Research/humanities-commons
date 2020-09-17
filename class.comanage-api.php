@@ -236,6 +236,8 @@ class comanageApi {
 						'Description' => 'Michigan State University' ];
 			$temp_cous['Cous'][] = [ 'Id' => '8', 'Name' => 'ARLISNA',
 						'Description' => 'ARLIS/NA' ];
+			$temp_cous['Cous'][] = [ 'Id' => '10', 'Name' => 'SAH',
+						'Description' => 'SAH' ];
 			$req['body'] = json_encode( $temp_cous );
 
 			//$req = wp_remote_get( $this->url . '/cous.' . $this->format . '?coid=2', $this->api_args );
