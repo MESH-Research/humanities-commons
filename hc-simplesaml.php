@@ -488,7 +488,7 @@ function hcommons_set_env_saml_attributes() {
 		$_SERVER['HTTP_X_FORWARDED_HOST'] = $_SERVER['HTTP_HOST'];
 	}
 
-	$_SERVER['HTTP_SHIB_SESSION_ID'] = $_COOKIE['SimpleSAML'];
+	$_SERVER['HTTP_SHIB_SESSION_ID'] = $_COOKIE['SimpleSAMLCommons'];
 	// TODO https://github.com/mlaa/humanities-commons/commit/764f6f41511a7813109c5b95a8b2fcfd444c6662
 	$_SERVER['HTTP_SHIB_IDENTITY_PROVIDER'] = $IDP;
 };

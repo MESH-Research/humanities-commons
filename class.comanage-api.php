@@ -238,6 +238,12 @@ class comanageApi {
 						'Description' => 'ARLIS/NA' ];
 			$temp_cous['Cous'][] = [ 'Id' => '10', 'Name' => 'SAH',
 						'Description' => 'SAH' ];
+			$temp_cous['Cous'][] = [ 'Id' => '11', 'Name' => 'HUB',
+						'Description' => 'HUB' ];
+			$temp_cous['Cous'][] = [ 'Id' => '12', 'Name' => 'SOCSCI',
+						'Description' => 'SOCSCI' ];
+			$temp_cous['Cous'][] = [ 'Id' => '13', 'Name' => 'STEM',
+						'Description' => 'STEM' ];
 			$req['body'] = json_encode( $temp_cous );
 
 			//$req = wp_remote_get( $this->url . '/cous.' . $this->format . '?coid=2', $this->api_args );

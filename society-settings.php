@@ -61,6 +61,15 @@ if ( ! defined( 'ABSPATH' ) ) {
                                 'has_directory' => 'hc'
                         ) );
                 bp_register_member_type(
+                        'hub',
+                        array(
+                                'labels' => array(
+                                        'name' => 'HUB',
+                                        'singular_name' => 'HUB',
+                                ),
+                                'has_directory' => 'hub'
+                        ) );
+                bp_register_member_type(
                         'mla',
                         array(
                                 'labels' => array(
@@ -86,6 +95,24 @@ if ( ! defined( 'ABSPATH' ) ) {
                                         'singular_name' => 'SAH',
                                 ),
                                 'has_directory' => 'sah'
+                        ) );
+                bp_register_member_type(
+                        'socsci',
+                        array(
+                                'labels' => array(
+                                        'name' => 'SOCSCI',
+                                        'singular_name' => 'SOCSCI',
+                                ),
+                                'has_directory' => 'socsci'
+                        ) );
+                bp_register_member_type(
+                        'stem',
+                        array(
+                                'labels' => array(
+                                        'name' => 'STEM',
+                                        'singular_name' => 'STEM',
+                                ),
+                                'has_directory' => 'stem'
                         ) );
                 bp_register_member_type(
                         'up',
@@ -147,6 +174,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 				'has_directory' => 'hc'
 			) );
 		bp_groups_register_group_type(
+			'hub',
+			array(
+				'labels' => array(
+					'name' => 'HUB',
+					'singular_name' => 'HUB',
+				),
+				'has_directory' => 'hub'
+			) );
+		bp_groups_register_group_type(
 			'mla',
 			array(
 				'labels' => array(
@@ -172,6 +208,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 					'singular_name' => 'SAH',
 				),
 				'has_directory' => 'sah'
+			) );
+		bp_groups_register_group_type(
+			'socsci',
+			array(
+				'labels' => array(
+					'name' => 'SOCSCI',
+					'singular_name' => 'SOCSCI',
+				),
+				'has_directory' => 'socsci'
+			) );
+		bp_groups_register_group_type(
+			'stem',
+			array(
+				'labels' => array(
+					'name' => 'STEM',
+					'singular_name' => 'STEM',
+				),
+				'has_directory' => 'stem'
 			) );
 		bp_groups_register_group_type(
 			'up',
