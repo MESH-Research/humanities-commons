@@ -148,9 +148,53 @@ class Humanities_Commons {
 		add_shortcode( 'hcommons_env_variable', array( $this, 'hcommons_get_env_variable' ) );
 		add_filter( 'bp_blogs_format_activity_action_new_blog_post', array( $this, 'hcommons_blogs_format_activity_new_blog_post' ),  10, 2 );
 		add_filter( 'bp_blogs_format_activity_action_new_blog_comment', array( $this, 'hcommons_blogs_format_activity_new_blog_comment' ), 10, 2 );
-
+	
+		// Disable Akismet for BuddyPress docs. Docs are getting spammed when moved around in folders. --Mike 21-08-19
+		add_filter( 'bp_docs_post_args_before_save', array( $this, 'hcommons_disable_akismet_for_moving_docs' ), 5, 3 );
 	}
 
+	/**
+	 * Disable Akismet for BuddyPress docs when a doc is being moved.
+	 *
+	 * This is meant to address an issue where docs get spuriously marked as
+	 * spam when being moved.
+	 * @link https://github.com/MESH-Research/commons/issues/76
+	 *
+	 * Note: This disables Akisment whenever a doc is being moved, and doesn't
+	 * check whether there are other changes. In theory you could avoid the spam
+	 * filter by moving the doc in addition to whatever else you're doing, but
+	 * this seems like it'd be a lot of trouble to go through.
+	 *
+	 * @see buddypress-docs/addon-akismet.php BP_Docs_Akismet::check_for_spam
+	 *
+	 * @author Mike Thicke
+	 *
+	 * @global $bp_docs The BP_Docs object. @see buddypress-docs/bp-docs.php
+	 *
+	 * @param array         $save_args   The arguments to be saved.
+	 * @param BP_Docs_Query $bdq_object  The query object.
+	 * @param array         $passed_args The arguments passed from the save
+	 * request.
+	 *
+	 * @return array Pass through $save_args unchanged. This filter acts by
+	 *               removing a lower priority filter if necessary.
+	 */
+	public function hcommons_disable_akismet_for_moving_docs( $save_args, $bdq_object, $passed_args ) {
+		global $bp_docs;
+
+		$folder_id          = intval( $_POST['bp-docs-folder'] );
+		$existing_folder_id = bp_docs_get_doc_folder( $passed_args['doc_id'] );
+
+		if ( $folder_id !== $existing_folder_id ) {
+			remove_filter(
+				'bp_docs_post_args_before_save',
+				array( $bp_docs->akismet, 'check_for_spam' ),
+				10
+			);
+		}
+
+		return $save_args;
+	}
 
 	/**
 	 * For new blog comment posts in activity feed
