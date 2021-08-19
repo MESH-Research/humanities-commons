@@ -148,7 +148,7 @@ class Humanities_Commons {
 		add_shortcode( 'hcommons_env_variable', array( $this, 'hcommons_get_env_variable' ) );
 		add_filter( 'bp_blogs_format_activity_action_new_blog_post', array( $this, 'hcommons_blogs_format_activity_new_blog_post' ),  10, 2 );
 		add_filter( 'bp_blogs_format_activity_action_new_blog_comment', array( $this, 'hcommons_blogs_format_activity_new_blog_comment' ), 10, 2 );
-	
+
 		// Disable Akismet for BuddyPress docs. Docs are getting spammed when moved around in folders. --Mike 21-08-19
 		add_filter( 'bp_docs_post_args_before_save', array( $this, 'hcommons_disable_akismet_for_moving_docs' ), 5, 3 );
 	}
