@@ -46,7 +46,7 @@ function hcommons_write_error_log( $error_type, $error_message, $info = null ) {
 require_once ( dirname( __FILE__ ) . '/society-settings.php' );
 require_once ( dirname( __FILE__ ) . '/wpmn-taxonomy-functions.php' );
 require_once ( dirname( __FILE__ ) . '/admin-toolbar.php' );
-require_once ( dirname( __FILE__ ) . '/hc-shibboleth.php' );
+require_once ( dirname( __FILE__ ) . '/hc-simplesaml.php' );
 require_once ( dirname( __FILE__ ) . '/class.comanage-api.php' );
 require_once ( dirname( __FILE__ ) . '/class-logger.php' );
 
@@ -148,7 +148,6 @@ class Humanities_Commons {
 		add_shortcode( 'hcommons_env_variable', array( $this, 'hcommons_get_env_variable' ) );
 		add_filter( 'bp_blogs_format_activity_action_new_blog_post', array( $this, 'hcommons_blogs_format_activity_new_blog_post' ),  10, 2 );
 		add_filter( 'bp_blogs_format_activity_action_new_blog_comment', array( $this, 'hcommons_blogs_format_activity_new_blog_comment' ), 10, 2 );
-
 	}
 
 

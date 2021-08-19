@@ -30,7 +30,6 @@ add_filter( 'login_redirect', 'hcommons_remove_admin_redirect', 5 );
  * @param string $username User who is attempting to log in.
  */
 function hcommons_login_failed( $username ) {
-	hcommons_write_error_log( 'info', '****LOGIN_FAILED****-' . $_SERVER['HTTP_REFERER'] . ' ' . $_SERVER['HTTP_X_FORWARDED_FOR'] . ' ' . $_SERVER['HTTP_EMPLOYEENUMBER'] );
 
 	$referrer = $_SERVER['HTTP_REFERER'];
 
@@ -107,6 +106,7 @@ function hcommons_set_user_member_types( $user ) {
 	$user_id = $user->ID;
 
 	$memberships = Humanities_Commons::hcommons_get_user_memberships();
+	//hcommons_write_error_log( 'info', '****DUMP****-' . var_export( $_SERVER, true ) );
 	hcommons_write_error_log( 'info', '****RETURNED_MEMBERSHIPS****-' . $_SERVER['HTTP_HOST'] . '-' . var_export( $user->user_login, true ) . '-' . var_export( $memberships, true ) );
 	$member_societies = (array) bp_get_member_type( $user_id, false );
 	hcommons_write_error_log( 'info', '****PRE_SET_USER_MEMBER_TYPES****-' . var_export( $member_societies, true ) );
@@ -501,27 +501,36 @@ function hcommons_auto_login() {
 	if ( defined( 'WP_CLI' ) && constant( 'WP_CLI' ) ) {
 		return;
 	}
-
+	hcommons_write_error_log( 'info', '****HCOMMONS_AUTO_LOGIN_STEP1****-' . var_export( Humanities_Commons::$society_id, true ) );
 	// This requires wp-saml-auth to be active.
 	if ( ! class_exists( 'WP_SAML_Auth' ) ) {
 		return;
 	}
 
+	hcommons_write_error_log( 'info', '****HCOMMONS_AUTO_LOGIN_STEP2****-' . var_export( WP_SAML_Auth::get_instance()->get_provider()->isAuthenticated(), true ) );
 	// Do nothing without a SimpleSAML session.
 	if ( ! WP_SAML_Auth::get_instance()->get_provider()->isAuthenticated() ) {
 		return;
 	}
+	hcommons_write_error_log( 'info', '****HCOMMONS_AUTO_LOGIN_STEP3****-' . var_export ( is_user_logged_in(), true ) );
 
 	// Do nothing for existing sessions.
 	if ( is_user_logged_in() ) {
 		return;
 	}
+	hcommons_write_error_log( 'info', '****HCOMMONS_AUTO_LOGIN_STEP4****-' . sprintf( '%s: authenticating token %s', __METHOD__, $_COOKIE['SimpleSAMLAuthToken'] ) );
 
 	// At this point, we know there's a SimpleSAML session but no WordPress session, so try authenticating.
 	error_log( sprintf( '%s: authenticating token %s', __METHOD__, $_COOKIE['SimpleSAMLAuthToken'] ) );
 	$result = WP_SAML_Auth::get_instance()->do_saml_authentication();
 
+	hcommons_write_error_log( 'info', '****HCOMMONS_AUTO_LOGIN_STEP5****-' . var_export( Humanities_Commons::$society_id, true ) . var_export(  $result, true ) );
+
 	if ( is_a( $result, 'WP_User' ) ) {
+		hcommons_write_error_log( 'info', '****HCOMMONS_AUTO_LOGIN_STEP5****-' . var_export( Humanities_Commons::$society_id, true ) . var_export(  $result, true ) );
+		hcommons_write_error_log( 'info', '****HCOMMONS_AUTO_LOGIN_STEP6****-' . sprintf( '%s: successfully authenticated %s', __METHOD__, $result->user_login ) );
+		hcommons_write_error_log( 'info', '****HCOMMONS_AUTO_LOGIN_STEP6a***-' . var_export ( is_user_logged_in(), true ) );
+
 		error_log( sprintf( '%s: successfully authenticated %s', __METHOD__, $result->user_login ) );
 
 		// Make sure this user is a member of the current site.
