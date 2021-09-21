@@ -469,6 +469,7 @@ function hcommons_set_env_saml_attributes() {
 		'Meta-displayName'  => 'HTTP_META_DISPLAYNAME',
 		'Meta-organizationName'  => 'HTTP_META_ORGANIZATIONDISPLAYNAME',
 		'Meta-organizationDisplayName'  => 'HTTP_META_ORGANIZATIONNAME',
+		'urn:oid:2.5.4.3' => 'HTTP_DISPLAYNAME',
 	];
 
 	$mapped = [];
