@@ -162,7 +162,8 @@ function hcommons_maybe_set_user_role_for_site( $user ) {
 			$site_caps_array['subscriber'] = true;
 			$site_caps_updated = maybe_serialize( $site_caps_array );
 			$result = update_user_meta( $user_id, $prefix . 'capabilities', $site_caps_updated );
-			$user->init_caps();
+			$user->for_site();
+            hcommons_write_error_log( 'info', '****MAYBE_SET_USER_ROLE_FOR_SITE***-'.var_export( $user, true ) );
 			hcommons_write_error_log( 'info', '****MAYBE_SET_USER_ROLE_FOR_SITE***-'.var_export( $result, true ).'-'.var_export( $is_site_member, true ).'-'.var_export( $site_caps_updated, true ).'-'.var_export( $prefix, true ).'-'.var_export( $user_id, true ) );
 		}
 	} else {
@@ -173,6 +174,14 @@ function hcommons_maybe_set_user_role_for_site( $user ) {
 	}
 }
 add_action( 'wp_saml_auth_existing_user_authenticated', 'hcommons_maybe_set_user_role_for_site' );
+
+function hcommons_dump_new_user_data( $user_args, $attributes ) {
+
+	hcommons_write_error_log( 'info', '****DUMP_NEW_USER_DATA***-'.var_export( $user_args, true ) );
+	hcommons_write_error_log( 'info', '****DUMP_NEW_USER_DATA***-'.var_export( $attributes, true ) );
+	return $user_args;
+}
+add_action( 'wp_saml_auth_insert_user', 'hcommons_dump_new_user_data', 10, 2 );
 
 /**
  * Capture shibboleth data in user meta once per shibboleth session
