@@ -131,17 +131,19 @@ function hcommons_set_user_member_types( $user ) {
 					hcommons_write_error_log( 'info', '****ADD_GROUP_MEMBERSHIP***-' . $group_id . '-' . $user_id );
 				}
 			}
-			//Remove a user from society groups if they are not a member of that society.
-			$user_groups = groups_get_groups( ['user_id' => $user_id ] );
-			foreach ( $user_groups as $user_group ) {
-				$group_type = bp_groups_get_group_type( $user_group->id );
-				if ( ! $group_type ) {
-					continue;
-				}
-				if ( ! in_array( $group_type, $memberships['societies'] ) ) {
-					groups_leave_group( $group_id, $user_id );
-					hcommons_write_error_log( 'info', '****REMOVE_GROUP_MEMBERSHIP***-' . $group_id . '-' . $user_id );
-				}
+		}
+	}
+
+	//Remove a user from society groups if they are not a member of that society.
+	$user_groups = groups_get_groups( ['user_id' => $user_id ] );
+	if ( array_key_exists( 'groups', $user_groups ) ) {
+		foreach ( $user_groups['groups'] as $user_group ) {
+			$group_type = bp_groups_get_group_type( $user_group->id );
+			if ( ! $group_type ) {
+				continue;
+			}
+			if ( ! in_array( $group_type, $memberships['societies'] ) ) {
+				groups_leave_group( $user_group->id, $user_id );
 			}
 		}
 	}
