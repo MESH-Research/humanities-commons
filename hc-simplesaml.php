@@ -134,6 +134,19 @@ function hcommons_set_user_member_types( $user ) {
 		}
 	}
 
+	//Remove a user from society groups if they are not a member of that society.
+	$user_groups = groups_get_groups( ['user_id' => $user_id ] );
+	if ( array_key_exists( 'groups', $user_groups ) ) {
+		foreach ( $user_groups['groups'] as $user_group ) {
+			$group_type = bp_groups_get_group_type( $user_group->id );
+			if ( ! $group_type ) {
+				continue;
+			}
+			if ( ! in_array( $group_type, $memberships['societies'] ) ) {
+				groups_leave_group( $user_group->id, $user_id );
+			}
+		}
+	}
 }
 add_action( 'wp_saml_auth_existing_user_authenticated', 'hcommons_set_user_member_types' );
 
@@ -366,6 +379,10 @@ add_filter( 'wp_saml_auth_existing_user_authenticated', 'hcommons_shibboleth_ses
  * @return bool $active
  */
 function hcommons_saml_session_active() {
+
+		if ( ! class_exists( 'WP_SAML_Auth' ) ) {
+			return false;
+		}
 
         if ( ! WP_SAML_Auth::get_instance()->get_provider()->isAuthenticated() ) {
                 return false;
