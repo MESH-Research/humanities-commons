@@ -150,39 +150,32 @@ function hcommons_set_user_member_types( $user ) {
 }
 add_action( 'wp_saml_auth_existing_user_authenticated', 'hcommons_set_user_member_types' );
 
+/**
+ * When a user logs in, if they are a member of the society, ensure that they
+ * have at least the subscriber role. If they are not a member of the society,
+ * remove all of their roles.
+ *
+ * Note: the logic of this function is slightly different than the previous
+ * version when a user is not the member of a site. The previous version was
+ * more thorough in removing user capabilities. (Mike 21-10-26)
+ *
+ * @param WP_User $user The user who has just logged in.
+ */
 function hcommons_maybe_set_user_role_for_site( $user ) {
-
-	//TODO Can we find WP functions that avoid messing directly with usermeta for a user that has not yet signed in?
-	global $wpdb;
-	$prefix = $wpdb->get_blog_prefix();
-	$user_id = $user->ID;
-	$site_caps = get_user_meta( $user_id, $prefix . 'capabilities', true );
-	$site_caps_array = maybe_unserialize( $site_caps );
-	//$memberships = $this->hcommons_get_user_memberships();
 	$memberships = Humanities_Commons::hcommons_get_user_memberships();
 	$is_site_member = in_array( Humanities_Commons::$society_id, $memberships['societies'] );
 
+	$user_roles = get_userdata( $user->ID )->roles;
+	$site_roles = [ 'subscriber', 'contributor', 'author', 'editor', 'administrator' ];
+	$user_site_roles = array_intersect( $user_roles, $site_roles );
+
 	if ( $is_site_member ) {
-		//TODO Copy role check logic from hcommons_check_user_site_membership().
-		$site_role_found = false;
-		foreach( $site_caps_array as $key=>$value ) {
-			if ( in_array( $key, array( 'subscriber', 'contributor', 'author', 'editor', 'administrator' ) ) ) {
-				$site_role_found = true;
-				break;
-			}
-		}
-		if ( $is_site_member && ! $site_role_found ) {
-			$site_caps_array['subscriber'] = true;
-			$site_caps_updated = maybe_serialize( $site_caps_array );
-			$result = update_user_meta( $user_id, $prefix . 'capabilities', $site_caps_updated );
-			$user->for_site();
-            hcommons_write_error_log( 'info', '****MAYBE_SET_USER_ROLE_FOR_SITE***-'.var_export( $user, true ) );
-			hcommons_write_error_log( 'info', '****MAYBE_SET_USER_ROLE_FOR_SITE***-'.var_export( $result, true ).'-'.var_export( $is_site_member, true ).'-'.var_export( $site_caps_updated, true ).'-'.var_export( $prefix, true ).'-'.var_export( $user_id, true ) );
+		if ( empty( $user_site_roles ) ) {
+			$user->set_role( 'subscriber' );
 		}
 	} else {
-		if ( ! empty( $site_caps ) ) {
-			delete_user_meta( $user_id, $prefix . 'capabilities' );
-			delete_user_meta( $user_id, $prefix . 'user_level' );
+		foreach ( $user_site_roles as $role ) {
+			$user->remove_role( $role );
 		}
 	}
 }
