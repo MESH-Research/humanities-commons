@@ -32,15 +32,20 @@ $hcommons_logger->createLog( 'hcommons_error' );
 function hcommons_write_error_log( $error_type, $error_message, $info = null ) {
 
 	global $hcommons_logger;
-	if ( 'info' === $error_type ) {
-		if ( empty( $info ) ) {
-			$hcommons_logger->addInfo( $error_message );
+	try {
+		if ( 'info' === $error_type ) {
+			if ( empty( $info ) ) {
+				$hcommons_logger->addInfo( $error_message );
+			} else {
+				$hcommons_logger->addInfo( $error_message . ' : ', $info );
+			}
 		} else {
-			$hcommons_logger->addInfo( $error_message . ' : ', $info );
+			$hcommons_logger->addError( $error_message );
 		}
-	} else {
-		$hcommons_logger->addError( $error_message );
+	} catch ( Exception $e ) {
+		//Do nothing
 	}
+	
 }
 
 require_once ( dirname( __FILE__ ) . '/society-settings.php' );
