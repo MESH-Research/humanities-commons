@@ -542,14 +542,12 @@ function hcommons_auto_login() {
 
 	// At this point, we know there's a SimpleSAML session but no WordPress session, so try authenticating.
 	error_log( sprintf( '%s: authenticating token %s', __METHOD__, $_COOKIE['SimpleSAMLAuthToken'] ) );
-        hcommons_write_error_log( 'info', '****HCOMMONS_AUTO_LOGIN_STEP4A****-' );
 	$result = WP_SAML_Auth::get_instance()->do_saml_authentication();
-        hcommons_write_error_log( 'info', '****HCOMMONS_AUTO_LOGIN_STEP4B****-' );
 
-	hcommons_write_error_log( 'info', '****HCOMMONS_AUTO_LOGIN_STEP5a****-' . var_export( Humanities_Commons::$society_id, true ) . var_export(  $result, true ) );
+	hcommons_write_error_log( 'info', '****HCOMMONS_AUTO_LOGIN_STEP5****-' . var_export( Humanities_Commons::$society_id, true ) . var_export(  $result, true ) );
 
 	if ( is_a( $result, 'WP_User' ) ) {
-		hcommons_write_error_log( 'info', '****HCOMMONS_AUTO_LOGIN_STEP5b****-' . var_export( Humanities_Commons::$society_id, true ) . var_export(  $result, true ) );
+		hcommons_write_error_log( 'info', '****HCOMMONS_AUTO_LOGIN_STEP5****-' . var_export( Humanities_Commons::$society_id, true ) . var_export(  $result, true ) );
 		hcommons_write_error_log( 'info', '****HCOMMONS_AUTO_LOGIN_STEP6****-' . sprintf( '%s: successfully authenticated %s', __METHOD__, $result->user_login ) );
 		hcommons_write_error_log( 'info', '****HCOMMONS_AUTO_LOGIN_STEP6a***-' . var_export ( is_user_logged_in(), true ) );
 
@@ -575,83 +573,3 @@ function hcommons_auto_login() {
 		}
 	}
 }
-
-/**
- * This function ensures that when plugit.php::valudate_auth_cookie runs, it
- * always uses the auth_key stored in the main Humanities Commons network,
- * rather than society networks.
- *
- * It is called from wp_salt, which stores secrets in the database if they are
- * not defined in wp-config.php.
- *
- * Note: This function assumes that the main Humanities Commons network has an
- * ID of 2. It doesn't really matter which network is used, as long as it
- * exists.
- *
- * @see hcommons_always_return_hc_secure_auth_salt for companion filter that
- * returns the auth_salt from Humanities Commons.
- * 
- * @author Mike Thicke
- *
- * @param string|bool $key        The auth key ( false if not set by some other
- * filter )
- * @param string      $option     The option (should be 'secure_auth_key' )
- * @param int         $network_id The network ID
- * @param string      $default    The default value (unused)
- *
- * @return string The auth key stored in the Humanities Commons network (network
- * ID 2)
- */
-function hcommons_always_return_hc_secure_auth_key( $key, $option, $network_id, $default ) {
-	if ( $key ) {
-		return $key;
-	}
-
-	if ( $network_id === 2 || $option !== 'secure_auth_key' ) {
-		return false;
-	}
-
-	$hc_auth_key = get_network_option( 2, 'secure_auth_key' );
-	return $hc_auth_key;
-}
-add_filter( 'pre_site_option_secure_auth_key', 'hcommons_always_return_hc_secure_auth_key', 10, 4 );
-
-/**
- * This function ensures that when plugit.php::valudate_auth_cookie runs, it
- * always uses the auth_salt stored in the main Humanities Commons network,
- * rather than society networks.
- *
- * It is called from wp_salt, which stores secrets in the database if they are
- * not defined in wp-config.php.
- *
- * Note: This function assumes that the main Humanities Commons network has an
- * ID of 2. It doesn't really matter which network is used, as long as it
- * exists.
- *
- * @see hcommons_always_return_hc_secure_auth_key for companion filter that
- * returns the auth_key from Humanities Commons.
- * 
- * @author Mike Thicke
- *
- * @param string|bool $salt       The auth key ( false if not set by some other
- * filter )
- * @param string      $option     The option (should be 'secure_auth_salt' )
- * @param int         $network_id The network ID
- * @param string      $default    The default value (unused)
- *
- * @return string The auth key stored in the Humanities Commons network (network
- * ID 2)
- */
-function hcommons_always_return_hc_secure_auth_salt( $salt, $option, $network_id, $default ) {
-	if ( $salt ) {
-		return $salt;
-	}
-
-	if ( $network_id === 2 || $option !== 'secure_auth_salt' ) {
-		return false;
-	}
-
-	$hc_auth_salt = get_network_option( 2, 'secure_auth_salt' );
-	return $hc_auth_salt;
-}
-add_filter( 'pre_site_option_secure_auth_salt', 'hcommons_always_return_hc_secure_auth_salt', 10, 4 );
