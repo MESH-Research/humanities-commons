@@ -158,6 +158,30 @@ class Humanities_Commons {
 		add_filter( 'bp_docs_post_args_before_save', array( $this, 'hcommons_disable_akismet_for_moving_docs' ), 5, 3 );
 	}
 
+	public static function society_name() {
+		if ( ! self::$society_id ) {
+			return '';
+		}
+		switch ( self::$society_id ) {
+			case 'hc' :
+				return 'Humanities Commons';
+			case 'msu' :
+				return 'MSU Commons';
+			case 'mla' :
+				return 'MLA Commons';
+			case 'up' :
+				return 'UP Commons';
+			case 'sah' :
+				return 'SAH Commons';
+			case 'asees' :
+				return 'ASEEES Commons';
+			case 'arlisna' :
+				return 'ARLIS/NA Commons';
+			default :
+				return strtoupper( self::$society_id ) . ' Commons';
+		}
+	}
+
 	/**
 	 * Disable Akismet for BuddyPress docs when a doc is being moved.
 	 *
@@ -1772,7 +1796,10 @@ class Humanities_Commons {
 	public static function hcommons_non_member_active_session() {
 
 		$user_memberships = self::hcommons_get_user_memberships();
-		if ( ! empty( $user_memberships['societies'] ) && ! in_array( self::$society_id, $user_memberships['societies'] ) ) {
+		if ( empty( $user_memberships['societies'] ) ) {
+			return true;
+		}
+		if ( ! in_array( self::$society_id, $user_memberships['societies'] ) ) {
 			return true;
 		}
 		return false;
