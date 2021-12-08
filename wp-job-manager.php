@@ -19,14 +19,12 @@ function hc_custom_wp_jobs_can_post_job_up( $can_post ) {
 	if ( ! $can_post || strpos( $current_site, 'jobs.up.hcommons' ) === False ) {
 		return $can_post;
 	}
-
-	$user = wp_get_current_user();
-	$user_roles = get_userdata( $user->ID )->roles;
 	
-	if ( empty( $user_roles ) ) {
-		return False;
-	} else {
+	$memberships = Humanities_Commons::hcommons_get_user_memberships();
+	if ( is_array($memberships['societies'] ) && in_array( 'up', $memberships['societies'] ) ) {
 		return True;
+	} else {
+		return False;
 	} 
 }
 add_filter( 'job_manager_user_can_post_job', 'hc_custom_wp_jobs_can_post_job_up', 10, 1 );
