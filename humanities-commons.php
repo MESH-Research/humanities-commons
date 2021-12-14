@@ -156,6 +156,20 @@ class Humanities_Commons {
 
 		// Disable Akismet for BuddyPress docs. Docs are getting spammed when moved around in folders. --Mike 21-08-19
 		add_filter( 'bp_docs_post_args_before_save', array( $this, 'hcommons_disable_akismet_for_moving_docs' ), 5, 3 );
+
+		// Add hcommons.org to list of allowed redirect hosts on dev, for site importing purposes. --Mike 21-12-10
+		add_filter( 'http_request_host_is_external', array( $this, 'allow_external_hcommons'), 10, 3 );
+	}
+
+	public function allow_external_hcommons( $external, $host, $url ) {
+		if ( ! defined('WP_ENV') || ( WP_ENV != 'staging' && WP_ENV != 'development' ) ) {
+			return $external;
+		}
+
+		if ( ! strpos( $host, 'hcommons.org' ) !== False ) {
+			return True;
+		}
+		return False;
 	}
 
 	public static function society_name() {
@@ -1686,6 +1700,25 @@ class Humanities_Commons {
 			}
 		}
 
+		if ( isset( $_SERVER['HTTP_ISMEMBEROF'] ) && ! $memberships['societies'] ) {
+			$server_membership_strings = explode( ';', $_SERVER['HTTP_ISMEMBEROF'] );
+			$server_memberships = [];
+			foreach ( $server_membership_strings as $membership_string ) {
+				$pattern = '/CO:COU:(.*?):members:(.*)/';
+				if ( preg_match( $pattern, $membership_string, $matches ) ) {
+					$server_memberships[strtolower($matches[1])] = $matches[2];
+				}
+			}
+
+			$member_types = array_keys( bp_get_member_types() );
+			$active_memberships = array_keys(
+				array_filter( $server_memberships, function( $value ) {
+					return $value === 'active';
+				} )
+			);
+			$memberships['societies'] = array_intersect( $member_types, $active_memberships );
+		}
+
 		return $memberships;
 	}
 
@@ -1784,6 +1817,21 @@ class Humanities_Commons {
 
 		}
 		return false;
+	}
+
+	public static function hcommons_user_in_current_society() {
+		// If user has active society session, return true. 
+		if ( ! self::hcommons_non_member_active_session() ) {
+			return True;
+		}
+
+		//If not, check if they have the correct member type.
+		$current_user = wp_get_current_user();
+		$member_types = (array)bp_get_member_type( $current_user->ID, false );
+		if ( in_array( self::$society_id, $member_types ) ) {
+			return True;
+		}
+		return False;
 	}
 
 	/**
