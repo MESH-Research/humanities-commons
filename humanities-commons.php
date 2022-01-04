@@ -1720,10 +1720,13 @@ class Humanities_Commons {
 		}
 
 		/** Logging */
-		$username = wp_get_current_user()->user_login;
-		$ismemberof = isset( $_SERVER['HTTP_ISMEMBEROF'] ) ? $_SERVER['HTTP_ISMEMBEROF'] : '';
-		hcommons_write_error_log( 'info', "User: $username ISMEMBEROF: $ismemberof memberships: " . var_export( $memberships, true ) );
-
+		$current_user = wp_get_current_user();
+		if ( $current_user ) {
+			$username = $current_user->user_login;
+			$ismemberof = isset( $_SERVER['HTTP_ISMEMBEROF'] ) ? $_SERVER['HTTP_ISMEMBEROF'] : '';
+			hcommons_write_error_log( 'info', "User: $username ISMEMBEROF: $ismemberof memberships: " . var_export( $memberships, true ) );
+		}
+		
 		return $memberships;
 	}
 
