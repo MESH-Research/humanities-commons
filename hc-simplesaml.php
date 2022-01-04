@@ -521,43 +521,43 @@ function hcommons_auto_login() {
 	if ( defined( 'WP_CLI' ) && constant( 'WP_CLI' ) ) {
 		return;
 	}
-	hcommons_write_error_log( 'info', '****HCOMMONS_AUTO_LOGIN_STEP1****-' . var_export( Humanities_Commons::$society_id, true ) );
+	//hcommons_write_error_log( 'info', '****HCOMMONS_AUTO_LOGIN_STEP1****-' . var_export( Humanities_Commons::$society_id, true ) );
 	// This requires wp-saml-auth to be active.
 	if ( ! class_exists( 'WP_SAML_Auth' ) ) {
 		return;
 	}
 
-	hcommons_write_error_log( 'info', '****HCOMMONS_AUTO_LOGIN_STEP2****-' . var_export( WP_SAML_Auth::get_instance()->get_provider()->isAuthenticated(), true ) );
+	//hcommons_write_error_log( 'info', '****HCOMMONS_AUTO_LOGIN_STEP2****-' . var_export( WP_SAML_Auth::get_instance()->get_provider()->isAuthenticated(), true ) );
 	// Do nothing without a SimpleSAML session.
 	if ( ! WP_SAML_Auth::get_instance()->get_provider()->isAuthenticated() ) {
 		return;
 	}
-	hcommons_write_error_log( 'info', '****HCOMMONS_AUTO_LOGIN_STEP3****-' . var_export ( is_user_logged_in(), true ) );
+	//hcommons_write_error_log( 'info', '****HCOMMONS_AUTO_LOGIN_STEP3****-' . var_export ( is_user_logged_in(), true ) );
 
 	// Do nothing for existing sessions.
 	if ( is_user_logged_in() ) {
 		return;
 	}
-	hcommons_write_error_log( 'info', '****HCOMMONS_AUTO_LOGIN_STEP4****-' . sprintf( '%s: authenticating token %s', __METHOD__, $_COOKIE['SimpleSAMLAuthToken'] ) );
+	//hcommons_write_error_log( 'info', '****HCOMMONS_AUTO_LOGIN_STEP4****-' . sprintf( '%s: authenticating token %s', __METHOD__, $_COOKIE['SimpleSAMLAuthToken'] ) );
 
 	// At this point, we know there's a SimpleSAML session but no WordPress session, so try authenticating.
 	error_log( sprintf( '%s: authenticating token %s', __METHOD__, $_COOKIE['SimpleSAMLAuthToken'] ) );
 	$result = WP_SAML_Auth::get_instance()->do_saml_authentication();
 
-	hcommons_write_error_log( 'info', '****HCOMMONS_AUTO_LOGIN_STEP5****-' . var_export( Humanities_Commons::$society_id, true ) . var_export(  $result, true ) );
+	//hcommons_write_error_log( 'info', '****HCOMMONS_AUTO_LOGIN_STEP5****-' . var_export( Humanities_Commons::$society_id, true ) . var_export(  $result, true ) );
 
 	if ( is_a( $result, 'WP_User' ) ) {
-		hcommons_write_error_log( 'info', '****HCOMMONS_AUTO_LOGIN_STEP5****-' . var_export( Humanities_Commons::$society_id, true ) . var_export(  $result, true ) );
-		hcommons_write_error_log( 'info', '****HCOMMONS_AUTO_LOGIN_STEP6****-' . sprintf( '%s: successfully authenticated %s', __METHOD__, $result->user_login ) );
-		hcommons_write_error_log( 'info', '****HCOMMONS_AUTO_LOGIN_STEP6a***-' . var_export ( is_user_logged_in(), true ) );
+		//hcommons_write_error_log( 'info', '****HCOMMONS_AUTO_LOGIN_STEP5****-' . var_export( Humanities_Commons::$society_id, true ) . var_export(  $result, true ) );
+		//hcommons_write_error_log( 'info', '****HCOMMONS_AUTO_LOGIN_STEP6****-' . sprintf( '%s: successfully authenticated %s', __METHOD__, $result->user_login ) );
+		//hcommons_write_error_log( 'info', '****HCOMMONS_AUTO_LOGIN_STEP6a***-' . var_export ( is_user_logged_in(), true ) );
 
-		error_log( sprintf( '%s: successfully authenticated %s', __METHOD__, $result->user_login ) );
+		//error_log( sprintf( '%s: successfully authenticated %s', __METHOD__, $result->user_login ) );
 
 		// Make sure this user is a member of the current site.
 		$memberships      = Humanities_Commons::hcommons_get_user_memberships();
 		$member_societies = (array) $memberships['societies'];
 		if ( ! in_array( Humanities_Commons::$society_id, $member_societies ) ) {
-			hcommons_write_error_log( 'info', '****CHECK_USER_SITE_MEMBERSHIP_FAIL****-' . var_export( $memberships['societies'], true ) . var_export( Humanities_Commons::$society_id, true ) . var_export( $result, true ) );
+			//hcommons_write_error_log( 'info', '****CHECK_USER_SITE_MEMBERSHIP_FAIL****-' . var_export( $memberships['societies'], true ) . var_export( Humanities_Commons::$society_id, true ) . var_export( $result, true ) );
 			error_log( '****CHECK_USER_SITE_MEMBERSHIP_FAIL****-' . var_export( $memberships['societies'], true ) . var_export( Humanities_Commons::$society_id, true ) . var_export( $result, true ) );
 			error_log( sprintf( '%s: %s is not a member of %s', __METHOD__, $result->user_login, Humanities_Commons::$society_id ) );
 			return;
