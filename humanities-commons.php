@@ -159,6 +159,9 @@ class Humanities_Commons {
 
 		// Add hcommons.org to list of allowed redirect hosts on dev, for site importing purposes. --Mike 21-12-10
 		add_filter( 'http_request_host_is_external', array( $this, 'allow_external_hcommons'), 10, 3 );
+
+		add_filter( 'user_has_cap', array( $this, 'hcommons_vet_user_for_bpeo' ), 10, 4 );
+		add_filter( 'map_meta_cap', array( $this, 'hcommons_bpeo_event_creation_capability' ), 20, 4 );
 	}
 
 	public function allow_external_hcommons( $external, $host, $url ) {
@@ -1526,6 +1529,33 @@ class Humanities_Commons {
 	}
 
 	/**
+	 * Waiting period for BP Events
+	 */
+	public function hcommons_vet_user_for_bpeo( $capabilities, $primitive_caps, $args, $user ) {
+		if ( $args[0] !== 'connect_event_to_group' && $args[0] !== 'publish_events') {
+			return $capabilities;
+		}
+		$vetted_user = $this->hcommons_vet_user();
+		if ( ! $vetted_user ) {
+			// 'read' is the required primitive capability for 'connect_event_to_group'
+			unset( $capabilities['read'] );
+		}
+		return $capabilities;
+	}
+
+	/**
+	 * A user should require the 'read' primitive capability in order to create events.
+	 */
+	public function hcommons_bpeo_event_creation_capability( $caps, $cap, $user_id, $args ) {
+		if ( $cap !== 'publish_events' ) {
+			return $caps;
+		}
+
+		$caps[] = 'read';
+		return $caps;
+	}
+
+	/**
 	 * Waiting period for BP DOCS
 	 *
 	 * @return array
@@ -1637,8 +1667,8 @@ class Humanities_Commons {
 		$timeDiff = time() - strtotime( $current_user->user_registered );
 
 		if ( $timeDiff < ( 60 * 60 * 48 ) ) {
-			//return false;
-			return true; // disable spammer check for now
+			return false;
+			//return true; // disable spammer check for now
 		} else {
 			return true;
 		}
