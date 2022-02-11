@@ -123,6 +123,15 @@ if ( ! defined( 'ABSPATH' ) ) {
                                 ),
                                 'has_directory' => 'up'
                         ) );
+                bp_register_member_type(
+                        'hastac',
+                        array(
+                                'labels' => array(
+                                        'name' => 'HASTAC',
+                                        'singular_name' => 'HASTAC',
+                                ),
+                                'has_directory' => 'hastac'
+                        ) );
         }
         add_action( 'bp_register_member_types', 'hcommons_register_member_types' );
 
@@ -236,6 +245,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 				),
 				'has_directory' => 'up'
 			) );
+                bp_groups_register_group_type(
+                        'hastac',
+                        array(
+                                'labels' => array(
+                                        'name' => 'HASTAC',
+                                        'singular_name' => 'HASTAC',
+                                ),
+                                'has_directory' => 'hastac'
+                        ) );
 	}
         add_action( 'bp_groups_register_group_types', 'hcommons_register_group_types' );
 
