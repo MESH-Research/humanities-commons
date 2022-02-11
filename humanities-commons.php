@@ -194,6 +194,8 @@ class Humanities_Commons {
 				return 'ASEEES Commons';
 			case 'arlisna' :
 				return 'ARLIS/NA Commons';
+			case 'hastac' :
+				return 'HASTAC Commons';
 			default :
 				return strtoupper( self::$society_id ) . ' Commons';
 		}
