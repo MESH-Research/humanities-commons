@@ -244,6 +244,16 @@ class comanageApi {
 						'Description' => 'SOCSCI' ];
 			$temp_cous['Cous'][] = [ 'Id' => '13', 'Name' => 'STEM',
 						'Description' => 'STEM' ];
+			$temp_cous['Cous'][] = [ 
+				'Id'          => '13',
+				'Name'        => 'STEM',
+				'Description' => 'STEM'
+			];
+			$temp_cous['Cous'][] = [ 
+				'Id'          => '14',
+				'Name'        => 'HASTAC',
+				'Description' => 'HASTAC'
+			];
 			$req['body'] = json_encode( $temp_cous );
 
 			//$req = wp_remote_get( $this->url . '/cous.' . $this->format . '?coid=2', $this->api_args );

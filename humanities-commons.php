@@ -194,6 +194,8 @@ class Humanities_Commons {
 				return 'ASEEES Commons';
 			case 'arlisna' :
 				return 'ARLIS/NA Commons';
+			case 'hastac' :
+				return 'HASTAC Commons';
 			default :
 				return strtoupper( self::$society_id ) . ' Commons';
 		}
@@ -1754,7 +1756,9 @@ class Humanities_Commons {
 		if ( 0 !== $current_user->ID ) {
 			$username = $current_user->user_login;
 			$ismemberof = isset( $_SERVER['HTTP_ISMEMBEROF'] ) ? $_SERVER['HTTP_ISMEMBEROF'] : '';
+			$email = isset( $_SERVER['HTTP_MAIL'] ) ? $SERVER['HTTP_MAIL'] : '';
 			hcommons_write_error_log( 'info', "User: $username ISMEMBEROF: $ismemberof memberships: " . var_export( $memberships, true ) );
+			hcommons_write_error_log( 'info', "User: $username Email: $email" );
 		}
 		
 		return $memberships;
