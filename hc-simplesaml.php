@@ -399,22 +399,6 @@ if ( class_exists( 'WP_SAML_Auth' ) ) {
 }
 
 /**
- * COOKIE_DOMAIN is defined by wordpress-mu-domain-mapping's sunrise.php for sites using mapped domains.
- * For all other sites, use the domain of the root blog on the root network.
- */
-if ( ! defined( 'COOKIE_DOMAIN' ) ) {
-	$main_network_id = 2; // TODO This is HC's ID. Reconcile with PRIMARY_NETWORK_ID, which is still MLA.
-
-	if ( function_exists( 'network_exists' ) && network_exists( $main_network_id ) ) {
-		$main_network = get_network( $main_network_id );
-
-		if ( is_a( $main_network, 'WP_Network' ) ) {
-			define( 'COOKIE_DOMAIN', $main_network->cookie_domain );
-		}
-	}
-}
-
-/**
  * Set WP SAML Auth configuration options.
  *
  * @param mixed  $value       Configuration value.
