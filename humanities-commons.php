@@ -1712,27 +1712,11 @@ class Humanities_Commons {
 		];
 
 		if ( isset( $_SERVER['HTTP_ISMEMBEROF'] ) ) {
-			$membership_header = $_SERVER['HTTP_ISMEMBEROF'] . ';';
-			$member_types = bp_get_member_types();
-
-			foreach ( $member_types as $key=>$value ) {
-
-				$pattern = sprintf( '/Humanities Commons:%1$s:members_%1$s;/', strtoupper( $key ) );
-				if ( preg_match( $pattern, $membership_header, $matches ) ) {
-					$memberships['societies'][] = $key;
-				}
-
-				$pattern = sprintf( '/Humanities Commons:%1$s_(.*?);/', strtoupper( $key ) );
-				if ( preg_match_all( $pattern, $membership_header, $matches ) ) {
-					//hcommons_write_error_log( 'info', '****GET_MATCHES****-'.$key.'-'.var_export( $matches, true ) );
-					$memberships['groups'][$key] = $matches[1];
-				}
-
-			}
-		}
-
-		if ( isset( $_SERVER['HTTP_ISMEMBEROF'] ) && ! $memberships['societies'] ) {
 			$server_membership_strings = explode( ';', $_SERVER['HTTP_ISMEMBEROF'] );
+
+			/*
+			 * Societies / organizations
+			 */
 			$server_memberships = [];
 			foreach ( $server_membership_strings as $membership_string ) {
 				$pattern = '/CO:COU:(.*?):members:(.*)/';
@@ -1748,6 +1732,24 @@ class Humanities_Commons {
 				} )
 			);
 			$memberships['societies'] = array_intersect( $member_types, $active_memberships );
+
+			/*
+			 * Groups
+			 */
+			foreach ( $server_membership_strings as $membership_string ) {
+				$pattern = '/Humanities Commons:([A-Z]*_)?([^:^;]*)/';
+				if ( preg_match( $pattern, $membership_string, $matches ) ) {
+					$society_prefix = $matches[1];
+					if ( $society_prefix ) {
+						$society_key = trim( $society_prefix, '_' );
+						$society_key = strtolower( $society_key );
+						if ( ! array_key_exists( $society_key, $memberships['groups'] ) ) {
+							$memberships['groups'][$society_key] = [];
+						}
+						$memberships['groups'][$society_key][] = $matches[2];
+					} 
+				}
+			}
 		}
 
 		/** Logging */

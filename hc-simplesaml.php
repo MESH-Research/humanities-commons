@@ -120,13 +120,13 @@ function hcommons_set_user_member_types( $user ) {
 
 	//If site is a society we are mapping groups for and the user is member of the society, map any groups from comanage to wp.
 	//TODO add logic to remove groups the user is no longer a member of
-	if ( in_array( Humanities_Commons::$society_id, array( 'ajs', 'arlisna', 'aseees', 'caa', 'mla', 'msu', 'sah', 'up', ) ) &&
+	if ( in_array( Humanities_Commons::$society_id, array( 'ajs', 'arlisna', 'aseees', 'caa', 'mla', 'msu', 'sah', 'up', 'hastac', 'hc' ) ) &&
 		in_array( Humanities_Commons::$society_id, $memberships['societies'] ) ) {
 		if ( isset( $memberships['groups'][Humanities_Commons::$society_id] ) ) {
 			foreach( $memberships['groups'][Humanities_Commons::$society_id] as $group_name ) {
 				//$group_id = $this->hcommons_lookup_society_group_id( Humanities_Commons::$society_id, $group_name );
 				$group_id = Humanities_Commons::hcommons_lookup_society_group_id( Humanities_Commons::$society_id, $group_name );
-				if ( ! groups_is_user_member( $user_id, $group_id ) ) {
+				if ( $group_id && ! groups_is_user_member( $user_id, $group_id ) ) {
 					$success = groups_join_group( $group_id, $user_id );
 					hcommons_write_error_log( 'info', '****ADD_GROUP_MEMBERSHIP***-' . $group_id . '-' . $user_id );
 				}
