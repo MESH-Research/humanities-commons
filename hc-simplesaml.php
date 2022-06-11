@@ -101,41 +101,31 @@ function hcommons_sync_bp_profile( $user ) {
 }
 add_action( 'wp_saml_auth_existing_user_authenticated', 'hcommons_sync_bp_profile' );
 
+/**
+ * Sync user memberships from COmanage for organizations and managed groups.
+ *
+ * For societies, user must be a member of that socitey in COmanage to be a
+ * member of that organization in WP. For unmanaged organization groups, remove
+ * group membership for users who are not a member of that organization. For
+ * managed groups (set in WordPress admin for that group), add/remove users
+ * based on group membership in COmanage.
+ *
+ * @param WP_User $user The user.
+ */
 function hcommons_set_user_member_types( $user ) {
 
 	$user_id = $user->ID;
-
 	$memberships = Humanities_Commons::hcommons_get_user_memberships();
-	//hcommons_write_error_log( 'info', '****DUMP****-' . var_export( $_SERVER, true ) );
-	hcommons_write_error_log( 'info', '****RETURNED_MEMBERSHIPS****-' . $_SERVER['HTTP_HOST'] . '-' . var_export( $user->user_login, true ) . '-' . var_export( $memberships, true ) );
-	$member_societies = (array) bp_get_member_type( $user_id, false );
-	hcommons_write_error_log( 'info', '****PRE_SET_USER_MEMBER_TYPES****-' . var_export( $member_societies, true ) );
-	$result = bp_set_member_type( $user_id, '' ); // Clear existing types, if any.
-	$append = true;
+	
+	bp_set_member_type( $user_id, '' ); // Clear existing types, if any.
 
 	foreach( $memberships['societies'] as $member_type ) {
-		$result = bp_set_member_type( $user_id, $member_type, $append );
-		hcommons_write_error_log( 'info', '****SET_EACH_MEMBER_TYPE****-' . $user_id . '-' . $member_type . '-' . var_export( $result, true ) );
+		bp_set_member_type( $user_id, $member_type, true );
 	}
 
-	//If site is a society we are mapping groups for and the user is member of the society, map any groups from comanage to wp.
-	//TODO add logic to remove groups the user is no longer a member of
-	if ( in_array( Humanities_Commons::$society_id, array( 'ajs', 'arlisna', 'aseees', 'caa', 'mla', 'msu', 'sah', 'up', 'hastac', 'hc' ) ) &&
-		in_array( Humanities_Commons::$society_id, $memberships['societies'] ) ) {
-		if ( isset( $memberships['groups'][Humanities_Commons::$society_id] ) ) {
-			foreach( $memberships['groups'][Humanities_Commons::$society_id] as $group_name ) {
-				//$group_id = $this->hcommons_lookup_society_group_id( Humanities_Commons::$society_id, $group_name );
-				$group_id = Humanities_Commons::hcommons_lookup_society_group_id( Humanities_Commons::$society_id, $group_name );
-				if ( $group_id && ! groups_is_user_member( $user_id, $group_id ) ) {
-					$success = groups_join_group( $group_id, $user_id );
-					hcommons_write_error_log( 'info', '****ADD_GROUP_MEMBERSHIP***-' . $group_id . '-' . $user_id );
-				}
-			}
-		}
-	}
-
-	//Remove a user from society groups if they are not a member of that society.
 	$user_groups = groups_get_groups( ['user_id' => $user_id ] );
+
+	// Remove a user from society groups if they are not a member of that society.
 	if ( array_key_exists( 'groups', $user_groups ) ) {
 		foreach ( $user_groups['groups'] as $user_group ) {
 			$group_type = bp_groups_get_group_type( $user_group->id );
@@ -144,6 +134,21 @@ function hcommons_set_user_member_types( $user ) {
 			}
 			if ( ! in_array( $group_type, $memberships['societies'] ) ) {
 				groups_leave_group( $user_group->id, $user_id );
+			}
+		}
+	}
+
+	// Sync group membership for managed groups.
+	$managed_groups = Humanities_Commons::hcommons_get_managed_groups();
+	foreach ( $managed_groups as $society_id => $society_groups ) {
+		foreach ( $society_groups as $group_name => $group_id ) {
+			if ( 
+				array_key_exists( $society_id, $memberships['groups'] ) &&
+				in_array( $group_name, $memberships['groups'][ $society_id ] )
+			) {
+				groups_join_group( $group_id, $user_id );
+			} else {
+				groups_leave_group( $group_id, $user_id );
 			}
 		}
 	}
@@ -395,7 +400,7 @@ if ( class_exists( 'WP_SAML_Auth' ) ) {
 	add_action( 'bp_init', 'hcommons_set_env_saml_attributes', 2 );
 
 	// After hcommons_set_env_saml_attributes().
-	add_action( 'bp_init', 'hcommons_auto_login', 3 );
+	add_action( 'bp_init', 'hcommons_auto_login', 50 );
 }
 
 /**

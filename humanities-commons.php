@@ -308,7 +308,7 @@ class Humanities_Commons {
 				if( $autopopulate !== $autopopulate_meta ) {
 
 					groups_update_groupmeta( $group_id, 'autopopulate', $autopopulate );
-					wp_cache_delete( self::$society_id. '_managed_group_names', 'hcommons_settings' );
+					wp_cache_delete( 'managed_group_names', 'hcommons_settings' );
 
 				}
 
@@ -1976,43 +1976,65 @@ class Humanities_Commons {
 		return false;
 	}
 
-        /**
-         * Lookup society group id by name.
+	/**
+	 * Get managed groups.
+	 *
+	 * @return array Managed groups categorized by society
+	 */
+	public static function hcommons_get_managed_groups() {
+		$managed_group_names = wp_cache_get( 'managed_group_names', 'hcommons_settings' );
+
+		if ( false === $managed_group_names || empty( $managed_group_names ) ) {
+			$managed_group_names = [];
+			$autopopulate_groups = groups_get_groups( 
+				[
+					'show_hidden' => true, 
+					'per_page'    => -1,
+					'meta_query'  => [
+						[
+							'key'   => 'autopopulate',
+							'value' => 'Y',
+						],
+					],
+				] 
+			);
+			foreach( $autopopulate_groups['groups'] as $group ) {
+				$group_society_id = bp_groups_get_group_type( $group->id, true );
+				$managed_group_names[ $group_society_id ][ strip_tags( stripslashes( $group->name ) ) ] = $group->id;
+			}
+			wp_cache_set( 
+				'managed_group_names',
+				$managed_group_names,
+				'hcommons_settings',
+				24 * HOUR_IN_SECONDS
+			);
+		}
+
+		return $managed_group_names;
+	}
+
+	/**
+	 * Lookup society group id by name.
 	 *
 	 * @since HCommons
 	 *
 	 * @param string $society_id
 	 * @param string $group_name
 	 * @return string group id
-         */
-        public function hcommons_lookup_society_group_id( $society_id, $group_name ) {
+	 */
+	public static function hcommons_lookup_society_group_id( $society_id, $group_name ) {
 
-                $managed_group_names = wp_cache_get( $society_id . '_managed_group_names', 'hcommons_settings' );
+		$managed_group_names = self::hcommons_get_managed_groups();
 
-                if ( false === $managed_group_names || empty( $managed_group_names ) ) {
+		if ( 
+			array_key_exists( $society_id, $managed_group_names ) &&
+			array_key_exists( $group_name, $managed_group_names[ $society_id ] )
+		) {
+			return $managed_group_names[ $society_id ][ $group_name ];
+		}
 
-                        $bp = buddypress();
-                        global $wpdb;
-                        $managed_group_names = array();
-                        $all_groups = $wpdb->get_results( 'SELECT * FROM ' . $bp->table_prefix . 'bp_groups' );
-                        foreach ( $all_groups as $group ) {
-
-                                $group_society_id = bp_groups_get_group_type( $group->id, true );
-                                if ( $society_id === $group_society_id ) {
-					$autopopulate = groups_get_groupmeta( $group->id, 'autopopulate' );
-                                        if ( ! empty( $autopopulate ) && 'Y' === $autopopulate ) {
-                                                $managed_group_names[strip_tags( stripslashes( $group->name ) )] = $group->id;
-                                        }
-
-                                }
-
-                        }
-                        wp_cache_set( $society_id . '_managed_group_names', $managed_group_names, 'hcommons_settings', 24 * HOUR_IN_SECONDS );
-                }
-		//hcommons_write_error_log( 'info', '****DUMP_LOOKUP_TRANSIENT***-' . var_export( $managed_group_names, true ) );
-                return $managed_group_names[$group_name];
-
-        }
+		return null;
+	}
 
 	/**
 	 * helper function to facilitate conditions where caller can be identified by function/class name
