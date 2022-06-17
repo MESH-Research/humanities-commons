@@ -113,6 +113,10 @@ add_action( 'wp_saml_auth_existing_user_authenticated', 'hcommons_sync_bp_profil
  * @param WP_User $user The user.
  */
 function hcommons_set_user_member_types( $user ) {
+
+	if ( ! $user ) {
+		$user = wp_get_current_user();
+	}
 	
 	$user_info = get_userdata( $user->ID );
 	hcommons_write_error_log( 'info', "Setting user member types for {$user_info->user_login}." );
@@ -120,14 +124,14 @@ function hcommons_set_user_member_types( $user ) {
 	$user_id = $user->ID;
 	$memberships = Humanities_Commons::hcommons_get_user_memberships();
 		
-	bp_set_member_type( $user_id, '' ); // Clear existing types, if any.
+	bp_set_member_type( $user->ID, '' ); // Clear existing types, if any.
 
 	foreach( $memberships['societies'] as $member_type ) {
 		hcommons_write_error_log( 'info', "Adding {$user_info->user_login} to $member_type." );
-		bp_set_member_type( $user_id, $member_type, true );
+		bp_set_member_type( $user->ID, $member_type, true );
 	}
 
-	$user_groups = groups_get_groups( ['user_id' => $user_id ] );
+	$user_groups = groups_get_groups( ['user_id' => $user->ID ] );
 
 	// Remove a user from society groups if they are not a member of that society.
 	if ( array_key_exists( 'groups', $user_groups ) ) {
@@ -138,7 +142,7 @@ function hcommons_set_user_member_types( $user ) {
 			}
 			if ( ! in_array( $group_type, $memberships['societies'] ) ) {
 				hcommons_write_error_log( 'info', "Removing {$user_info->user_login} from society group {$user_group->id}." );
-				groups_leave_group( $user_group->id, $user_id );
+				groups_leave_group( $user_group->id, $user->ID );
 			}
 		}
 	}
@@ -152,10 +156,10 @@ function hcommons_set_user_member_types( $user ) {
 				in_array( $group_name, $memberships['groups'][ $society_id ] )
 			) {
 				hcommons_write_error_log( 'info', "Adding {$user_info->user_login} to $society_id group $group_name" );
-				groups_join_group( $group_id, $user_id );
+				groups_join_group( $group_id, $user->ID );
 			} elseif ( in_array( $group_id, array_map( function( $g ) { return $g->id; }, $user_groups['groups'] ) ) ) {
 				hcommons_write_error_log( 'info', "Removing {$user_info->user_login} from $society_id group $group_name" );
-				groups_leave_group( $group_id, $user_id );
+				groups_leave_group( $group_id, $user->ID );
 			}
 		}
 	}
@@ -331,13 +335,13 @@ function hcommons_check_user_site_membership( $user_role ) {
 	$username = $_SERVER['HTTP_EMPLOYEENUMBER'];
 
 	$user = get_user_by( 'login', $username );
-	$user_id = $user->ID;
+
 	$global_super_admins = array();
 	if ( defined( 'GLOBAL_SUPER_ADMINS' ) ) {
 		$global_super_admin_list = constant( 'GLOBAL_SUPER_ADMINS' );
 		$global_super_admins = explode( ',', $global_super_admin_list );
 	}
-	//$memberships = $this->hcommons_get_user_memberships();
+
 	$memberships = Humanities_Commons::hcommons_get_user_memberships();
 	$member_societies = (array)$memberships['societies'];
 	if ( ! in_array( Humanities_Commons::$society_id, $member_societies ) && ! in_array( $user->user_login, $global_super_admins ) ) {
@@ -547,7 +551,7 @@ function hcommons_auto_login() {
 		wp_set_current_user( $result->ID );
 	} else {
 		if ( is_wp_error( $result ) ) {
-			hcommons_write_error_log( 'info', '%s: %s', __METHOD__, $result->get_error_message() );
+			hcommons_write_error_log( 'info', sprintf( '%s: %s', __METHOD__, $result->get_error_message() ) );
 		} else {
 			hcommons_write_error_log( 'info', sprintf( '%s: failed to authenticate', __METHOD__ ) );
 		}
