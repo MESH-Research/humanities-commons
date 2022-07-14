@@ -117,12 +117,21 @@ function hcommons_set_user_member_types( $user ) {
 	if ( ! $user ) {
 		$user = wp_get_current_user();
 	}
+
+	if ( $user->ID === 0 ) {
+		return;
+	}
 	
 	$user_info = get_userdata( $user->ID );
 	hcommons_write_error_log( 'info', "Setting user member types for {$user_info->user_login}." );
 
-	$user_id = $user->ID;
 	$memberships = Humanities_Commons::hcommons_get_user_memberships();
+	hcommons_write_error_log( 'info', "Memberships passed from SAML: " . var_export( $memberships, true ) );
+
+	if ( count( $memberships['societies'] ) === 0 && count( $memberships['groups'] ) === 0 ) {
+		hcommons_write_error_log( 'info', "User is logged in but has expired SAML session, so don't change anything." );
+		return;
+	}
 		
 	bp_set_member_type( $user->ID, '' ); // Clear existing types, if any.
 
@@ -132,20 +141,7 @@ function hcommons_set_user_member_types( $user ) {
 	}
 
 	$user_groups = groups_get_groups( ['user_id' => $user->ID ] );
-
-	// Remove a user from society groups if they are not a member of that society.
-	if ( array_key_exists( 'groups', $user_groups ) ) {
-		foreach ( $user_groups['groups'] as $user_group ) {
-			$group_type = bp_groups_get_group_type( $user_group->id );
-			if ( ! $group_type ) {
-				continue;
-			}
-			if ( ! in_array( $group_type, $memberships['societies'] ) ) {
-				hcommons_write_error_log( 'info', "Removing {$user_info->user_login} from society group {$user_group->id}." );
-				groups_leave_group( $user_group->id, $user->ID );
-			}
-		}
-	}
+	hcommons_write_error_log( 'info', "User Groups: " . var_export( $user_groups, true ) );
 
 	// Sync group membership for managed groups.
 	$managed_groups = Humanities_Commons::hcommons_get_managed_groups();
@@ -160,6 +156,20 @@ function hcommons_set_user_member_types( $user ) {
 			} elseif ( in_array( $group_id, array_map( function( $g ) { return $g->id; }, $user_groups['groups'] ) ) ) {
 				hcommons_write_error_log( 'info', "Removing {$user_info->user_login} from $society_id group $group_name" );
 				groups_leave_group( $group_id, $user->ID );
+			}
+		}
+	}
+
+	// Remove a user from society groups if they are not a member of that society.
+	if ( array_key_exists( 'groups', $user_groups ) ) {
+		foreach ( $user_groups['groups'] as $user_group ) {
+			$group_type = bp_groups_get_group_type( $user_group->id );
+			if ( ! $group_type ) {
+				continue;
+			}
+			if ( ! in_array( $group_type, $memberships['societies'] ) ) {
+				hcommons_write_error_log( 'info', "Removing {$user_info->user_login} from society group {$user_group->name}." );
+				groups_leave_group( $user_group->id, $user->ID );
 			}
 		}
 	}
