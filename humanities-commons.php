@@ -163,7 +163,8 @@ class Humanities_Commons {
 		add_filter( 'user_has_cap', array( $this, 'hcommons_vet_user_for_bpeo' ), 10, 4 );
 		add_filter( 'map_meta_cap', array( $this, 'hcommons_bpeo_event_creation_capability' ), 20, 4 );
 		add_filter( 'bp_loggedin_user_id', array( $this, 'hcommons_bp_loggedin_user_id'), 10, 1 );
-		add_filter( 'bp_follow_blogs_show_footer_button', array( $this, 'hcommons_filter_show_footer_button' ), 10, 1);
+		add_filter( 'bp_follow_blogs_show_footer_button', array( $this, 'hcommons_filter_show_footer_button' ), 10, 1 );
+		add_filter( 'bp_follow_blogs_get_follow_button', array( $this, 'hcommons_filter_get_follow_button' ), 10, 3 );
 	}
 
 	public function allow_external_hcommons( $external, $host, $url ) {
@@ -213,6 +214,17 @@ class Humanities_Commons {
 	 */
 	public function hcommons_filter_show_footer_button( $retval ) {
 		return false;
+	}
+
+	/**
+	 * 
+	 * @see buddypress-followers/_inc/modules/blogs.php::get_button()
+	 * 
+	 * @return array Empty array to prevent button from showing.
+	 * 
+	 */
+	public function hcommons_filter_get_follow_button( $button, $r, $is_following ) {
+		return [];
 	}
 
 	/**
