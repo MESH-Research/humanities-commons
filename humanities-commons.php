@@ -163,6 +163,7 @@ class Humanities_Commons {
 		add_filter( 'user_has_cap', array( $this, 'hcommons_vet_user_for_bpeo' ), 10, 4 );
 		add_filter( 'map_meta_cap', array( $this, 'hcommons_bpeo_event_creation_capability' ), 20, 4 );
 		add_filter( 'bp_loggedin_user_id', array( $this, 'hcommons_bp_loggedin_user_id'), 10, 1 );
+		add_filter( 'bp_follow_blogs_show_footer_button', array( $this, 'hcommons_filter_show_footer_button' ), 10, 1);
 	}
 
 	public function allow_external_hcommons( $external, $host, $url ) {
@@ -200,6 +201,18 @@ class Humanities_Commons {
 			default :
 				return strtoupper( self::$society_id ) . ' Commons';
 		}
+	}
+
+	/**
+	 * Prevent 'Follow Site' and 'Followed Sites' buttons from appearing in footer.
+	 *
+	 * @see buddypress-followers/_inc/modules/blogs.php::show_footer_button()
+	 * 
+	 * @param boolean $retval Whether buttons should appear
+	 * @return boolean Whether buttons should appear (false)
+	 */
+	public function hcommons_filter_show_footer_button( $retval ) {
+		return false;
 	}
 
 	/**
