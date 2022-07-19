@@ -1798,7 +1798,6 @@ class Humanities_Commons {
 				} 
 			}
 		}
-
 		return $group_memberships;
 	}
 
