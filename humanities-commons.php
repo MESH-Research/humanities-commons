@@ -162,6 +162,9 @@ class Humanities_Commons {
 
 		add_filter( 'user_has_cap', array( $this, 'hcommons_vet_user_for_bpeo' ), 10, 4 );
 		add_filter( 'map_meta_cap', array( $this, 'hcommons_bpeo_event_creation_capability' ), 20, 4 );
+		add_filter( 'bp_loggedin_user_id', array( $this, 'hcommons_bp_loggedin_user_id'), 10, 1 );
+		add_filter( 'bp_follow_blogs_show_footer_button', array( $this, 'hcommons_filter_show_footer_button' ), 10, 1 );
+		add_filter( 'bp_follow_blogs_get_follow_button', array( $this, 'hcommons_filter_get_follow_button' ), 10, 3 );
 	}
 
 	public function allow_external_hcommons( $external, $host, $url ) {
@@ -199,6 +202,29 @@ class Humanities_Commons {
 			default :
 				return strtoupper( self::$society_id ) . ' Commons';
 		}
+	}
+
+	/**
+	 * Prevent 'Follow Site' and 'Followed Sites' buttons from appearing in footer.
+	 *
+	 * @see buddypress-followers/_inc/modules/blogs.php::show_footer_button()
+	 * 
+	 * @param boolean $retval Whether buttons should appear
+	 * @return boolean Whether buttons should appear (false)
+	 */
+	public function hcommons_filter_show_footer_button( $retval ) {
+		return false;
+	}
+
+	/**
+	 * 
+	 * @see buddypress-followers/_inc/modules/blogs.php::get_button()
+	 * 
+	 * @return array Empty array to prevent button from showing.
+	 * 
+	 */
+	public function hcommons_filter_get_follow_button( $button, $r, $is_following ) {
+		return [];
 	}
 
 	/**
@@ -308,7 +334,7 @@ class Humanities_Commons {
 				if( $autopopulate !== $autopopulate_meta ) {
 
 					groups_update_groupmeta( $group_id, 'autopopulate', $autopopulate );
-					wp_cache_delete( self::$society_id. '_managed_group_names', 'hcommons_settings' );
+					wp_cache_delete( 'managed_group_names', 'hcommons_settings' );
 
 				}
 
@@ -1705,62 +1731,74 @@ class Humanities_Commons {
 	 */
 	public static function hcommons_get_user_memberships() {
 
-		// Legacy code expects these keys to be set.
 		$memberships = [
-			'societies' => [],
-			'groups' => [],
+			'societies' => self::hcommons_get_user_org_memberships(),
+			'groups'    => self::hcommons_get_user_group_memberships(),
 		];
 
-		if ( isset( $_SERVER['HTTP_ISMEMBEROF'] ) ) {
-			$membership_header = $_SERVER['HTTP_ISMEMBEROF'] . ';';
-			$member_types = bp_get_member_types();
-
-			foreach ( $member_types as $key=>$value ) {
-
-				$pattern = sprintf( '/Humanities Commons:%1$s:members_%1$s;/', strtoupper( $key ) );
-				if ( preg_match( $pattern, $membership_header, $matches ) ) {
-					$memberships['societies'][] = $key;
-				}
-
-				$pattern = sprintf( '/Humanities Commons:%1$s_(.*?);/', strtoupper( $key ) );
-				if ( preg_match_all( $pattern, $membership_header, $matches ) ) {
-					//hcommons_write_error_log( 'info', '****GET_MATCHES****-'.$key.'-'.var_export( $matches, true ) );
-					$memberships['groups'][$key] = $matches[1];
-				}
-
-			}
-		}
-
-		if ( isset( $_SERVER['HTTP_ISMEMBEROF'] ) && ! $memberships['societies'] ) {
-			$server_membership_strings = explode( ';', $_SERVER['HTTP_ISMEMBEROF'] );
-			$server_memberships = [];
-			foreach ( $server_membership_strings as $membership_string ) {
-				$pattern = '/CO:COU:(.*?):members:(.*)/';
-				if ( preg_match( $pattern, $membership_string, $matches ) ) {
-					$server_memberships[strtolower($matches[1])] = $matches[2];
-				}
-			}
-
-			$member_types = array_keys( bp_get_member_types() );
-			$active_memberships = array_keys(
-				array_filter( $server_memberships, function( $value ) {
-					return $value === 'active';
-				} )
-			);
-			$memberships['societies'] = array_intersect( $member_types, $active_memberships );
-		}
-
-		/** Logging */
-		$current_user = wp_get_current_user();
-		if ( 0 !== $current_user->ID ) {
-			$username = $current_user->user_login;
-			$ismemberof = isset( $_SERVER['HTTP_ISMEMBEROF'] ) ? $_SERVER['HTTP_ISMEMBEROF'] : '';
-			$email = isset( $_SERVER['HTTP_MAIL'] ) ? $_SERVER['HTTP_MAIL'] : '';
-			hcommons_write_error_log( 'info', "User: $username ISMEMBEROF: $ismemberof memberships: " . var_export( $memberships, true ) );
-			hcommons_write_error_log( 'info', "User: $username Email: $email" );
-		}
-		
 		return $memberships;
+	}
+
+	/**
+	 * Return user organization / society memberships from session.
+	 *
+	 * @return Array List of organization slugs that user is member of. 
+	 *               Eg. [ 'hc', 'mla', 'msu' ]
+	 */
+	public static function hcommons_get_user_org_memberships() {
+		if ( ! isset( $_SERVER['HTTP_ISMEMBEROF'] ) ) {
+			return [];
+		}
+
+		$server_membership_strings = explode( ';', $_SERVER['HTTP_ISMEMBEROF'] );
+
+		$server_memberships = [];
+		foreach ( $server_membership_strings as $membership_string ) {
+			$pattern = '/CO:COU:(.*?):members:(.*)/';
+			if ( preg_match( $pattern, $membership_string, $matches ) ) {
+				$server_memberships[strtolower($matches[1])] = $matches[2];
+			}
+		}
+
+		$member_types = array_keys( bp_get_member_types() );
+		$active_memberships = array_keys(
+			array_filter( $server_memberships, function( $value ) {
+				return $value === 'active';
+			} )
+		);
+		$org_memberships = array_intersect( $member_types, $active_memberships );
+
+		return $org_memberships;
+	}
+
+	/**
+	 * Return user group memberships from session.
+	 *
+	 * @return Array Associative array where keys are organization slugs and
+	 *               values are lists of group names the user is a member of.
+	 */
+	public static function hcommons_get_user_group_memberships() {
+		if ( ! isset( $_SERVER['HTTP_ISMEMBEROF'] ) ) {
+			return [];
+		}
+
+		$server_membership_strings = explode( ';', $_SERVER['HTTP_ISMEMBEROF'] );
+		$group_memberships = [];
+
+		foreach ( $server_membership_strings as $membership_string ) {
+			$pattern = '/Humanities Commons:([A-Z]*_)?([^:^;]*)/';
+			if ( preg_match( $pattern, $membership_string, $matches ) ) {
+				$society_prefix = $matches[1];
+				if ( $society_prefix ) {
+					$society_key = strtolower( trim( $society_prefix, '_' ) );
+					if ( ! array_key_exists( $society_key, $group_memberships ) ) {
+						$group_memberships[$society_key] = [];
+					}
+					$group_memberships[$society_key][] = $matches[2];
+				} 
+			}
+		}
+		return $group_memberships;
 	}
 
 	/**
@@ -1974,43 +2012,65 @@ class Humanities_Commons {
 		return false;
 	}
 
-        /**
-         * Lookup society group id by name.
+	/**
+	 * Get managed groups.
+	 *
+	 * @return array Managed groups categorized by society
+	 */
+	public static function hcommons_get_managed_groups() {
+		$managed_group_names = wp_cache_get( 'managed_group_names', 'hcommons_settings' );
+
+		if ( false === $managed_group_names || empty( $managed_group_names ) ) {
+			$managed_group_names = [];
+			$autopopulate_groups = groups_get_groups( 
+				[
+					'show_hidden' => true, 
+					'per_page'    => -1,
+					'meta_query'  => [
+						[
+							'key'   => 'autopopulate',
+							'value' => 'Y',
+						],
+					],
+				] 
+			);
+			foreach( $autopopulate_groups['groups'] as $group ) {
+				$group_society_id = bp_groups_get_group_type( $group->id, true );
+				$managed_group_names[ $group_society_id ][ strip_tags( stripslashes( $group->name ) ) ] = $group->id;
+			}
+			wp_cache_set( 
+				'managed_group_names',
+				$managed_group_names,
+				'hcommons_settings',
+				24 * HOUR_IN_SECONDS
+			);
+		}
+
+		return $managed_group_names;
+	}
+
+	/**
+	 * Lookup society group id by name.
 	 *
 	 * @since HCommons
 	 *
 	 * @param string $society_id
 	 * @param string $group_name
 	 * @return string group id
-         */
-        public function hcommons_lookup_society_group_id( $society_id, $group_name ) {
+	 */
+	public static function hcommons_lookup_society_group_id( $society_id, $group_name ) {
 
-                $managed_group_names = wp_cache_get( $society_id . '_managed_group_names', 'hcommons_settings' );
+		$managed_group_names = self::hcommons_get_managed_groups();
 
-                if ( false === $managed_group_names || empty( $managed_group_names ) ) {
+		if ( 
+			array_key_exists( $society_id, $managed_group_names ) &&
+			array_key_exists( $group_name, $managed_group_names[ $society_id ] )
+		) {
+			return $managed_group_names[ $society_id ][ $group_name ];
+		}
 
-                        $bp = buddypress();
-                        global $wpdb;
-                        $managed_group_names = array();
-                        $all_groups = $wpdb->get_results( 'SELECT * FROM ' . $bp->table_prefix . 'bp_groups' );
-                        foreach ( $all_groups as $group ) {
-
-                                $group_society_id = bp_groups_get_group_type( $group->id, true );
-                                if ( $society_id === $group_society_id ) {
-					$autopopulate = groups_get_groupmeta( $group->id, 'autopopulate' );
-                                        if ( ! empty( $autopopulate ) && 'Y' === $autopopulate ) {
-                                                $managed_group_names[strip_tags( stripslashes( $group->name ) )] = $group->id;
-                                        }
-
-                                }
-
-                        }
-                        wp_cache_set( $society_id . '_managed_group_names', $managed_group_names, 'hcommons_settings', 24 * HOUR_IN_SECONDS );
-                }
-		//hcommons_write_error_log( 'info', '****DUMP_LOOKUP_TRANSIENT***-' . var_export( $managed_group_names, true ) );
-                return $managed_group_names[$group_name];
-
-        }
+		return [];
+	}
 
 	/**
 	 * helper function to facilitate conditions where caller can be identified by function/class name
@@ -2030,6 +2090,15 @@ class Humanities_Commons {
 		}
 
 		return $retval;
+	}
+
+	public function hcommons_bp_loggedin_user_id( $id ) {
+		if ( $id && $id !== 0 ) {
+			return $id;
+		}
+
+		$current_user = wp_get_current_user();
+		return $current_user->ID;
 	}
 }
 
