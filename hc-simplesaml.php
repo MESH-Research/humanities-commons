@@ -190,8 +190,13 @@ add_action( 'bp_init', 'hcommons_set_user_member_types', 50 );
  * @param WP_User $user The user who has just logged in.
  */
 function hcommons_maybe_set_user_role_for_site( $user ) {
+	hcommons_write_error_log( 'info', 'hcommons_maybe_set_user_role_for_site - current site: ' . get_current_blog_id() );
 	$memberships = Humanities_Commons::hcommons_get_user_memberships();
 	$is_site_member = in_array( Humanities_Commons::$society_id, $memberships['societies'] );
+
+	switch_to_blog( get_main_site_id() );
+
+	hcommons_write_error_log( 'info', 'hcommons_maybe_set_user_role_for_site - switched to site: ' . get_current_blog_id() );
 
 	$user_roles = get_userdata( $user->ID )->roles;
 	$site_roles = [ 'subscriber', 'contributor', 'author', 'editor', 'administrator' ];
@@ -202,10 +207,13 @@ function hcommons_maybe_set_user_role_for_site( $user ) {
 			$user->set_role( 'subscriber' );
 		}
 	} else {
+		hcommons_write_error_log( 'info', 'hcommons_maybe_set_user_role_for_site - removing roles for site' );
 		foreach ( $user_site_roles as $role ) {
 			$user->remove_role( $role );
 		}
 	}
+
+	restore_current_blog();
 }
 add_action( 'wp_saml_auth_existing_user_authenticated', 'hcommons_maybe_set_user_role_for_site' );
 
