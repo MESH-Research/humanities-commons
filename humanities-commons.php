@@ -1753,8 +1753,8 @@ class Humanities_Commons {
 		$server_membership_strings = explode( ';', $_SERVER['HTTP_ISMEMBEROF'] );
 
 		$server_memberships = [];
+		$pattern = '/CO:COU:(.*?):members:(.*)/';
 		foreach ( $server_membership_strings as $membership_string ) {
-			$pattern = '/CO:COU:(.*?):members:(.*)/';
 			if ( preg_match( $pattern, $membership_string, $matches ) ) {
 				$server_memberships[strtolower($matches[1])] = $matches[2];
 			}
@@ -1766,6 +1766,21 @@ class Humanities_Commons {
 				return $value === 'active';
 			} )
 		);
+
+		// Fallback for legacy organizational memberships. If this is finding
+		// memberships that are not being found above, something is going wrong.
+		// This code should be removed once Grouper is retired.
+		$pattern = '/Humanities Commons:(.*?):members_(.*?)/';
+		foreach ( $server_membership_strings as $membership_string ) {
+			if ( preg_match( $pattern, $membership_string, $matches ) ) {
+				$member_org = strtolower( $matches[1] );
+				if ( ! in_array( $member_org, $active_memberships ) ) {
+					$active_memberships[] = $member_org;
+					hcommons_write_error_log( 'info', "hcommons_get_user_org_memberships - adding fallback society membership - $member_org" );
+				}
+			}
+		}
+
 		$org_memberships = array_intersect( $member_types, $active_memberships );
 
 		return $org_memberships;
@@ -1783,6 +1798,7 @@ class Humanities_Commons {
 		}
 
 		$server_membership_strings = explode( ';', $_SERVER['HTTP_ISMEMBEROF'] );
+		hcommons_write_error_log( 'info', 'HTTP_ISMEMBEROF' . var_export($_SERVER['HTTP_ISMEMBEROF'], true));
 		$group_memberships = [];
 
 		foreach ( $server_membership_strings as $membership_string ) {
