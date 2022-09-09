@@ -132,6 +132,15 @@ if ( ! defined( 'ABSPATH' ) ) {
                                 ),
                                 'has_directory' => 'hastac'
                         ) );
+                bp_register_member_type(
+                        'dhri',
+                        array(
+                                'labels' => array(
+                                        'name' => 'DHRI',
+                                        'singular_name' => 'DHRI',
+                                ),
+                                'has_directory' => 'dhri'
+                        ) );
         }
         add_action( 'bp_register_member_types', 'hcommons_register_member_types' );
 
@@ -253,6 +262,15 @@ if ( ! defined( 'ABSPATH' ) ) {
                                         'singular_name' => 'HASTAC',
                                 ),
                                 'has_directory' => 'hastac'
+                        ) );
+                bp_groups_register_group_type(
+                        'dhri',
+                        array(
+                                'labels' => array(
+                                        'name' => 'DHRI',
+                                        'singular_name' => 'DHRI',
+                                ),
+                                'has_directory' => 'dhri'
                         ) );
 	}
         add_action( 'bp_groups_register_group_types', 'hcommons_register_group_types' );
