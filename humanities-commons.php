@@ -165,6 +165,8 @@ class Humanities_Commons {
 		add_filter( 'bp_loggedin_user_id', array( $this, 'hcommons_bp_loggedin_user_id'), 10, 1 );
 		add_filter( 'bp_follow_blogs_show_footer_button', array( $this, 'hcommons_filter_show_footer_button' ), 10, 1 );
 		add_filter( 'bp_follow_blogs_get_follow_button', array( $this, 'hcommons_filter_get_follow_button' ), 10, 3 );
+	
+		add_action( 'init', array( $this, 'add_hide_site_option' ), 10 , 0 );
 	}
 
 	public function allow_external_hcommons( $external, $host, $url ) {
@@ -2106,6 +2108,13 @@ class Humanities_Commons {
 		}
 
 		return $retval;
+	}
+
+	/**
+	 * Adds an option to hide the site from the Sites page.
+	 */
+	public function add_hide_site_option() {
+		add_option( 'hide-site-from-listing' );
 	}
 
 	public function hcommons_bp_loggedin_user_id( $id ) {
