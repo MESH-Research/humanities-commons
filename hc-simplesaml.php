@@ -190,26 +190,28 @@ add_action( 'bp_init', 'hcommons_set_user_member_types', 50 );
  * @param WP_User $user The user who has just logged in.
  */
 function hcommons_maybe_set_user_role_for_site( $user ) {
-	hcommons_write_error_log( 'info', 'hcommons_maybe_set_user_role_for_site - current site: ' . get_current_blog_id() );
+	hcommons_write_error_log( 'info', "hcommons_maybe_set_user_role_for_site - user: {$user->data->user_nicename} current site: " . get_current_blog_id() );
 	$memberships = Humanities_Commons::hcommons_get_user_memberships();
 	$is_site_member = in_array( Humanities_Commons::$society_id, $memberships['societies'] );
 
 	switch_to_blog( get_main_site_id() );
 
-	hcommons_write_error_log( 'info', 'hcommons_maybe_set_user_role_for_site - switched to site: ' . get_current_blog_id() );
+	hcommons_write_error_log( 'info', "hcommons_maybe_set_user_role_for_site - user: {$user->data->user_nicename} switched to site: " . get_current_blog_id() );
 
-	$user_roles = get_userdata( $user->ID )->roles;
+	$base_site_user = get_userdata( $user->ID );
+	$user_roles = $base_site_user->roles;
 	$site_roles = [ 'subscriber', 'contributor', 'author', 'editor', 'administrator' ];
 	$user_site_roles = array_intersect( $user_roles, $site_roles );
 
 	if ( $is_site_member ) {
 		if ( empty( $user_site_roles ) ) {
-			$user->set_role( 'subscriber' );
+			hcommons_write_error_log( 'info', "hcommons_maybe_set_user_role_for_site - user: {$user->data->user_nicename} - setting role to subscriber" );
+			$base_site_user->set_role( 'subscriber' );
 		}
 	} else {
 		hcommons_write_error_log( 'info', 'hcommons_maybe_set_user_role_for_site - removing roles for site' );
 		foreach ( $user_site_roles as $role ) {
-			$user->remove_role( $role );
+			$base_site_user->remove_role( $role );
 		}
 	}
 
