@@ -2054,7 +2054,7 @@ class Humanities_Commons {
 			);
 			foreach( $autopopulate_groups['groups'] as $group ) {
 				$group_society_id = bp_groups_get_group_type( $group->id, true );
-				$managed_group_names[ $group_society_id ][ strip_tags( stripslashes( $group->name ) ) ] = $group->id;
+				$managed_group_names[ $group_society_id ][ strip_tags( stripslashes( html_entity_decode( $group->name ) ) ) ] = $group->id;
 			}
 			wp_cache_set( 
 				'managed_group_names',
