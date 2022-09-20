@@ -20,7 +20,16 @@
  * @return string Author's display name wrapped in link to their profile.
  */
 function hc_add_post_author_profile_link( $value, $user_id, $original_user_id ) {
+	global $wp_current_filter;
+	
 	if ( is_admin() ) {
+		return $value;
+	}
+
+	// In the context where this is meant to be called,
+	// get_the_author_display_name should be the only active filter. If there
+	// are other nested filters, we probably don't want to do anything.
+	if ( count( $wp_current_filter ) > 1 ) {
 		return $value;
 	}
 
