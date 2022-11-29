@@ -132,7 +132,12 @@ function hcommons_set_user_member_types( $user ) {
 		hcommons_write_error_log( 'info', "User is logged in but has expired SAML session, so don't change anything." );
 		return;
 	}
-		
+	
+	// Everyone should be a member of hc. Ensure that they are if something has gone wrong in COmanage.
+	if ( ! in_array( 'hc', $memberships['societies'] ) ) {
+		$memberships['societies'][] = 'hc';
+	}
+
 	bp_set_member_type( $user->ID, '' ); // Clear existing types, if any.
 
 	foreach( $memberships['societies'] as $member_type ) {
