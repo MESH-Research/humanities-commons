@@ -16,15 +16,6 @@ if ( ! defined( 'ABSPATH' ) ) {
         function hcommons_register_member_types() {
 
                 bp_register_member_type(
-                        'ajs',
-                        array(
-                                'labels' => array(
-                                        'name' => 'AJS',
-                                        'singular_name' => 'AJS',
-                                ),
-                                'has_directory' => 'ajs'
-                        ) );
-                bp_register_member_type(
                         'arlisna',
                         array(
                                 'labels' => array(
@@ -41,15 +32,6 @@ if ( ! defined( 'ABSPATH' ) ) {
                                         'singular_name' => 'ASEEES',
                                 ),
                                 'has_directory' => 'aseees'
-                        ) );
-                bp_register_member_type(
-                        'caa',
-                        array(
-                                'labels' => array(
-                                        'name' => 'CAA',
-                                        'singular_name' => 'CAA',
-                                ),
-                                'has_directory' => 'caa'
                         ) );
                 bp_register_member_type(
                         'hc',
@@ -147,15 +129,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	function hcommons_register_group_types() {
 
 		bp_groups_register_group_type(
-			'ajs',
-			array(
-				'labels' => array(
-					'name' => 'AJS',
-					'singular_name' => 'AJS',
-				),
-				'has_directory' => 'ajs'
-			) );
-		bp_groups_register_group_type(
 			'arlisna',
 			array(
 				'labels' => array(
@@ -172,15 +145,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 					'singular_name' => 'ASEEES',
 				),
 				'has_directory' => 'aseees'
-			) );
-		bp_groups_register_group_type(
-			'caa',
-			array(
-				'labels' => array(
-					'name' => 'CAA',
-					'singular_name' => 'CAA',
-				),
-				'has_directory' => 'caa'
 			) );
 		bp_groups_register_group_type(
 			'hc',
