@@ -160,7 +160,7 @@ function hcommons_set_user_member_types( $user ) {
 				groups_join_group( $group_id, $user->ID );
 			} elseif ( in_array( $group_id, array_map( function( $g ) { return $g->id; }, $user_groups['groups'] ) ) ) {
 				hcommons_write_error_log( 'info', "Removing {$user_info->user_login} from $society_id group $group_name" );
-				groups_leave_group( $group_id, $user->ID );
+				hcommons_safe_leave_group( $group_id, $user->ID );
 			}
 		}
 	}
@@ -174,7 +174,7 @@ function hcommons_set_user_member_types( $user ) {
 			}
 			if ( ! in_array( $group_type, $memberships['societies'] ) ) {
 				hcommons_write_error_log( 'info', "Removing {$user_info->user_login} from society group {$user_group->name}." );
-				groups_leave_group( $user_group->id, $user->ID );
+				hcommons_safe_leave_group( $user_group->id, $user->ID );
 			}
 		}
 	}
@@ -182,6 +182,23 @@ function hcommons_set_user_member_types( $user ) {
 	hcommons_write_error_log( 'info', "Finished setting user member types for {$user_info->user_login}." );
 }
 add_action( 'bp_init', 'hcommons_set_user_member_types', 50 );
+
+/**
+ * If the user is the only group admin, BuddyPress will not allow them to leave
+ * and will throw a message. There's not a good way to suppress the message, so
+ * we'll check to make sure they aren't the only admin before trying to remove.
+ *
+ * @see bp-groups-functions.php::groups_leave_group()
+ */
+function hcommons_safe_leave_group( $group_id, $user_id ) {
+	if ( count( groups_get_group_admins( $group_id ) ) < 2 ) {
+		if ( groups_is_user_admin( $user_id, $group_id ) ) {
+			return false;
+		}
+	}
+
+	return groups_leave_group( $group_id, $user_id );
+}
 
 /**
  * When a user logs in, if they are a member of the society, ensure that they
