@@ -72,3 +72,23 @@ function hc_filter_author_link( $link, $author_id, $author_nicename ) {
 	return $link;
 }
 add_filter( 'author_link', 'hc_filter_author_link', 10, 3 );
+
+/**
+ * Add Google Tag to header site-wide.
+ * 
+ * @see https://github.com/MESH-Research/commons/issues/550
+ */
+function hc_add_google_analytics_tag() {
+	?>
+	<!-- Google tag (gtag.js) (site-wide) -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-G8B8HY7PBC"></script>
+	<script>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
+
+	  gtag('config', 'G-G8B8HY7PBC');
+	</script>
+	<?php
+}
+add_action( 'wp_head', 'hc_add_google_analytics_tag', 10, 0 );
