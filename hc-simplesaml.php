@@ -241,6 +241,42 @@ function hcommons_maybe_set_user_role_for_site( $user ) {
 }
 add_action( 'wp_saml_auth_existing_user_authenticated', 'hcommons_maybe_set_user_role_for_site' );
 
+/**
+ * When a user logs in, check if the email address passsed from the IDMS matches
+ * the user's current email address. If not, update the user's address
+ * accordingly.
+ *
+ * This supports moving user account administration out of WordPress and into
+ * COmanage widgets.
+ *
+ * Will only update if exactly one email address is passed from COmanage. This
+ * prevents unintended changes if the COmanage elector data filter is not
+ * operating or a user's record has not been reprovisioned.
+ *
+ * @see https://github.com/MESH-Research/commons/issues/560
+ */
+function hcommons_maybe_update_email( $user ) {
+	if ( ! $_SERVER['HTTP_MAIL'] ) {
+		return;
+	}
+
+	$email_addresses = explode( ';', $_SERVER['HTTP_MAIL'] );
+
+	if ( count( $email_addresses ) !== 1 ) {
+		return;
+	}
+
+	if ( $user->data->user_email !== $email_addresses[0] ) {
+		wp_update_user(
+			[
+				'ID'          => $user->ID,
+				'user_email' => $email_addresses[0],
+			]
+		);
+	}
+}
+add_action( 'wp_saml_auth_existing_user_authenticated', 'hcommons_maybe_update_email', 10, 1 );
+
 function hcommons_dump_new_user_data( $user_args, $attributes ) {
 
 	hcommons_write_error_log( 'info', '****DUMP_NEW_USER_DATA***-'.var_export( $user_args, true ) );
