@@ -1,0 +1,199 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: bp-block-member\n"
+"POT-Creation-Date: 2015-04-10 10:41-0800\n"
+"PO-Revision-Date: 2015-04-10 10:41-0800\n"
+"Last-Translator: \n"
+"Language-Team: philopress\n"
+"Language: Enlgish\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.5\n"
+"X-Poedit-KeywordsList: _;_e;__\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: ..\n"
+
+#: ../bp-block-member-profile.php:13 ../bp-block-member-profile.php:34
+#: ../bp-block-member.php:608
+msgid "Blocked Members"
+msgstr ""
+
+#: ../bp-block-member-profile.php:66
+msgid "You are not blocking any members."
+msgstr ""
+
+#: ../bp-block-member-profile.php:69
+msgid "You are blocking these members:"
+msgstr ""
+
+#: ../bp-block-member-profile.php:75 ../bp-block-member.php:482
+#: ../bp-block-member.php:983 ../bp-block-member.php:1139
+msgid "UnBlock"
+msgstr ""
+
+#: ../bp-block-member-profile.php:115
+msgid "Member was UnBlocked."
+msgstr ""
+
+#: ../bp-block-member.php:320
+msgid ""
+"You have been blocked by one of the persons you are attempting to send a "
+"message to.  Your message has not been sent."
+msgstr ""
+
+#: ../bp-block-member.php:321
+msgid ""
+"You have been blocked by one of the persons you are attempting to send a "
+"reply to.  Your reply has not been sent."
+msgstr ""
+
+#: ../bp-block-member.php:324
+msgid ""
+"You are blocking   one of the persons you are attempting to send a message "
+"to.  Your message has not been sent."
+msgstr ""
+
+#: ../bp-block-member.php:325
+msgid ""
+"You are blocking  one of the persons you are attempting to send a reply to.  "
+"Your reply has not been sent."
+msgstr ""
+
+#: ../bp-block-member.php:483
+msgid "Allow this member to see you."
+msgstr ""
+
+#: ../bp-block-member.php:488
+msgid "Block"
+msgstr ""
+
+#: ../bp-block-member.php:489
+msgid "Block this member from seeing you."
+msgstr ""
+
+#: ../bp-block-member.php:589 ../bp-block-member.php:591
+#: ../bp-block-member.php:600
+msgid "BuddyBlock"
+msgstr ""
+
+#: ../bp-block-member.php:657
+msgid "Visibility"
+msgstr ""
+
+#: ../bp-block-member.php:663
+msgid ""
+"If selected, a blocked member and their content will not be visible to you."
+msgstr ""
+
+#: ../bp-block-member.php:665
+msgid ""
+"If not selected, a blocked member cannot see you, but their content will be "
+"visible to you."
+msgstr ""
+
+#: ../bp-block-member.php:675
+msgid "Yes, I want to hide blocked members and their content."
+msgstr ""
+
+#: ../bp-block-member.php:680
+msgid "Save Checkbox"
+msgstr ""
+
+#: ../bp-block-member.php:706
+msgid "Visibility has been updated."
+msgstr ""
+
+#: ../bp-block-member.php:733
+msgid "Assign User Roles"
+msgstr ""
+
+#: ../bp-block-member.php:739
+msgid ""
+"1. Assigned roles can access the 'Blocked Members' list and 'Block a Member' "
+"below."
+msgstr ""
+
+#: ../bp-block-member.php:740
+msgid ""
+"2. Their profile page will not include a Block button. They cannot be "
+"blocked."
+msgstr ""
+
+#: ../bp-block-member.php:770
+msgid "Save Changes"
+msgstr ""
+
+#: ../bp-block-member.php:818
+msgid "User Roles have been updated."
+msgstr ""
+
+#: ../bp-block-member.php:821
+msgid "No changes were detected re User Roles."
+msgstr ""
+
+#: ../bp-block-member.php:841
+msgid "Block a Member"
+msgstr ""
+
+#: ../bp-block-member.php:847
+msgid "You will need the user login names for both members."
+msgstr ""
+
+#: ../bp-block-member.php:849
+msgid "Enter the user login names:"
+msgstr ""
+
+#: ../bp-block-member.php:853
+msgid "wants to block"
+msgstr ""
+
+#: ../bp-block-member.php:856
+msgid "Create Member Block"
+msgstr ""
+
+#: ../bp-block-member.php:886
+msgid "Invalid user login name in the first box."
+msgstr ""
+
+#: ../bp-block-member.php:892
+msgid "Please enter a user login name in the first box."
+msgstr ""
+
+#: ../bp-block-member.php:904
+msgid "Invalid user login name in the second box."
+msgstr ""
+
+#: ../bp-block-member.php:910
+msgid "Please enter a user login name in the second box."
+msgstr ""
+
+#: ../bp-block-member.php:930
+msgid "There was a database error."
+msgstr ""
+
+#: ../bp-block-member.php:935
+msgid "is now blocking"
+msgstr ""
+
+#: ../bp-block-member.php:942
+msgid "is already blocking"
+msgstr ""
+
+#: ../bp-block-member.php:950
+msgid "cannot block themself."
+msgstr ""
+
+#: ../bp-block-member.php:981
+msgid "User"
+msgstr ""
+
+#: ../bp-block-member.php:982
+msgid "is Blocking"
+msgstr ""
+
+#: ../bp-block-member.php:1124 ../bp-block-member.php:1131
+msgid "Profile"
+msgstr ""

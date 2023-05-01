@@ -1,0 +1,11 @@
+*.log
+*.bak
+.htaccess
+release/
+src/blocks/build
+.DS_Store
+node_modules
+*.code-workspace
+.vscode/
+.pytest_cache/
+vendor/

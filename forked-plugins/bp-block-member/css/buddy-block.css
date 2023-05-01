@@ -1,0 +1,15 @@
+/*
+* This file provides an example ruleset that may be copied to your themes stylesheet
+*
+* This ruleset adds a property to manage the action buttons spacing in BP themes members loops that don't
+* make provision for this aspect. It's not included automagically as it won't be needed by all themes.
+*
+* @package BuddyBlock
+* @version buddyblock 1.0
+*/
+
+/* copy & paste this ruleset below to your themes stylesheet */
+
+.item-list div.action .generic-button {
+	padding: 2px 0 ;
+}
