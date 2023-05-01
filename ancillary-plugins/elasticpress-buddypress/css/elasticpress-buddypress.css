@@ -1,0 +1,164 @@
+/* hide meta for non-post types as it's often wrong */
+.search .type-bp_group .comments-link,
+.search .type-bp_group .entry-actions,
+.search .type-bp_group .post-date,
+.search .type-bp_group .author,
+.search .type-user .comments-link,
+.search .type-user .entry-actions,
+.search .type-user .post-date,
+.search .type-humcore_deposit .comments-link,
+.search .type-humcore_deposit .entry-actions {
+  display: none;
+}
+
+.search .epbp-msg,
+.search #content .epbp-loader {
+  font-size: 2em;
+  padding: 20px 70px;
+}
+
+.search .epbp-loader {
+  text-align: center;
+}
+.search .epbp-loader img {
+}
+
+.search .avatar-65 {
+  border-radius: 37px;
+}
+
+.search .ep-bp-search-facets .epbp-loader {
+  margin-top: 20px;
+}
+
+.search #ep-bp-facets h5 {
+  padding: 1em 0 0.5em;
+}
+/* "select all" links for multiselects */
+.search #ep-bp-facets h5 label a {
+  cursor: pointer;
+  font-size: 80%;
+  margin-left: 0.5em;
+}
+
+.search #ep-bp-facets input,
+.search #ep-bp-facets select {
+  width: 100%;
+}
+
+.search #ep-bp-facets .buddyboss-select {
+  min-width: 0;
+  width: 100%;
+}
+
+.search #ep-bp-facets .buddyboss-select:first-of-type {
+  margin-bottom: 10px;
+}
+
+.search #ep-bp-facets input[type=submit] {
+  padding: 10px 0;
+}
+
+.search .post-wrap {
+  padding: 10px 70px;
+}
+.search .hentry .whitespace {
+  height: 0;
+}
+.search #content article {
+  margin-bottom: 0;
+}
+
+.search .avatar {
+  display: inline;
+}
+
+.search :hover .post_type {
+  color: initial;
+  text-decoration: none;
+}
+
+.search .entry-title {
+  margin-bottom: 10px;
+  line-height: 20px;
+}
+
+.search .entry-title a .post_type {
+  margin-top: 0 !important;
+}
+
+.search .post_type {
+  border-radius: 4px;
+  display: inline-block;
+  font-size: 15px;
+  margin: 5px 10px 0 0;
+  padding: 5px;
+  background-color: #ececec;
+  vertical-align: top;
+}
+.search .post_type::before {
+}
+.search .post_type::after {
+}
+
+/* no pagination since we use infinite scroll. first page still has the links, so hide them. */
+.search .pagination-below {
+  display: none;
+}
+
+.search #ep-bp-facets label {
+  display: inline;
+}
+
+/**
+ * tabselect css
+ * adjusted from http://fredibach.ch/jquery-plugins/tabselect.php#styling
+ */
+.search #ep-bp-facets select[multiple] {
+  display: none;
+}
+
+.search #ep-bp-facets span span {
+  cursor: pointer;
+  padding: 0 5px;
+  margin: 5px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.search #ep-bp-facets span.active {
+  background: yellow;
+  color: black;
+  border: 1px #66aa00 solid;
+}
+.search #ep-bp-facets span.active:hover {
+  border: 1px #338800 solid;
+}
+
+.search #ep-bp-facets span.inactive {
+  background: #ddd;
+  color: #888;
+  border: 1px #bbb solid;
+}
+.search #ep-bp-facets span.inactive:hover {
+  background: #bbb;
+  color: #fff;
+  border: 1px #888 solid;
+}
+
+.search .in-progress {
+  opacity: 0.5;
+}
+
+.search .btn.more {
+  display: block;
+  margin: 2em;
+}
+
+.is-mobile #ep-bp-facets [name=s] {
+  margin-top: 1em;
+}
+
+.is-mobile.search-results .entry-meta {
+  display: none !important;
+}
