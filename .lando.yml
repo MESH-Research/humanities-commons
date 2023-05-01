@@ -1,0 +1,4 @@
+name: humanities-commons
+recipe: lemp
+config:
+  webroot: site/web
