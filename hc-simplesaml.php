@@ -56,15 +56,18 @@ function hcommons_sync_bp_profile( $user ) {
 	hcommons_write_error_log( 'info', '****SYNC_BP_PROFILE****-'.var_export( $user->ID, true ) );
 
 	$current_name = xprofile_get_field_data( 'Name', $user->ID );
+	hcommons_write_error_log( 'info', 'SYNC-name: '.var_export( $current_name, true ) );
 	if ( empty( $current_name ) ) {
 		$server_displayname = !empty($_SERVER['HTTP_DISPLAYNAME']) && isset($_SERVER['HTTP_DISPLAYNAME']) ? $_SERVER['HTTP_DISPLAYNAME'] : '';
 		$name = $server_displayname;  // user record maybe not fully populated for first time users.
 		if ( ! empty( $name ) ) {
+			hcommons_write_error_log( 'info', 'SYNC setting name' );
 			xprofile_set_field_data( 'Name', $user->ID, $name );
 		}
 	}
 
 	$current_title = xprofile_get_field_data( 'Title', $user->ID );
+	hcommons_write_error_log( 'info', 'SYNC-title: '.var_export( $current_title, true ) );
 	if ( empty( $current_title ) ) {
 		$titles = maybe_unserialize( get_user_meta( $user->ID, 'shib_title', true ) );
 		if ( is_array( $titles ) ) {
@@ -73,6 +76,7 @@ function hcommons_sync_bp_profile( $user ) {
 			$title = $titles;
 		}
 		if ( ! empty( $title ) ) {
+			hcommons_write_error_log( 'info', 'SYNC setting title' );
 			xprofile_set_field_data( 'Title', $user->ID, $title );
 		}
 	}
