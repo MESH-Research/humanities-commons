@@ -1,0 +1,343 @@
+/**
+ * view/general styles
+ */
+
+.profile #item-nav,
+.profile #sidebar {
+  display: none !important;
+}
+
+.profile #content {
+  float: none;
+  width: 100%;
+}
+
+.profile #item-header {
+  display: flex;
+}
+
+.profile #item-header-avatar {
+  flex: 1;
+}
+
+.profile #item-header-avatar .avatar {
+  float: none;
+  margin: 0;
+}
+
+.profile #item-header #item-header-content {
+  display: flex;
+  flex: 4;
+  margin: 0 1em;
+}
+
+.profile #item-main {
+  margin-left: 1em;
+  float: left;
+}
+
+.profile #item-main h4 {
+  margin-top: 0;
+}
+
+.profile #item-meta {
+  flex: 1;
+  text-align: right;
+}
+
+.profile #item-meta .current {
+  display: none;
+}
+
+.profile #item-meta #item-buttons > div > a {
+  line-height: 1em;
+}
+
+.profile #profile-main form {
+  display: flex;
+}
+
+.profile #profile-main .left {
+  flex: 1;
+}
+
+.profile #profile-main .right {
+  flex: 2;
+  overflow: auto;
+}
+
+.profile #profile-main .left legend,
+.profile #profile-main .right legend {
+	display: none;
+}
+
+.profile #profile-main .left > div,
+.profile #profile-main .right > div {
+  padding: 1em;
+  background-color: #fafafa;
+}
+
+.profile #profile-main .left > div {
+  margin: 1em 0.5em 1em 0;
+}
+
+.profile #profile-main .right > div {
+  margin: 1em 0 1em 0.5em;
+}
+
+.profile #profile-main .left > div h4,
+.profile #profile-main .right > div h4 {
+  margin: 0 0 0.5em;
+}
+
+.profile .recent-commons-activity li:first-letter {
+  text-transform: capitalize;
+}
+
+.profile h4 {
+  color: black;
+}
+
+/**
+ * tag-cloud-like lists for interests, groups, sites
+ */
+
+.profile .wordblock ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.profile .wordblock li {
+  display: block;
+  margin: 0.25em 0;
+}
+
+.profile .wordblock li a {
+  display: block;
+  padding: 0.25em;
+  text-decoration: none;
+}
+
+.profile .wordblock li a:hover {
+  text-decoration: underline;
+}
+
+.profile #item-header #edit {
+  /*color: #07d;*/ /* leave this up to theme */
+  margin: 0.5em 0 0;
+}
+
+.profile #profile-main .right .core-deposits {
+  white-space: normal;
+}
+
+.profile .core-deposits h5 {
+  margin-top: 0.75em;
+}
+
+.profile .core-deposits li {
+  margin-top: 0.25em;
+}
+
+.profile .recent-commons-activity li {
+  margin-top: 1em;
+}
+
+/**
+ * edit-specific styles
+ */
+
+.profile-edit #profile-main .left > div,
+.profile-edit #profile-main .right > div {
+  white-space: inherit;
+}
+
+.profile-edit .hidden,
+.profile-edit .editable > label,
+.profile-edit #profile-main form .radio {
+  display: none;
+}
+
+.profile-edit .editable {
+  position: relative;
+}
+
+.profile-edit .visibility {
+  position: absolute;
+  top: 1em;
+  right: 1em;
+}
+
+.profile-edit .collapsed > input,
+.profile-edit .collapsed > div {
+  display: none;
+}
+
+.profile-edit .edit-action-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.25);
+  text-align: center;
+  z-index: 1;
+}
+
+.profile-edit #profile-group-edit-submit,
+.profile-edit #cancel {
+	margin: 1em;
+}
+
+.profile-edit .academic-interests .description {
+  margin-bottom: 0.5em;
+}
+
+.profile-edit .js-basic-multiple-tags {
+  width: 100%;
+}
+
+
+/* social link icon labels */
+
+.profile #item-main .username .social-label,
+.profile #item-main .twitter .social-label,
+.profile #item-main .mastodon .social-label,
+.profile #item-main .orcid .social-label,
+.profile #item-main .facebook .social-label,
+.profile #item-main .linkedin .social-label,
+.profile #item-main .website .social-label {
+  display: none;
+}
+
+.profile #item-main .username a::before,
+.profile #item-main .twitter a::before,
+.profile #item-main .mastodon a::before,
+.profile #item-main .orcid a::before,
+.profile #item-main .facebook a::before,
+.profile #item-main .linkedin a::before,
+.profile #item-main .website a::before {
+  background-repeat: no-repeat;
+  background-size: contain;
+  content: "";
+  display: inline-block;
+  height: 14px;
+  padding-right: 4px;
+  position: relative;
+  top: 3px;
+  width: 14px;
+}
+
+.profile #item-main .username a::before {
+  background-image: url( '../assets/img/hc_july8_smaller.png' );
+}
+.profile #item-main .twitter a::before {
+  background-image: url( '../assets/img/Twitter_Logo_Blue.png' );
+}
+.profile #item-main .mastodon a::before {
+  background-image: url( '../assets/img/mastodon.png' );
+}
+.profile #item-main .orcid a::before {
+  background-image: url( '../assets/img/iD-icon.png' );
+}
+.profile #item-main .facebook a::before {
+  background-image: url( '../assets/img/FB-f-Logo__blue_29.png' );
+}
+.profile #item-main .linkedin a::before {
+  background-image: url( '../assets/img/In-2C-14px.png' );
+}
+.profile #item-main .website a::before {
+  background-image: url( '../assets/img/www-icon.png' );
+}
+
+/* jquery dynamic max height */
+.dynamic-height-wrap {
+  overflow: hidden;
+  position: relative;
+  transition: max-height 0.25s ease-in-out;
+  width: 100%;
+}
+
+/* Bottom gradient (optional, but recommended)*/
+.dynamic-height-active .dynamic-height-wrap:before {
+  background: -moz-linear-gradient(270deg, rgba(250,250,250,0) 0%, rgba(250,250,250,1) 100%); /* ff3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(250,250,250,0)), color-stop(100%, rgba(250,250,250,1))); /* safari4+,chrome */
+  background: -webkit-linear-gradient(270deg, rgba(250,250,250,0) 0%, rgba(250,250,250,1) 100%); /* safari5.1+,chrome10+ */
+  background: -o-linear-gradient(270deg, rgba(250,250,250,0) 0%, rgba(250,250,250,1) 100%); /* opera 11.10+ */
+  background: -ms-linear-gradient(270deg, rgba(250,250,250,0) 0%, rgba(250,250,250,1) 100%); /* ie10+ */
+  background: linear-gradient(180deg, rgba(250,250,250,0) 0%, rgba(250,250,250,1) 100%); /* w3c */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fafafa', endColorstr='#fafafa',GradientType=0 ); /* ie6-9 */
+
+  bottom: 0;
+  content:'';
+  height: 30px;
+  left: 0;
+  position: absolute;
+  right: 0;
+  z-index: 1;
+}
+
+.js-dynamic-show-hide.button {
+  margin-top: 1em;
+}
+
+.dynamic-height-active .dynamic-show-more {
+  display: inline-block;
+}
+
+.dynamic-show-more {
+  display: none;
+}
+
+@media screen and (max-width: 721px)  {
+
+  .profile #profile-main form {
+    display: block;
+  }
+
+  .profile #profile-main .left > div,
+  .profile #profile-main .right > div {
+    margin: 1em 0;
+  }
+
+  .profile #item-header #item-header-content {
+    display: block;
+  }
+
+  .network-profile #item-header {
+    margin: 0;
+  }
+
+  body.bp-user #buddypress div#item-header div#item-header-content {
+    margin-left: 0;
+  }
+
+  .profile #buddypress div#item-header div#item-meta {
+    margin: 1em 0 0;
+  }
+
+  .profile #item-main {
+    float: none;
+  }
+
+  .profile #item-meta {
+    text-align: inherit;
+  }
+
+  .profile .avatar-wrap {
+    float: none;
+    height: 60px;
+    width: 60px;
+  }
+
+  .profile #buddypress div#item-header #item-buttons {
+    margin: 0;
+    padding: 0;
+    width: auto;
+  }
+
+  .profile .network-profile #item-header {
+    margin: 1em 2em;
+  }
+
+}

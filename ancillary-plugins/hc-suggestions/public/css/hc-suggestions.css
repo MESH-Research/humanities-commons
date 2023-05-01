@@ -1,0 +1,187 @@
+/**
+ * tabs
+ */
+
+.hc-suggestions-widget ul.ui-tabs-nav {
+	margin-bottom: 0;
+	list-style: none;
+}
+
+.hc-suggestions-widget ul.ui-tabs-nav li {
+	border-radius: 5px;
+	margin: 0 0.25em;
+}
+
+.hc-suggestions-widget ul.ui-tabs-nav li:first-child {
+	margin-left: 0;
+}
+
+.hc-suggestions-widget ul.ui-tabs-nav li:first-child:last-child {
+	display: none;
+}
+
+.hc-suggestions-widget ul.ui-tabs-nav li a {
+	display: inline-block;
+	padding: 0.25em 1em;
+}
+
+.hc-suggestions-widget .ui-state-active {
+	background-color: #ececec;
+}
+
+.hc-suggestions-widget > ul li a:hover {
+	text-decoration: none;
+}
+
+.hc-suggestions-widget .ui-tabs-nav li.ui-state-default a {
+	border-color: #ececec;
+	border-radius: 5px;
+	border-style: solid;
+	border-width: 1px;
+	color: black;
+}
+
+.hc-suggestions-widget .ui-tabs-panel.ui-widget-content {
+	display: table;
+	padding: 1em 0.5em;
+	width: calc( 100% - 1em );
+}
+
+
+/**
+ * content
+ */
+
+.hc-suggestions-widget .widget-description {
+	margin-bottom: 1em;
+	font-size: 120%;
+}
+
+.hc-suggestions-widget > div > p {
+	margin: 1em 2em;
+}
+
+.hc-suggestions-widget .btn.more {
+	margin-top: 1em;
+}
+
+.hc-suggestions-widget .result {
+	display: table;
+	margin-top: 1em;
+	width: 100%;
+}
+
+.hc-suggestions-widget .result:first-child {
+	margin-top: 0;
+}
+
+.hc-suggestions-widget .image {
+	display: table-cell;
+	text-align: center;
+	vertical-align: middle;
+	width: 70px;
+}
+
+.hc-suggestions-widget .image img {
+	border-radius: 50%;
+	height: 70px;
+	max-width: 70px; /* override .entry-content img */
+	vertical-align: middle;
+	width: 70px;
+}
+
+#hc-suggestions-tab-humcore_deposit .image img {
+	height: 48px;
+	width: 48px;
+}
+
+.hc-suggestions-widget .excerpt {
+	display: table-cell;
+	line-height: 1em;
+	padding: 0 2em;
+	width: 80%;
+	vertical-align: middle;
+}
+
+.hc-suggestions-widget .result .actions {
+	display: table-cell;
+	margin-right: 1em;
+	text-align: center;
+	vertical-align: middle;
+}
+
+.hc-suggestions-widget .actions .btn {
+	display: block;
+	margin: 0.25em;
+	padding: 0.25em 0.5em;
+	white-space: nowrap;
+}
+
+.hc-suggestions-widget .name,
+.hc-suggestions-widget .title,
+.hc-suggestions-widget .affiliation,
+.hc-suggestions-widget .terms {
+	display: block;
+	line-height: 1.2em;
+}
+
+.hc-suggestions-widget .name {
+	font-size: 1.2em;
+}
+
+.hc-suggestions-widget .title,
+.hc-suggestions-widget .affiliation,
+.hc-suggestions-widget .description {
+	font-size: 0.8em;
+}
+
+.hc-suggestions-widget .terms {
+	margin-top: 0.25em;
+}
+
+.hc-suggestions-widget .term {
+	display: block;
+}
+
+.hc-suggestions-widget .loader {
+	display: block;
+	margin: 0 auto;
+}
+
+/**
+ * exceptions & overrides
+ */
+
+.home .hc-suggestions-widget:not(:last-child) {
+	margin-bottom: 30px;
+}
+
+#hc-suggestions-tab-humcore_deposit img {
+	border-radius: 0;
+}
+
+
+/**
+ * responsive
+ */
+
+.hc-suggestions-widget.narrow ul.ui-tabs-nav {
+	display: inline-block;
+}
+
+.hc-suggestions-widget.narrow ul.ui-tabs-nav li {
+	margin: 0 0.5em 0.5em 0;
+}
+
+.hc-suggestions-widget.narrow ul.ui-tabs-nav li a {
+	padding: 0 0.5em;
+}
+
+.hc-suggestions-widget.narrow .image,
+.hc-suggestions-widget.narrow .actions {
+	display: none;
+}
+
+.hc-suggestions-widget.narrow .excerpt {
+	padding: 0;
+}

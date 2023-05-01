@@ -1,0 +1,440 @@
+/* core pages */
+.humcore ul, #deposit-error-dialog ul, #deposit-warning-dialog ul {
+    list-style: disc !important;
+    list-style-position: outside !important;
+    margin-left: 20px;
+}
+.core-welcome-page:not(.boxed) #content .panel-grid {
+    margin-left: -70px;
+    margin-right: -70px;
+}
+/* orphan */
+/*
+ul#deposit-other-authors-entry-list {
+	list-style-type: none;
+	margin-left: 0px;
+}
+*/
+.page-template-deposit div.column.twelve.sidebar-left {
+    width: 75% !important;
+}
+/* deposit search styles */
+/*
+.search-page #content {
+    width: 75% !important;
+}
+*/
+#deposits-dir-search {
+	margin-top: 18px;
+}
+.search-page div.item-list-tabs ul li {
+	float: none;
+}
+.buddyboss-select #deposits-order-by {
+    min-width: 165px !important;
+}
+.buddyboss-select #search-deposits-field {
+    min-width: 125px !important;
+}
+/* deposit directory styles */
+.deposits-directory-page .dir-form h3 .button {
+	top: -2px;
+	left: 45px;
+}
+/*
+.deposits-directory-page #content {
+    width: 75% !important;
+}
+*/
+.deposits-directory-page div.item-list-tabs ul li {
+	float: none;
+}
+div.item-list-tabs div#search-again-link {
+	display: inline;
+	float: right;
+}
+div.item-list-tabs ul#search-results-header {
+	display: inline;
+}
+div.item-list-tabs ul#search-results-header li span {
+	display: block;
+	padding: 4px 5px;
+	text-decoration: none;
+	color: #777;
+}
+#deposits-sidebar .directory-facets ul
+#deposits-sidebar h4 {
+	clear: none;
+}
+#deposits-sidebar .directory-facets ul,
+#deposits-sidebar .search-facets ul {
+	margin-top: 0px;
+}
+#deposits-sidebar .directory-facets ul li.descriptive-item {
+	background-color: #ebebeb;
+	border-top: 1px solid #ddd;
+	border-left: 1px solid #ddd;
+	font-weight: normal;
+	padding-left: 10px;
+}
+#deposits-sidebar .directory-facets ul li.descriptive-item ul {
+	color: #999999;
+}
+#deposits-sidebar .directory-facets ul li.facet-set-item,
+#deposits-sidebar .search-facets ul li.facet-set-item {
+      border-bottom: 1px solid #ddd;
+      padding-left: 5px;
+}
+#deposits-sidebar .directory-facets ul.facet-list li,
+#deposits-sidebar .search-facets ul.facet-list li {
+	margin: 0;
+	border: 0;
+}
+#deposits-sidebar .directory-facets ul.facet-list li a,
+#deposits-sidebar .search-facets ul.facet-list li a {
+	padding: 0 !important;
+}
+#deposits-sidebar .directory-facets ul.facet-list li:hover,
+#deposits-sidebar .search-facets ul.facet-list li:hover {
+	border: 1px solid #cccccc;
+	background-color: #eeeeee;
+}
+#deposits-sidebar .directory-facets ul.facet-list,
+#deposits-sidebar .search-facets ul.facet-list {
+	padding: 5px 0 5px 0;
+}
+#deposits-sidebar .directory-facets ul.facet-list div,
+#deposits-sidebar .search-facets ul.facet-list div {
+	margin: 5px 0 0 0;
+}
+#deposits-sidebar .directory-facets ul.facet-list li span.count,
+#deposits-sidebar .search-facets ul.facet-list li span.count {
+    font-size: 75%;
+    font-weight: bolder;
+    margin: 0 0 0 2px;
+    padding: 0 4px 0 4px;
+	border: 0;
+    border-left: 1px solid #dddddd;
+    border-right: 1px solid #dddddd;
+	border-radius: 4px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+}
+#deposits-sidebar .directory-facets ul li.facet-set-item ul,
+#deposits-sidebar .search-facets ul li.facet-set-item ul {
+	height:auto;
+	overflow:hidden;
+	overflow-y:hidden;
+}
+#about-core ul {
+    list-style: none;
+}
+#about-core ul li {
+    margin: 4px 0 4px 4px;
+}
+/* deposit item styles */
+.deposits-item-page #content {
+/*   width: 75% !important; */
+/*    float: right; */
+}
+.deposit-item .mashsb-container {
+	padding-top: 0px;
+	width: 50%;
+}
+/* deposit list styles */
+ul.deposits-item {
+	list-style-type: none;
+	font-size: 62%;
+	line-height: 1.5em;
+	display: inline;
+}
+ul.deposits-item .list-item-label {
+        float: left;
+	width: 15%;
+	clear: both;
+}
+ul.deposits-item .list-item-value {
+        float: left;
+	width: 85%;
+}
+.deposit-item-pub-metadata.hide-details {
+	display: none;
+}
+.deposit-item-pub-metadata.show-details {
+	display: block;
+}
+.pub-metadata-display-button, a.bp-deposits-edit-button {
+	background-color: #006650;
+	border-radius: 4px;
+	border-width: 0;
+	box-shadow: rgba(0,0,0,0.117647) 0px 1px 6px,rgba(0,0,0,0.117647) 0px 1px 4px;
+	color: #fff;
+	font-weight: normal;
+	letter-spacing: unset;
+	padding: 1px 2px;
+	text-align: center;
+	text-transform: none;
+	width: unset;
+}
+.pub-metadata-display-button:hover, a.bp-deposits-edit-button:hover {
+	background-color: #009978;
+	border-radius: 4px;
+	border-width: 0;
+	box-shadow: rgba(0,0,0,0.117647) 0px 1px 6px,rgba(0,0,0,0.117647) 0px 1px 4px;
+	color: #fff;
+	font-weight: normal;
+	letter-spacing: unset;
+	padding: 1px 2px;
+	text-align: center;
+	text-transform: none;
+	text-decoration: none;
+	width: unset;
+}
+/* deposit form styles */
+.deposits-new-item-page div.main-wrap.row, .deposits-edit-item-page div.main-wrap.row {
+	margin-left: 0;
+}
+#progressbar {
+  width: 200px;
+  margin: 5px 0 5px 0;
+  border: 1px solid grey;
+  background-color: white;
+  height: 12px;
+  display: none;
+}
+#indicator {
+  width: 0%;
+  background-color: gray;
+  height: 11px;
+  margin: 0;
+}
+#progressnum {
+  text-align: center;
+  width: 300px;
+}
+#console {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+.no-close .ui-dialog-titlebar-close {
+    display: none !important;
+}
+.character-count {
+  color: #999999;
+  font-size: 80%;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+#lookup-doi {
+	width: 40%;
+}
+#lookup-doi-message {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+.deposit-input-highlight {
+	border-color: red !important;
+}
+#deposit-title-unchanged {
+	width: 98% !important;
+}
+#deposit-abstract-unchanged {
+	width: 98% !important;
+	margin-bottom: 0 !important;
+	padding-bottom: 30 !important;
+}
+#deposit-genre-entry .buddyboss-select, #deposit-resource-type-entry .buddyboss-select, #deposit-language-entry .buddyboss-select,
+	#deposit-license-type-entry .buddyboss-select, #deposit-embargo-length-entry .buddyboss-select {
+    display: none !important;
+}
+#deposit-file-entries, #deposit-metadata-entries, #deposit-committee-entry {
+	padding-left: 10px;
+}
+#deposit-conference-entries, #deposit-meeting-entries, #deposit-institution-entries {
+	padding-left: 10px;
+}
+#deposit-book-entries, #deposit-journal-entries, #deposit-proceedings-entries, #deposit-publication-type-entries {
+	padding-left: 10px;
+}
+#deposit-embargoed-entries {
+	padding-left: 10px;
+}
+#deposit-book-pages-entry label, #deposit-journal-volume-entry label, #deposit-journal-pages-entry label, #deposit-proceeding-pages-entry label {
+	float: left;
+	margin: 5px 10px 5px 0;
+}
+#deposit-book-pages-entry span, #deposit-journal-volume-entry span, #deposit-journal-pages-entry span, #deposit-proceeding-pages-entry span {
+	display: block;
+	padding: 5px 10px 5px 0;
+}
+#deposit-other-authors-entry-table td.borderTop {
+        border-top: 1px solid #eee;
+}
+#deposit-other-authors-entry-table td.noBorderTop {
+	border-top: 0;
+}
+.button.button-large {
+	font-size: 100%;
+}
+/* deposit entry styles */
+dl.defList {
+/*	float: right; */
+	width: 100%;
+}
+dl.defList dt {
+	float: left;
+	text-align: right;
+	width: 20%;
+	clear: both;
+	color: #888;
+	margin: 2px 0;
+	padding: 2px .5em 2px 0px;
+	font-weight: normal;
+
+}
+dl.defList dd {
+	float: left;
+	text-align: left;
+	width: 75%;
+	margin: 2px 0;
+	padding: 2px 0;
+
+}
+table.view_statistics, table.view_downloads {
+	margin-left: 10px;
+	width: 100%;
+}
+table.view_statistics td, table.view_downloads td {
+	border: 0;
+}
+table.view_statistics td.prompt, table.view_downloads td.prompt {
+	width: 25%;
+}
+table.view_statistics td.value, table.view_downloads td.value {
+	width: 75%;
+}
+/* goodbye
+.bp-deposits-download.button:before {
+	font-size: 130%;
+	content: "[";
+}
+.bp-deposits-view.button{
+	line-height: 24px;
+	margin-left: 10px;
+}
+*/
+ul.deposit-list > li:first-child {
+	padding-top: 30px;
+}
+ul.deposit-list li {
+	overflow: hidden;
+}
+ul.deposit-list li .deposit-content {
+	display: inline-block;
+	width: 86%;
+	margin-left: 2%;
+}
+img.deposit-thumb {
+	border-radius: 3px;
+	box-shadow: 0px 1px 4px 1px rgba(0, 0, 0, 0.2);
+}
+/* search box styles
+div.search-term:before {
+	font-family: dashIcons;
+	content: "";
+	position: relative;
+	left: 9px;
+	top: 40px;
+}
+div.search-term {
+	float: right;
+	margin-top: -18px;
+}
+div.search-term input[type=text] {
+	display: inline-block;
+	box-shadow: none;
+	border: 1px solid #eee;
+	border-top: 2px solid #ddd;
+	border-left: 2px solid #ddd;
+	width: 200px;
+	padding-left: 28px;
+}
+div.search-term input[type=submit] {
+	float: right;
+	margin-left: 8px;
+	margin-top: 2px;
+}
+ */
+/* other */
+/* goodbye
+.iconify {
+	border: none !important;
+	display: inline !important;
+	padding-left: 0 !important;
+	font-family: "iconsweetsRegular";
+}
+.bp-deposits-deposit.button:before {
+        font-size: 130%;
+        content: "]";
+}
+.deposits-return.button:before {
+		padding: 10px !important;
+        font-size: 130%;
+        content: "<";
+}
+*/
+/* media queries */
+@media only screen and (max-width: 640px) {
+	dl.defList {
+     	float: none;
+		margin-left: 20px;
+    }
+	dl.defList dt {
+     	float: none;
+		text-align: left;
+    }
+	dl.defList dd {
+     	padding-bottom: 10px;
+		text-align: left;
+    }
+}
+@media only screen and (max-width: 320px) {
+	dl.defList {
+     	float: none;
+		margin-left: 20px;
+    }
+	dl.defList dt {
+     	float: none;
+		text-align: left;
+    }
+	dl.defList dd {
+     	padding-bottom: 10px;
+		text-align: left;
+    }
+    h3 {
+    	font-size: 1.5em !important;
+    }
+}
+/* select2 overrides */
+.select2-selection--multiple {
+	border-color: #ddd;
+}
+.select2-container--default .select2-selection--multiple {
+	height: auto;
+}
+.select2-selection__rendered {
+	line-height: 1.8em;
+	font-size: 85.7%;
+	margin-bottom: -5px;
+}
+
+input[type="search"].select2-search__field {
+	border: 0px;
+	box-shadow: inset 0 0px 2px rgba( 0, 0, 0, 0 );
+	padding: 5px 0 0 0;
+	/* width: auto !important; */
+}
+.select2-container {
+	margin-top: 5px;
+	margin-bottom: 14px;
+}
