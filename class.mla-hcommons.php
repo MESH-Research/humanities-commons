@@ -87,7 +87,7 @@ class Mla_Hcommons {
 			$all_groups = $wpdb->get_results( 'SELECT * FROM ' . $bp->table_prefix . 'bp_groups' );
 			foreach ( $all_groups as $group ) {
 
-				$society_id = bp_groups_get_group_type( $group->id, true );
+				$society_id = hcommons_get_group_society_id( $group->id );
 				if ( 'mla' === $society_id ) {
 					$oid = groups_get_groupmeta( $group->id, 'mla_oid' );
 					if ( ! empty( $oid ) && in_array( substr( $oid, 0, 1 ), array( 'D', 'G', 'M' ) ) ) {

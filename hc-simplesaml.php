@@ -163,7 +163,7 @@ function hcommons_set_user_member_types( $user ) {
 	// Remove a user from society groups if they are not a member of that society.
 	if ( array_key_exists( 'groups', $user_groups ) ) {
 		foreach ( $user_groups['groups'] as $user_group ) {
-			$group_type = bp_groups_get_group_type( $user_group->id );
+			$group_type = hcommons_get_group_society_id( $user_group->id );
 			if ( ! $group_type ) {
 				continue;
 			}

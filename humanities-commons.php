@@ -141,8 +141,8 @@ class Humanities_Commons {
 		add_filter( 'bp_before_activity_get_parse_args', array( $this, 'hcommons_set_network_admin_activities_query' ) );
 		add_action( 'init', array( $this, 'hcommons_remove_bp_settings_general' ) );
 		add_action( 'bp_before_group_settings_creation_step', array( $this, 'hcommons_groups_group_before_save') );
-		add_action( 'bp_groups_admin_meta_boxes', array( $this, 'hcommons_remove_group_type_meta_boxes' ) );
-		add_action( 'bp_groups_admin_meta_boxes', array( $this, 'hcommons_add_group_type_meta_box' ) );
+//		add_action( 'bp_groups_admin_meta_boxes', array( $this, 'hcommons_remove_group_type_meta_boxes' ) );
+//		add_action( 'bp_groups_admin_meta_boxes', array( $this, 'hcommons_add_group_type_meta_box' ) );
 		add_action( 'bp_members_admin_user_metaboxes', array( $this, 'hcommons_remove_member_type_meta_boxes' ), 10, 2 );
 		add_action( 'bp_members_admin_user_metaboxes', array( $this, 'hcommons_add_member_type_meta_box' ), 10, 2 );
 		add_action( 'bp_groups_admin_meta_boxes', array( $this, 'hcommons_add_manage_group_memberships_meta_box' ) );
@@ -498,7 +498,7 @@ class Humanities_Commons {
 
 		//make sure group id is only numerical
 		$group_id = filter_var( $_GET['gid'], FILTER_SANITIZE_NUMBER_INT );
-		$current_types = (array) bp_groups_get_group_type( $group_id, false );
+		$current_types = (array) hcommons_get_group_society_id( $group_id );
 
 		?>
 
@@ -560,12 +560,14 @@ class Humanities_Commons {
 	}
 
 	public function hcommons_set_groups_query_args( $args ) {
+
+		hcommons_write_error_log( 'info', '****GROUPS_QUERY_ARGS****-' . var_export( $args, true ) );
+
 		// profile loops per-type, leave as-is
 		if ( bp_is_user_profile() || ( bp_is_settings_component() && bp_is_current_action( 'notifications' ) ) ) {
 			return $args;
 		}
 
-		//hcommons_write_error_log( 'info', '****GROUPS_QUERY_ARGS****-' . var_export( $args, true ) );
 		if ( isset( $args['scope'] ) && $args['scope'] == 'personal' ) {
 			$args['group_type'] = '';
 			return $args;
@@ -632,10 +634,18 @@ class Humanities_Commons {
 				'include'            => $r['include'],
 				'exclude'            => $r['exclude'],
 				'search_terms'       => $r['search_terms'],
-				'group_type'         => self::$society_id,
+				'group_type'         => $r['group_type'],
 				'group_type__in'     => $r['group_type__in'],
 				'group_type__not_in' => $r['group_type__not_in'],
 				'meta_query'         => $r['meta_query'],
+				'meta_query'     => [
+					[
+						'key'     => 'society_id',
+						'value'   => strtolower( self::$society_id ),
+						'type'    => 'CHAR',
+						'compare' => '='
+					]
+				],
 				'show_hidden'        => TRUE,
 				'per_page'           => $r['per_page'],
 				'page'               => $r['page'],
@@ -885,7 +895,7 @@ class Humanities_Commons {
 			$args['meta_query'] = array(
 				array(
 					'key'     => 'society_id',
-					'value'   => self::$society_id,
+					'value'   => strtolower( self::$society_id ),
 					'type'    => 'string',
 					'compare' => '='
 				),
@@ -1010,7 +1020,7 @@ class Humanities_Commons {
 
 		if ( ! empty( $groups_template->group ) ) {
 			$group_id = bp_get_group_id();
-			$group_society_id = bp_groups_get_group_type( $group_id );
+			$group_society_id = hcommons_get_group_society_id( $group_id );
 
 			if ( $group_society_id === self::$society_id ) {
 				return $group_permalink;
@@ -1040,7 +1050,7 @@ class Humanities_Commons {
 	public function hcommons_set_group_permalink( $group_permalink, $group ) {
 
 		$group_id = $group->id;
-		$group_society_id = bp_groups_get_group_type( $group_id );
+		$group_society_id = hcommons_get_group_society_id( $group_id );
 
 		global $wpdb;
 		$row = $wpdb->get_row( $wpdb->prepare( "SELECT site_id FROM $wpdb->sitemeta WHERE meta_key = '%s' AND meta_value = '%s'", 'society_id', $group_society_id ) );
@@ -1242,7 +1252,7 @@ class Humanities_Commons {
 		if ( 'hc' !== self::$society_id ) {
 			return $button;
 		}
-		$group_society_id = bp_groups_get_group_type( $group->id );
+		$group_society_id = hcommons_get_group_society_id( $group->id );
 		//hcommons_write_error_log( 'info', '****BP_GET_GROUP_JOIN_BUTTON****-'.var_export( $group_society_id, true ).'-'.var_export( $group, true ) );
 		if ( 'hc' !== $group_society_id ) {
 			return null;
@@ -1526,7 +1536,7 @@ class Humanities_Commons {
 		$args['meta_query'] = array(
 			array(
 				'key'     => 'society_id',
-				'value'   => self::$society_id,
+				'value'   => strtolower( self::$society_id ),
 				'type'    => 'string',
 				'compare' => '='
 			),
@@ -2053,7 +2063,7 @@ class Humanities_Commons {
 				] 
 			);
 			foreach( $autopopulate_groups['groups'] as $group ) {
-				$group_society_id = bp_groups_get_group_type( $group->id, true );
+				$group_society_id = hcommons_get_group_society_id( $group->id );
 				$managed_group_names[ $group_society_id ][ strip_tags( stripslashes( $group->name ) ) ] = $group->id;
 			}
 			wp_cache_set( 
@@ -2088,6 +2098,46 @@ class Humanities_Commons {
 		}
 
 		return [];
+	}
+
+	/**
+	 * Get active society ids
+	 *
+	 * @since HCommons
+	 *
+	 * @param string $type
+	 * @return array society ids
+	 */
+	public static function get_society_ids( $type = 'All' ) {
+
+		global $comanage_api;
+		$society_ids = [];
+                $comanage_cous = $comanage_api->get_cous();
+                foreach( $comanage_cous as $comanage_cou ) {
+                        if ( 'Inactive' == $comanage_cou['status'] ) continue;
+			if ( $type === $comanage_cou['type'] || $type === 'All' ) {
+				$society_ids[] = $comanage_cou['name'];
+			}
+		}
+
+                sort( $society_ids );
+
+		return $society_ids;
+	}
+
+	/**
+	 * Get group society id.
+	 *
+	 * @since HCommons
+	 *
+	 * @param string $group_id
+	 * @return string society id
+	 */
+	public static function get_group_society_id( $group_id ) {
+
+		$society_id = groups_get_groupmeta( $group_id, 'society_id', true );
+
+		return $society_id;
 	}
 
 	/**
@@ -2140,4 +2190,10 @@ function hcommons_get_session_eppn() {
 }
 function hcommons_get_session_meta_displayname() {
 	return Humanities_Commons::get_session_meta_displayname();
+}
+function hcommons_get_society_ids( $type = 'All' ) {
+	return Humanities_Commons::get_society_ids( $type = 'All' );
+}
+function hcommons_get_group_society_id( $group_id ) {
+	return Humanities_Commons::get_group_society_id( $group_id );
 }

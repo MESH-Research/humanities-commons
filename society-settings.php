@@ -273,5 +273,5 @@ if ( ! defined( 'ABSPATH' ) ) {
                                 'has_directory' => 'dhri'
                         ) );
 	}
-        add_action( 'bp_groups_register_group_types', 'hcommons_register_group_types' );
+//        add_action( 'bp_groups_register_group_types', 'hcommons_register_group_types' );
 

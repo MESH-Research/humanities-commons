@@ -32,6 +32,7 @@ class comanageApi {
 			$this->password = getenv( 'COMANAGE_API_PASSWORD' );
 
 			$this->api_args = [ 
+				'sslverify' => false,
 				'headers' => [ 
 					'Authorization' => 'Basic ' . base64_encode( $this->username . ':' . $this->password )
 				]
@@ -220,40 +221,105 @@ class comanageApi {
 
 			//Hard code COU values becasue REST API call gets a memory error on COmanage - PMO bug #329
 			$temp_cous = array();
-			$temp_cous['Cous'][] = [ 'Id' => '1', 'Name' => 'MLA',
-						'Description' => 'Modern Language Association' ];
-			$temp_cous['Cous'][] = [ 'Id' => '2', 'Name' => 'CAA',
-						'Description' => 'College Art Association' ];
-			$temp_cous['Cous'][] = [ 'Id' => '3', 'Name' => 'ASEEES',
-						'Description' => 'Association for Slavic, Eastern European, and Eurasian Studies' ];
-			$temp_cous['Cous'][] = [ 'Id' => '4', 'Name' => 'AJS',
-						'Description' => 'Association for Jewish Studies' ];
-			$temp_cous['Cous'][] = [ 'Id' => '5', 'Name' => 'HC',
-						'Description' => 'Humanities Commons' ];
-			$temp_cous['Cous'][] = [ 'Id' => '6', 'Name' => 'UP',
-						'Description' => 'Association of American University Presses' ];
-			$temp_cous['Cous'][] = [ 'Id' => '7', 'Name' => 'MSU',
-						'Description' => 'Michigan State University' ];
-			$temp_cous['Cous'][] = [ 'Id' => '8', 'Name' => 'ARLISNA',
-						'Description' => 'ARLIS/NA' ];
-			$temp_cous['Cous'][] = [ 'Id' => '10', 'Name' => 'SAH',
-						'Description' => 'SAH' ];
-			$temp_cous['Cous'][] = [ 'Id' => '11', 'Name' => 'HUB',
-						'Description' => 'HUB' ];
-			$temp_cous['Cous'][] = [ 'Id' => '12', 'Name' => 'SOCSCI',
-						'Description' => 'SOCSCI' ];
-			$temp_cous['Cous'][] = [ 'Id' => '13', 'Name' => 'STEM',
-						'Description' => 'STEM' ];
+			$temp_cous['Cous'][] = [
+				'Id'          => '1',
+				'Name'        => 'MLA',
+				'Status'      => 'Active',
+				'Type'        => 'Closed',
+				'Description' => 'Modern Language Association'
+			];
+			$temp_cous['Cous'][] = [
+				'Id'          => '2',
+				'Name'        => 'CAA',
+				'Status'      => 'Inactive',
+				'Type'        => 'Closed',
+				'Description' => 'College Art Association'
+			];
+			$temp_cous['Cous'][] = [
+				'Id'          => '3',
+				'Name'        => 'ASEEES',
+				'Status'      => 'Inactive',
+				'Type'        => 'Closed',
+				'Description' => 'Association for Slavic, Eastern European, and Eurasian Studies'
+			];
+			$temp_cous['Cous'][] = [
+				'Id'          => '4',
+				'Name'        => 'AJS',
+				'Status'      => 'Inactive',
+				'Type'        => 'Closed',
+				'Description' => 'Association for Jewish Studies'
+			];
+			$temp_cous['Cous'][] = [
+				'Id'          => '5',
+				'Name'        => 'HC',
+				'Status'      => 'Active',
+				'Type'        => 'Open',
+				'Description' => 'Humanities Commons'
+			];
+			$temp_cous['Cous'][] = [
+				'Id'          => '6',
+				'Name'        => 'UP',
+				'Status'      => 'Active',
+				'Type'        => 'Closed',
+				'Description' => 'Association of American University Presses'
+			];
+			$temp_cous['Cous'][] = [
+				'Id'          => '7',
+				'Name'        => 'MSU',
+				'Status'      => 'Active',
+				'Type'        => 'Closed',
+				'Description' => 'Michigan State University'
+			];
+			$temp_cous['Cous'][] = [
+				'Id'          => '8',
+				'Name'        => 'ARLISNA',
+				'Status'      => 'Active',
+				'Type'        => 'Closed',
+				'Description' => 'ARLIS/NA'
+			];
+			$temp_cous['Cous'][] = [
+				'Id'          => '9',
+				'Name'        => 'SAH',
+				'Status'      => 'Active',
+				'Type'        => 'Closed',
+				'Description' => 'SAH'
+			];
+			$temp_cous['Cous'][] = [
+				'Id'          => '11',
+				'Name'        => 'HUB',
+				'Status'      => 'Inactive',
+				'Type'        => 'Open',
+				'Description' => 'HUB'
+			];
+			$temp_cous['Cous'][] = [
+				'Id'          => '12',
+				'Name'        => 'SOCSCI',
+				'Status'      => 'Inactive',
+				'Type'        => 'Open',
+				'Description' => 'SOCSCI'
+			];
 			$temp_cous['Cous'][] = [ 
 				'Id'          => '13',
 				'Name'        => 'STEM',
+				'Status'      => 'Inactive',
+				'Type'        => 'Open',
 				'Description' => 'STEM'
 			];
 			$temp_cous['Cous'][] = [ 
-				'Id'          => '14',
+				'Id'          => '18',
 				'Name'        => 'HASTAC',
+				'Status'      => 'Active',
+				'Type'        => 'Open',
 				'Description' => 'HASTAC'
 			];
+			$temp_cous['Cous'][] = [ 
+				'Id'          => '19',
+				'Name'        => 'DHRI',
+				'Status'      => 'Inactive',
+				'Type'        => 'Closed',
+				'Description' => 'Digital Humanities Research Institutes'
+			];
+
 			$req['body'] = json_encode( $temp_cous );
 
 			//$req = wp_remote_get( $this->url . '/cous.' . $this->format . '?coid=2', $this->api_args );
@@ -272,6 +338,8 @@ class comanageApi {
 				$cous[] = [
 					'id' => $item['Id'],
 					'name' => $item['Name'],
+					'status' => $item['Status'],
+					'type' => $item['Type'],
 					'description' => $item['Description']
 				];
 
@@ -340,6 +408,97 @@ class comanageApi {
 
 	}
 
+	/**
+	 * Add a co person role and a bp member type for an open commons
+	 *
+	 * @param  string     $wordpress_username  wordpress username of logged in user
+	 * @param  string     $society_id  society to add
+	 * @return array
+	 */
+	public function add_person_role( $wordpress_username, $society_id ) {
+
+		//get the ID in WP for the user
+		$wp_user = get_user_by( 'login', $wordpress_username );
+		if ( false === $wp_user ) {
+			return false;
+		}
+		//get the existing member types for the user
+		$member_types = bp_get_member_type( $wp_user->ID, false );
+		//echo "<br />", var_export( $member_types, true ), "<br />";
+
+		//get the ID in CoManage for the user
+		$co_person = $this->get_co_person( $wordpress_username );
+		if ( false === $co_person ) {
+			return false;
+		}
+		//multiple records - find first active
+		foreach( $co_person as $person_record ) {
+			if ( $person_record[0]->CoId == "2" && $person_record[0]->Status == 'Active' ) {
+				$co_person_id = $person_record[0]->Id;
+				break 1;
+			}
+		}
+		//echo "<br />", var_export( $co_person_id, true ), "<br />";
+		//get all of the roles the person currently has
+		$co_person_roles = $this->get_co_person_role( $co_person_id );
+		$roles = $co_person_roles->CoPersonRoles;
+		echo "<br />", var_export( $roles, true ), "<br />";
+
+		//get the COU from CoManage for the society_id
+		$cou = $this->get_cous( $society_id );
+		//echo "<br />", var_export( $cou, true ), "<br />";
+		if ( false === $cou ) {
+			return false;
+		}
+
+		$post_api_args = [ 'sslverify' => false,
+				   'headers' => [ 
+					'Authorization' => 'Basic ' . base64_encode( $this->username . ':' . $this->password ),
+					'Content-Type' => 'application/json; charset=utf-8'
+				   ],
+				   'method' => 'POST',
+				   'data_format' => 'body',
+				   'timeout'     => 30,
+				   'blocking'    => false
+				 ];
+
+		//raw post body to send to CoManage
+		$post_body = array(
+			'RequestType' => 'CoPersonRoles',
+			'Version' => '1.0',
+			'CoPersonRoles' => array(
+				array(
+					'Version' => '1.0',
+					'Person' => array(
+						'Type' => 'CO',
+						'Id' => $co_person_id
+					),
+					'CouId' => $cou[0]['id'],
+					'Affiliation' => 'member',
+					'Title' => '',
+					'O' => '',
+					'Ordr' => '',
+					'Ou' => '',
+					'Status' => 'Active',
+					'ValidFrom' => '',
+					'ValidThrough' => ''
+				)
+			)
+		);
+
+		//$req_data = array_merge( $post_api_args, [ 'body' => json_encode( $post_body ) ] );
+		//echo "REQ<br />", var_export( $req_data, true ), "<br />";
+
+                //$req = wp_remote_post( $this->url . '/co_person_roles.' . $this->format, $req_data );
+		//echo "RES<br />", var_export( $req, true ), "<br />";
+
+		//if ( ! in_array( strtolower( $society_id ), $member_types ) ) {
+			//bp_set_member_type( $wp_user->ID, strtolower( $society_id ), true );
+		//}
+
+		return;
+
+	}
 }
 
 $comanage_api = new comanageApi;
