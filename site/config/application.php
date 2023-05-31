@@ -137,6 +137,211 @@ if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROT
     $_SERVER['HTTPS'] = 'on';
 }
 
+/**
+ * Multisite
+ */
+Config::define('WP_ALLOW_MULTISITE', true);
+Config::define('MULTISITE', true);
+Config::define('SUBDOMAIN_INSTALL', true);
+
+
+Config::define('SUNRISE', 'on');
+Config::define('PLUGINDIR', 'app/plugins');
+
+// all paths should be on the root to avoid cookies which are duplicates aside from path
+Config::define( 'COOKIEPATH', '/' );
+Config::define( 'ADMIN_COOKIE_PATH', '/' );
+Config::define( 'SITECOOKIEPATH',    '/' );
+
+Config::define('PATH_CURRENT_SITE', '/');
+
+Config::define('PRIMARY_NETWORK_ID', 1);
+
+/**
+ * Redirect nonexistent blogs
+ */
+Config::define('NOBLOGREDIRECT', getenv('WP_HOME'));
+
+/**
+ * Akismet
+ */
+Config::define('WPCOM_API_KEY', getenv('WPCOM_API_KEY'));
+
+/**
+ * Logging
+ */
+Config::define('WP_LOGS_DIR', getenv('WP_LOGS_DIR'));
+
+// W3 Total Cache
+Config::define( 'WP_CACHE', getenv( 'WP_CACHE' ) );
+
+/**
+ * Redis
+ */
+Config::define('WP_CACHE_KEY_SALT', getenv('WP_CACHE_KEY_SALT'));
+
+/**
+ * Redis cache
+ */
+Config::define('REDIS_HOST', getenv('REDIS_HOST'));       // wp-redis
+Config::define('WP_REDIS_HOST', getenv('WP_REDIS_HOST')); // redis-cache
+
+/**
+ * ElasticPress Elasticsearch
+ */
+Config::define('EP_HOST', getenv('EP_HOST'));
+
+/**
+ * Humanities Commons
+ */
+Config::define('HC_SITE_ID', getenv('HC_SITE_ID'));
+Config::define('HC_SITE_URL', getenv('HC_SITE_URL'));
+Config::define('AJS_SITE_URL', getenv('AJS_SITE_URL'));
+Config::define('ARLISNA_SITE_URL', getenv('ARLISNA_SITE_URL'));
+Config::define('ASEEES_SITE_URL', getenv('ASEEES_SITE_URL'));
+Config::define('CAA_SITE_URL', getenv('CAA_SITE_URL'));
+Config::define('MLA_SITE_URL', getenv('MLA_SITE_URL'));
+Config::define('MSU_SITE_URL', getenv('MSU_SITE_URL'));
+Config::define('SAH_SITE_URL', getenv('SAH_SITE_URL'));
+Config::define('UP_SITE_URL', getenv('UP_SITE_URL'));
+Config::define('REGISTRY_SERVER_URL', getenv('REGISTRY_SERVER_URL'));
+Config::define('SATOSA_SERVER_URL', getenv('SATOSA_SERVER_URL'));
+Config::define('HC_ENROLLMENT_URL', getenv('HC_ENROLLMENT_URL'));
+Config::define('AJS_ENROLLMENT_URL', getenv('AJS_ENROLLMENT_URL'));
+Config::define('ARLISNA_ENROLLMENT_URL', getenv('ARLISNA_ENROLLMENT_URL'));
+Config::define('ASEEES_ENROLLMENT_URL', getenv('ASEEES_ENROLLMENT_URL'));
+Config::define('CAA_ENROLLMENT_URL', getenv('CAA_ENROLLMENT_URL'));
+Config::define('MLA_ENROLLMENT_URL', getenv('MLA_ENROLLMENT_URL'));
+Config::define('MSU_ENROLLMENT_URL', getenv('MSU_ENROLLMENT_URL'));
+Config::define('SAH_ENROLLMENT_URL', getenv('SAH_ENROLLMENT_URL'));
+Config::define('UP_ENROLLMENT_URL', getenv('UP_ENROLLMENT_URL'));
+Config::define('HC_ACCOUNT_LINK_URL', getenv('HC_ACCOUNT_LINK_URL'));
+Config::define('AJS_ACCOUNT_LINK_URL', getenv('AJS_ACCOUNT_LINK_URL'));
+Config::define('ARLISNA_ACCOUNT_LINK_URL', getenv('ARLISNA_ACCOUNT_LINK_URL'));
+Config::define('ASEEES_ACCOUNT_LINK_URL', getenv('ASEEES_ACCOUNT_LINK_URL'));
+Config::define('CAA_ACCOUNT_LINK_URL', getenv('CAA_ACCOUNT_LINK_URL'));
+Config::define('MLA_ACCOUNT_LINK_URL', getenv('MLA_ACCOUNT_LINK_URL'));
+Config::define('MSU_ACCOUNT_LINK_URL', getenv('MSU_ACCOUNT_LINK_URL'));
+Config::define('SAH_ACCOUNT_LINK_URL', getenv('SAH_ACCOUNT_LINK_URL'));
+Config::define('UP_ACCOUNT_LINK_URL', getenv('UP_ACCOUNT_LINK_URL'));
+Config::define('HC_ORCID_USER_ACCOUNT_LINK_URL', getenv('HC_ORCID_USER_ACCOUNT_LINK_URL'));
+Config::define('AJS_ORCID_USER_ACCOUNT_LINK_URL', getenv('AJS_ORCID_USER_ACCOUNT_LINK_URL'));
+Config::define('ARLISNA_ORCID_USER_ACCOUNT_LINK_URL', getenv('ARLISNA_ORCID_USER_ACCOUNT_LINK_URL'));
+Config::define('ASEEES_ORCID_USER_ACCOUNT_LINK_URL', getenv('ASEEES_ORCID_USER_ACCOUNT_LINK_URL'));
+Config::define('CAA_ORCID_USER_ACCOUNT_LINK_URL', getenv('CAA_ORCID_USER_ACCOUNT_LINK_URL'));
+Config::define('MLA_ORCID_USER_ACCOUNT_LINK_URL', getenv('MLA_ORCID_USER_ACCOUNT_LINK_URL'));
+Config::define('MSU_ORCID_USER_ACCOUNT_LINK_URL', getenv('MSU_ORCID_USER_ACCOUNT_LINK_URL'));
+Config::define('SAH_ORCID_USER_ACCOUNT_LINK_URL', getenv('SAH_ORCID_USER_ACCOUNT_LINK_URL'));
+Config::define('UP_ORCID_USER_ACCOUNT_LINK_URL', getenv('UP_ORCID_USER_ACCOUNT_LINK_URL'));
+Config::define('GOOGLE_IDENTITY_PROVIDER', getenv('GOOGLE_IDENTITY_PROVIDER'));
+Config::define('TWITTER_IDENTITY_PROVIDER', getenv('TWITTER_IDENTITY_PROVIDER'));
+Config::define('HC_IDENTITY_PROVIDER', getenv('HC_IDENTITY_PROVIDER'));
+Config::define('MLA_IDENTITY_PROVIDER', getenv('MLA_IDENTITY_PROVIDER'));
+Config::define('GOOGLE_LOGIN_METHOD_SCOPE', getenv('GOOGLE_LOGIN_METHOD_SCOPE'));
+Config::define('TWITTER_LOGIN_METHOD_SCOPE', getenv('TWITTER_LOGIN_METHOD_SCOPE'));
+Config::define('HC_LOGIN_METHOD_SCOPE', getenv('HC_LOGIN_METHOD_SCOPE'));
+Config::define('MLA_LOGIN_METHOD_SCOPE', getenv('MLA_LOGIN_METHOD_SCOPE'));
+Config::define('HC_ROOT_BLOG_ID', getenv('HC_ROOT_BLOG_ID'));
+Config::define('AJS_ROOT_BLOG_ID', getenv('AJS_ROOT_BLOG_ID'));
+Config::define('ARLISNA_ROOT_BLOG_ID', getenv('ARLISNA_ROOT_BLOG_ID'));
+Config::define('ASEEES_ROOT_BLOG_ID', getenv('ASEEES_ROOT_BLOG_ID'));
+Config::define('CAA_ROOT_BLOG_ID', getenv('CAA_ROOT_BLOG_ID'));
+Config::define('MLA_ROOT_BLOG_ID', getenv('MLA_ROOT_BLOG_ID'));
+Config::define('MSU_ROOT_BLOG_ID', getenv('MSU_ROOT_BLOG_ID'));
+Config::define('SAH_ROOT_BLOG_ID', getenv('SAH_ROOT_BLOG_ID'));
+Config::define('UP_ROOT_BLOG_ID', getenv('UP_ROOT_BLOG_ID'));
+Config::define('GLOBAL_SUPER_ADMINS', getenv('GLOBAL_SUPER_ADMINS'));
+Config::define('GOOGLE_IDP_URL', getenv('GOOGLE_IDP_URL'));
+Config::define('TWITTER_IDP_URL', getenv('TWITTER_IDP_URL'));
+Config::define('MLA_IDP_URL', getenv('MLA_IDP_URL'));
+Config::define('HC_IDP_URL', getenv('HC_IDP_URL'));
+Config::define('REGISTRY_SP_URL', getenv('REGISTRY_SP_URL'));
+Config::define('HASTAC_SITE_URL', getenv('HASTAC_SITE_URL'));
+Config::define('HASTAC_ENROLLMENT_URL', getenv('HASTAC_ENROLLMENT_URL'));
+Config::define('HASTAC_ACCOUNT_LINK_URL', getenv('HASTAC_ACCOUNT_LINK_URL'));
+Config::define('HASTAC_ORCID_USER_ACCOUNT_LINK_URL', getenv('HASTAC_ORCID_USER_ACCOUNT_LINK_URL'));
+Config::define('HASTAC_ROOT_BLOG_ID', getenv('HASTAC_ROOT_BLOG_ID'));
+
+/**
+ * COMANAGE API
+ */
+Config::define('COMANAGE_API_URL', getenv( 'COMANAGE_API_URL' ));
+Config::define('COMANAGE_API_USERNAME', getenv( 'COMANAGE_API_USERNAME' ));
+Config::define('COMANAGE_API_PASSWORD', getenv( 'COMANAGE_API_PASSWORD' ));
+
+/**
+ * MLA Member API
+ */
+Config::define('CBOX_AUTH_API_URL', getenv('CBOX_AUTH_API_URL'));
+Config::define('CBOX_AUTH_API_KEY', getenv('CBOX_AUTH_API_KEY'));
+Config::define('CBOX_AUTH_API_SECRET', getenv('CBOX_AUTH_API_SECRET'));
+
+/**
+ * SMTP settings
+ */
+Config::define('GLOBAL_SMTP_FROM', getenv('GLOBAL_SMTP_FROM'));
+
+/**
+ * CBOX plugin management
+ */
+Config::define('CBOX_OVERRIDE_PLUGINS', true); // help debug setup
+
+/**
+ * Plugin Monitor
+ */
+Config::define( 'PLUGIN_MONITOR_ALERT_EMAILS', getenv( 'PLUGIN_MONITOR_ALERT_EMAILS' ) );
+
+/**
+ * BuddyPress
+ */
+Config::define( 'BP_DEFAULT_COMPONENT', 'profile' ); // make "profile" default rather than "activity" for bp members component
+
+/**
+ * BuddyPress Reply By Email
+ */
+Config::define( 'BP_RBE_SPARKPOST_WEBHOOK_TOKEN', getenv( 'BP_RBE_SPARKPOST_WEBHOOK_TOKEN' ) );
+
+/**
+ * Social Accounts
+ */
+Config::define( 'TWITTER_USERNAME', getenv( 'TWITTER_USERNAME' ) );
+Config::define( 'FACEBOOK_APP_ID', getenv( 'FACEBOOK_APP_ID' ) );
+
+/**
+ * Humanities CORE
+ */
+Config::define('CORE_HTTP_DEBUG', getenv('CORE_HTTP_DEBUG'));
+Config::define('CORE_ERROR_LOG', getenv('CORE_ERROR_LOG'));
+Config::define('CORE_HUMCORE_NAMESPACE', getenv('CORE_HUMCORE_NAMESPACE'));
+Config::define('CORE_HUMCORE_TEMP_DIR', getenv('CORE_HUMCORE_TEMP_DIR'));
+Config::define('CORE_HUMCORE_COLLECTION_PID', getenv('CORE_HUMCORE_COLLECTION_PID'));
+Config::define('CORE_FEDORA_PROTOCOL', getenv('CORE_FEDORA_PROTOCOL'));
+Config::define('CORE_FEDORA_HOST', getenv('CORE_FEDORA_HOST'));
+Config::define('CORE_FEDORA_PORT', getenv('CORE_FEDORA_PORT'));
+Config::define('CORE_FEDORA_PATH', getenv('CORE_FEDORA_PATH'));
+Config::define('CORE_FEDORA_LOGIN', getenv('CORE_FEDORA_LOGIN'));
+Config::define('CORE_FEDORA_PASSWORD', getenv('CORE_FEDORA_PASSWORD'));
+Config::define('CORE_SOLR_PROTOCOL', getenv('CORE_SOLR_PROTOCOL'));
+Config::define('CORE_SOLR_HOST', getenv('CORE_SOLR_HOST'));
+Config::define('CORE_SOLR_PORT', getenv('CORE_SOLR_PORT'));
+Config::define('CORE_SOLR_PATH', getenv('CORE_SOLR_PATH'));
+Config::define('CORE_SOLR_CORE', getenv('CORE_SOLR_CORE'));
+Config::define('CORE_EZID_PROTOCOL', getenv('CORE_EZID_PROTOCOL'));
+Config::define('CORE_EZID_HOST', getenv('CORE_EZID_HOST'));
+Config::define('CORE_EZID_PORT', getenv('CORE_EZID_PORT'));
+Config::define('CORE_EZID_PATH', getenv('CORE_EZID_PATH'));
+Config::define('CORE_EZID_LOGIN', getenv('CORE_EZID_LOGIN'));
+Config::define('CORE_EZID_PASSWORD', getenv('CORE_EZID_PASSWORD'));
+Config::define('CORE_EZID_PREFIX', getenv('CORE_EZID_PREFIX'));
+Config::define('CORE_DATACITE_PROTOCOL', getenv('CORE_DATACITE_PROTOCOL'));
+Config::define('CORE_DATACITE_HOST', getenv('CORE_DATACITE_HOST'));
+Config::define('CORE_DATACITE_PORT', getenv('CORE_DATACITE_PORT'));
+Config::define('CORE_DATACITE_PATH', getenv('CORE_DATACITE_PATH'));
+Config::define('CORE_DATACITE_LOGIN', getenv('CORE_DATACITE_LOGIN'));
+Config::define('CORE_DATACITE_PASSWORD', getenv('CORE_DATACITE_PASSWORD'));
+Config::define('CORE_DATACITE_PROXY', getenv('CORE_DATACITE_PROXY'));
+Config::define('CORE_DATACITE_PREFIX', getenv('CORE_DATACITE_PREFIX'));
+
 $env_config = __DIR__ . '/environments/' . WP_ENV . '.php';
 
 if (file_exists($env_config)) {

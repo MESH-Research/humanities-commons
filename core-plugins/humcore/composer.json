@@ -9,5 +9,10 @@
   },
     "autoload": {
         "psr-0": { "Solarium\\": "library/" }
+    },
+  "config": {
+    "allow-plugins": {
+      "composer/installers": true
     }
+  }
 }

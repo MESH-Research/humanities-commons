@@ -1,4 +1,31 @@
-name: humanities-commons
+name: commons-wordpress
 recipe: lemp
+services:
+  appserver:
+    type: php:custom
+    xdebug: debug, develop
+    overrides:
+      build: .
+      image: knowledge-commons/wordpress:7.4
+    build_as_root:
+      - rm -f site/.env && ln -s /app/config/local/wordpress/.env site/.env
+      - rm -f site/web/phpinfo.php && ln -s /app/config/local/php/phpinfo.php site/web/phpinfo.php
+    config:
+      php: config/local/php/php.ini
+  database:
+    type: mariadb
+    portforward: 3306
+    creds:
+      user: wordpress
+      password: wordpress
+      database: wordpress
+    volume:
+      - database:/var/lib/mysql
 config:
-  webroot: site/web
+  config:
+    vhosts: config/local/nginx/nginx.conf
+tooling:
+  wp:
+    service: appserver
+    description: Runs WP-CLI commands
+    cmd: wp
