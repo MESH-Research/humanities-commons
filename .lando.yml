@@ -12,6 +12,13 @@ services:
       - rm -f site/web/phpinfo.php && ln -s /app/config/local/php/phpinfo.php site/web/phpinfo.php
     config:
       php: config/local/php/php.ini
+    scanner:
+      okCodes:
+        - 500
+  appserver_nginx:
+    scanner:
+      okCodes:
+        - 500
   database:
     type: mariadb
     portforward: 3306
@@ -21,6 +28,12 @@ services:
       database: wordpress
     volume:
       - database:/var/lib/mysql
+  simplesamlphp:
+    type: php:custom
+    via: nginx
+    overrides:
+      build: ./simplesamlphp
+      image: knowledge-commons/simplesamlphp:1.19
 config:
   config:
     vhosts: config/local/nginx/nginx.conf
