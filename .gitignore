@@ -1,6 +1,9 @@
 # ignore node dependency directories
 node_modules/
 
+# ignore composer dependency directories
+vendor/
+
 # ignore log files and databases
 *.log
 *.sql
@@ -16,7 +19,9 @@ site/web/app/themes/*
 site/web/app/uploads/*
 site/web/wp/*
 
+#ignore temporary and logging directories
+*/log
+*/tmp
+
 .env
 .nohup.out
-
-

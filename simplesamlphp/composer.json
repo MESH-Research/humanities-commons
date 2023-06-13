@@ -1,0 +1,21 @@
+{
+    "name": "mesh-research/knowledge-commons-simplesamlphp",
+    "description": "Composer-managed SimpleSAMLphp",
+    "autoload": {
+    },
+    "authors": [
+        {
+            "name": "Mike Thicke",
+            "email": "thickemi@msu.edu"
+        }
+    ],
+    "require": {
+        "simplesamlphp/simplesamlphp": "^2.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "simplesamlphp/composer-module-installer": true
+        },
+        "platform-check": false
+    }
+}

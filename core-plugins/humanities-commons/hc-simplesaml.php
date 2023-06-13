@@ -503,7 +503,7 @@ if ( class_exists( 'WP_SAML_Auth' ) ) {
 function hcommons_wpsa_filter_option( $value, string $option_name ) {
 	$defaults = array(
 		'connection_type'        => 'simplesamlphp',
-		'simplesamlphp_autoload' => '/srv/www/simplesamlphp/lib/_autoload.php',
+		'simplesamlphp_autoload' => '/app/simplesamlphp/vendor/simplesamlphp/simplesamlphp/lib/_autoload.php',
 		'auth_source'            => 'default-sp',
 		'auto_provision'         => true,
 		'permit_wp_login'        => false,

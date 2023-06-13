@@ -1,4 +1,4 @@
-FROM php:7.4.33-fpm-alpine3.16
+FROM php:8.1-fpm-alpine
 
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 RUN chmod +x /usr/local/bin/install-php-extensions && \
@@ -11,5 +11,7 @@ RUN chmod a+x /usr/local/bin/wp-cli.phar && \
 RUN apk add --no-cache $PHPIZE_DEPS \
 	&& pecl install xdebug-3.1.6 \
     && docker-php-ext-enable xdebug
+
+RUN apk add mysql mysql-client
 
 EXPOSE 9000

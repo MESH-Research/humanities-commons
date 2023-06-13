@@ -173,6 +173,18 @@ class HC_Suggestions_Widget extends WP_Widget {
 	public function update( $new_instance, $old_instance ) {
 		$instance = $old_instance;
 
+		$defaults = array(
+			'title'                       => 'Recommended for You',
+			'description'                 => '',
+			'show_when_logged_in'         => true,
+			'show_when_logged_out'        => true,
+			'user_tab_enabled'            => true,
+			'bp_group_tab_enabled'        => true,
+			'humcore_deposit_tab_enabled' => true,
+		);
+
+		$new_instance = wp_parse_args( (array) $new_instance, $defaults );
+
 		$instance['title']                       = strip_tags( $new_instance['title'] );
 		$instance['description']                 = strip_tags( $new_instance['description'] );
 		$instance['show_when_logged_in']         = (bool) $new_instance['show_when_logged_in'];

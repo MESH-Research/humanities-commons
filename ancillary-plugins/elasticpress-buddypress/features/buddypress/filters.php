@@ -236,7 +236,9 @@ function ep_bp_translate_args( $query ) {
  * @return string Indexes to be searched including any user sites.
  */
 function ep_bp_search_user_sites( $index_name, $blog_id ) {
-	if ( ! is_search() ) {
+	global $wp_query;
+
+	if ( ! isset( $wp_query ) || ! is_search() ) {
 		return $index_name;
 	}
 	
