@@ -206,9 +206,9 @@ class BPEO_Component extends BP_Component {
 		// manage
 		} elseif ( bpeo_is_action( 'manage' ) ) {
 			$this->manage_events_screen();
-			add_action( 'bp_template_title',   create_function( '', "
+			add_action( 'bp_template_title', function() {
 				_e( 'Manage Events', 'bp-event-organiser' );
-			" ) );
+			} );
 			add_action( 'bp_template_content', array( $this, 'display_manage_events' ) );
 
 		// single event
