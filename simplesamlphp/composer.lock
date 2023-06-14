@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b92d539ab8890eccbefa23da57648e8c",
+    "content-hash": "75bb4b3f644717c3fe50e00744255f5f",
     "packages": [
         {
             "name": "composer/ca-bundle",
@@ -157,16 +157,16 @@
         },
         {
             "name": "composer/composer",
-            "version": "2.5.7",
+            "version": "2.5.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/composer.git",
-                "reference": "d477018d3f2ebd76dede3d3988a0b1a7add4d81e"
+                "reference": "4c516146167d1392c8b9b269bb7c24115d262164"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/composer/zipball/d477018d3f2ebd76dede3d3988a0b1a7add4d81e",
-                "reference": "d477018d3f2ebd76dede3d3988a0b1a7add4d81e",
+                "url": "https://api.github.com/repos/composer/composer/zipball/4c516146167d1392c8b9b269bb7c24115d262164",
+                "reference": "4c516146167d1392c8b9b269bb7c24115d262164",
                 "shasum": ""
             },
             "require": {
@@ -250,7 +250,7 @@
             "support": {
                 "irc": "ircs://irc.libera.chat:6697/composer",
                 "issues": "https://github.com/composer/composer/issues",
-                "source": "https://github.com/composer/composer/tree/2.5.7"
+                "source": "https://github.com/composer/composer/tree/2.5.8"
             },
             "funding": [
                 {
@@ -266,7 +266,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-05-24T13:00:40+00:00"
+            "time": "2023-06-09T15:13:21+00:00"
         },
         {
             "name": "composer/metadata-minifier",
@@ -1799,6 +1799,50 @@
                 "source": "https://github.com/simplesamlphp/simplesamlphp-assets-base/tree/v2.0.4"
             },
             "time": "2023-02-27T17:17:05+00:00"
+        },
+        {
+            "name": "skoranda/simplesamlphp-module-idpsamlmdattributes",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/MESH-Research/simplesamlphp-module-idpsamlmdattributes.git",
+                "reference": "12b067e606c3b47bd0816273e61a8dcb9ce4c698"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/MESH-Research/simplesamlphp-module-idpsamlmdattributes/zipball/12b067e606c3b47bd0816273e61a8dcb9ce4c698",
+                "reference": "12b067e606c3b47bd0816273e61a8dcb9ce4c698",
+                "shasum": ""
+            },
+            "require": {
+                "simplesamlphp/composer-module-installer": "^1.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~3.7",
+                "simplesamlphp/simplesamlphp": ">=1.14"
+            },
+            "default-branch": true,
+            "type": "simplesamlphp-module",
+            "autoload-dev": {
+                "files": [
+                    "tests/_autoload_modules.php"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Scott Koranda",
+                    "homepage": "https://orcid.org/0000-0003-4478-9026"
+                }
+            ],
+            "description": "SimpleSAMLphp module to assert details from IdP metadata into attributes",
+            "support": {
+                "issues": "https://github.com/skoranda/simplesamlphp-module-idpsamlmdattributes/issues",
+                "source": "https://github.com/skoranda/simplesamlphp-module-idpsamlmdattributes"
+            },
+            "time": "2023-06-14T16:41:48+00:00"
         },
         {
             "name": "symfony/cache",
@@ -4610,7 +4654,9 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "skoranda/simplesamlphp-module-idpsamlmdattributes": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

@@ -1,6 +1,12 @@
 {
     "name": "mesh-research/knowledge-commons-simplesamlphp",
     "description": "Composer-managed SimpleSAMLphp",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/MESH-Research/simplesamlphp-module-idpsamlmdattributes.git"
+        }
+    ],
     "autoload": {
     },
     "authors": [
@@ -10,7 +16,8 @@
         }
     ],
     "require": {
-        "simplesamlphp/simplesamlphp": "^2.0"
+        "simplesamlphp/simplesamlphp": "^2.0",
+        "skoranda/simplesamlphp-module-idpsamlmdattributes" : "dev-master"
     },
     "config": {
         "allow-plugins": {
