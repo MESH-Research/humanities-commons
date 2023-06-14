@@ -635,17 +635,19 @@ function ass_send_multipart_email( $to, $subject, $message_plaintext, $message )
 	// we're doing this during the 'wp_mail_from' filter because this runs before
 	// 'phpmailer_init'
 	$admin_email = addslashes( $admin_email );
-	$admin_email_filter = create_function( '$admin_email', '
+	$admin_email_filter = function() use ( $admin_email ) {
 		global $phpmailer;
 
 		$phpmailer->Body    = "";
 		$phpmailer->AltBody = "";
 
 		return $admin_email;
-	' );
+	};
 
 	$from_name = addslashes( $from_name );
-	$from_name_filter = create_function( '$from_name', 'return $from_name;' );
+	$from_name_filter = function() use ( $from_name ) {
+		return $from_name;
+	};
 
 	// set the WP email overrides
 	add_filter( 'wp_mail_from',      $admin_email_filter );
@@ -653,9 +655,9 @@ function ass_send_multipart_email( $to, $subject, $message_plaintext, $message )
 
 	// setup plain-text body
 	$message_plaintext = addslashes( $message_plaintext );
-	add_action( 'phpmailer_init', create_function( '$phpmailer', '
-		$phpmailer->AltBody = "' . $message_plaintext . '";
-	' ) );
+	add_action( 'phpmailer_init', function( $phpmailer ) use ( $message_plaintext ) {
+		$phpmailer->AltBody = $message_plaintext;
+	} );
 
 	// set content type as HTML
 	$headers = array( 'Content-type: text/html' );
