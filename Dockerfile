@@ -10,7 +10,9 @@ RUN chmod a+x /usr/local/bin/wp-cli.phar && \
 
 RUN apk add --no-cache $PHPIZE_DEPS \
 	&& pecl install xdebug-3.1.6 \
-    && docker-php-ext-enable xdebug
+    && docker-php-ext-enable xdebug \
+	&& touch /tmp/xdebug.log \
+	&& chmod 777 /tmp/xdebug.log
 
 RUN apk add mysql mysql-client
 
