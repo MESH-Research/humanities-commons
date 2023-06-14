@@ -1,0 +1,26 @@
+{
+    "name": "skoranda/simplesamlphp-module-idpsamlmdattributes",
+    "description": "SimpleSAMLphp module to assert details from IdP metadata into attributes",
+    "type": "simplesamlphp-module",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Scott Koranda",
+            "homepage": "https://orcid.org/0000-0003-4478-9026"
+        }
+    ],
+    "require": {
+        "simplesamlphp/composer-module-installer": "^1.1"
+    },
+    "require-dev": {
+        "simplesamlphp/simplesamlphp": ">=1.14",
+        "phpunit/phpunit": "~3.7"
+    },
+    "autoload-dev": {
+      "files": ["tests/_autoload_modules.php"]
+    },
+    "support": {
+        "issues": "https://github.com/skoranda/simplesamlphp-module-idpsamlmdattributes/issues",
+        "source": "https://github.com/skoranda/simplesamlphp-module-idpsamlmdattributes"
+    }
+}
