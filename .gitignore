@@ -20,8 +20,8 @@ site/web/app/uploads/*
 site/web/wp/*
 
 #ignore temporary and logging directories
-*/log
-*/tmp
+log/
+tmp/
 
 # ignore environment files
 .env
