@@ -516,7 +516,7 @@ class Bulk_Edit_Process extends Generic_Process {
 
 		$this->add_error_log( sprintf( __( 'Please verify, invalid value(s) to edit item ID: "%d"', 'tainacan' ), $item->get_id() ) );
 		$serealize_erro = (object) array('err' => array());
-		array_walk_recursive($item->get_errors(), create_function('&$v, $k, &$t', '$t->err[] = $v;'), $serealize_erro);
+		array_walk_recursive( $item->get_errors(), function ( &$v, $k, &$t ) { $t->err[] = $v; }, $serealize_erro );
 		$this->add_error_log( __('errors: ', 'tainacan') . implode(", ", $serealize_erro->err) );
 
 		return false;
@@ -538,7 +538,7 @@ class Bulk_Edit_Process extends Generic_Process {
 
 		$this->add_error_log( sprintf( __( 'Please verify, invalid value(s) to edit item ID: "%d"', 'tainacan' ), $item->get_id() ) );
 		$serealize_erro = (object) array('err' => array());
-		array_walk_recursive($item->get_errors(), create_function('&$v, $k, &$t', '$t->err[] = $v;'), $serealize_erro);
+		array_walk_recursive( $item->get_errors(), function ( &$v, $k, &$t ) { $t->err[] = $v; }, $serealize_erro );
 		$this->add_error_log( __('errors: ', 'tainacan') . implode(", ", $serealize_erro->err) );
 
 		return false;
