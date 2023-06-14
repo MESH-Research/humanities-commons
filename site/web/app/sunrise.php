@@ -30,7 +30,7 @@ if ( defined( 'COOKIE_DOMAIN' ) ) {
 }
 
 $wpdb->dmtable = $wpdb->base_prefix . 'domain_mapping';
-$dm_domain = $_SERVER[ 'HTTP_HOST' ];
+$dm_domain = array_key_exists( 'HTTP_HOST', $_SERVER ) ? $_SERVER[ 'HTTP_HOST' ] : null;
 
 $no_www = preg_replace( '|^www\.|', '', $dm_domain );
 if ( $no_www != $dm_domain ) {
