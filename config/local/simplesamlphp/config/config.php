@@ -1,12 +1,6 @@
 <?php
 
-$_requested_domain = $_SERVER['HTTP_HOST'];
-if ( false !== strpos( $_requested_domain, 'meshresearch.net' ) ) {
-        $_requested_domain_base = implode( '.', array_slice( explode( '.', $_requested_domain), -3 ) );
-} else {
-        $_requested_domain_base = implode( '.', array_slice( explode( '.', $_requested_domain), -2 ) );
-}
-$_requested_baseurlpath = 'https://' . $_requested_domain_base . '/simplesaml';
+$httpUtils = $httpUtils = new \SimpleSAML\Utils\HTTP();
 
 /**
  * The configuration of SimpleSAMLphp
@@ -514,7 +508,8 @@ $config = [
      'module.enable' => [
          'exampleauth' => false,
          'core' => true,
-         'saml' => true
+         'saml' => true,
+         'idpsamlmdattributes' => true, // Scott Koranda SAML Attributes module
      ],
 
 
@@ -573,7 +568,7 @@ $config = [
      * Example:
      *  'session.cookie.domain' => '.example.org',
      */
-    'session.cookie.domain' => $_requested_domain_base,
+    'session.cookie.domain' => '.lndo.site/',
 
     /*
      * Set the secure flag in the cookie.
@@ -594,7 +589,7 @@ $config = [
      * Example:
      *  'session.cookie.samesite' => 'None',
      */
-    'session.cookie.samesite' => \SimpleSAML\Utils\HTTP::canSetSameSiteNone() ? 'None' : null,
+    'session.cookie.samesite' => $httpUtils->canSetSameSiteNone() ? 'None' : null,
 
     /*
      * Options to override the default settings for php sessions.
@@ -822,7 +817,7 @@ $config = [
     'language.cookie.secure' => false,
     'language.cookie.httponly' => false,
     'language.cookie.lifetime' => (60 * 60 * 24 * 900),
-    'language.cookie.samesite' => \SimpleSAML\Utils\HTTP::canSetSameSiteNone() ? 'None' : null,
+    'language.cookie.samesite' => $httpUtils->canSetSameSiteNone() ? 'None' : null,
 
     /**
      * Custom getLanguage function called from SimpleSAML\Locale\Language::getLanguage().
