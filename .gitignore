@@ -26,7 +26,11 @@ tmp/
 # ignore environment files
 .env
 
-# ignore IDMS metadata
-*metadata.xml
+# ignore SAML private keys
+saml.crt
+saml.pem
 
 .nohup.out
+
+# ignore vscode settings
+.vscode
