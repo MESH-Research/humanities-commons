@@ -1,0 +1,1075 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EntitiesDescriptor Name="https://hcommons.org/metadata/dev-metadata.xml"
+    xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
+    xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui"
+    xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+    xmlns:shibmd="urn:mace:shibboleth:metadata:1.0"
+    xmlns:idpdisc="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <!-- google gateway -->
+    <EntityDescriptor entityID="https://google-gateway.hcommons-dev.org/idp/shibboleth"
+        xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
+        xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+        xmlns:shibmd="urn:mace:shibboleth:metadata:1.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+        <IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+
+            <Extensions>
+                <shibmd:Scope regexp="false">commons.mla.org</shibmd:Scope>
+                <mdui:UIInfo xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui">
+                  <mdui:DisplayName xml:lang="en">Google login</mdui:DisplayName>
+                  <mdui:Description xml:lang="en">Google gateway login</mdui:Description>
+                  <mdui:InformationURL xml:lang="en">https://hcommons-dev.org/about/</mdui:InformationURL>
+                  <mdui:PrivacyStatementURL xml:lang="en">https://hcommons-dev.org/privacy/</mdui:PrivacyStatementURL>
+                  <mdui:Logo width="80" height="60" xml:lang="en">https://registry.hcommons-dev.org/img/icons/google-icon.png</mdui:Logo>
+                </mdui:UIInfo>
+            </Extensions>
+
+            <KeyDescriptor>
+                <ds:KeyInfo>
+                    <ds:X509Data>
+                        <ds:X509Certificate>
+MIIDTzCCAjegAwIBAgIUH/QWaOPh7xTsU6s3LdTzornNwJcwDQYJKoZIhvcNAQEL
+BQAwJDEiMCAGA1UEAwwZbG9naW4tZGV2LmNvbW1vbnMubWxhLm9yZzAeFw0xNjAx
+MTcxNzIzMzFaFw0zNjAxMTcxNzIzMzFaMCQxIjAgBgNVBAMMGWxvZ2luLWRldi5j
+b21tb25zLm1sYS5vcmcwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDU
+Qfs349DYefgX0+JKOxdgXeXjTYUylTWVaOkncYm2F08wVj0vYAOZtQsFPinqwuEs
+JY2a9LPl+yFnnk/9ydEQ75QRCR+eJX3UlHX5vxw9gGlXgbOyghZTMmAqlO7bEgGV
+ne3Zttimzw1Ml2Z8DlM62cMG3XWs5fYNIELyLNyiVXziaH7j+rLZZddJk+p2/fEA
+2kCWnmbBJ2NZrCzavoxP5L53i0TLnsxtsj9KtzdW/6N+eV2ui+1O9FrlEyyEL9/1
+B+RIr/k4qyH0ZwmELy1FTAoxAVuTRReVB5m+cRpxRH0PWAD2COV242U9J6N7USNF
+LbqRktkHp+wrgdeq0gGJAgMBAAGjeTB3MB0GA1UdDgQWBBTWUDl9fm7PG0aUtFoE
+UMJi/8fmSzBWBgNVHREETzBNghlsb2dpbi1kZXYuY29tbW9ucy5tbGEub3JnhjBo
+dHRwczovL2xvZ2luLWRldi5jb21tb25zLm1sYS5vcmcvaWRwL3NoaWJib2xldGgw
+DQYJKoZIhvcNAQELBQADggEBAFTB2VNkNkyW7z3XPvKxIqGNd5v96JqdXTJp8X01
+cGuY/cJPKPHBtNMwjdFRIfnjylp51wfbmILV2gEkVUE7F1le8vxbZehQyx785Q/j
+64HYgVWeLXajYwca3O37qjb+AUgDWc7HL0z06ZH7hwQakGkbqmgPVr3SkZpeG1zr
+nXoGVbOfLeauDNv+mGArdJ+BlzWm2NqmNSAr2I7b20UCMJhRUyA/CIdbJvkjr8KD
+s/BwmrB8S6ZP7ZgFILipcckXscH94HwmWdZkeqZNUZ9BHYy+TsFaoFqXRIysVFm0
+U0YKb+GkgHhLn4KY4QJ5OZG2uHZfrrb0ItUtdIX/a5Oac1o=
+                        </ds:X509Certificate>
+                    </ds:X509Data>
+                </ds:KeyInfo>
+            </KeyDescriptor>
+
+            <SingleSignOnService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+                Location="https://google-gateway.hcommons-dev.org/simplesaml/saml2/idp/SSOService.php"/>
+
+        </IDPSSODescriptor>
+
+        <Organization>
+            <OrganizationName xml:lang="en">Humanities Commons</OrganizationName>
+            <OrganizationDisplayName xml:lang="en">Humanities Commons</OrganizationDisplayName>
+            <OrganizationURL xml:lang="en">https://hcommons.org</OrganizationURL>
+        </Organization>
+
+        <ContactPerson contactType="technical">
+            <GivenName>Eric</GivenName>
+            <SurName>Knappe</SurName>
+            <EmailAddress>eknappe@mla.org</EmailAddress>
+        </ContactPerson>
+
+    </EntityDescriptor>
+
+    <!-- orcid gateway -->
+    <EntityDescriptor entityID="https://orcid-gateway.hcommons-dev.org/simplesaml/saml2/idp"
+        xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
+        xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+        xmlns:shibmd="urn:mace:shibboleth:metadata:1.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+        <IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+
+            <Extensions>
+                <shibmd:Scope regexp="false">orcid-gateway.hcommons-dev.org</shibmd:Scope>
+                <mdui:UIInfo xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui">
+                  <mdui:DisplayName xml:lang="en">ORCID login</mdui:DisplayName>
+                  <mdui:Description xml:lang="en">ORCID gateway login</mdui:Description>
+                  <mdui:InformationURL xml:lang="en">https://hcommons-dev.org/about/</mdui:InformationURL>
+                  <mdui:PrivacyStatementURL xml:lang="en">https://hcommons-dev.org/privacy/</mdui:PrivacyStatementURL>
+                  <mdui:Logo width="80" height="60" xml:lang="en">https://registry.hcommons-dev.org/img/icons/orcid-icon.png</mdui:Logo>
+                </mdui:UIInfo>
+            </Extensions>
+
+            <KeyDescriptor>
+                <ds:KeyInfo>
+                    <ds:X509Data>
+                        <ds:X509Certificate>
+MIIFIjCCA4qgAwIBAgIJAOkb9EYuyUh7MA0GCSqGSIb3DQEBCwUAMIGlMQswCQYD
+VQQGEwJVUzERMA8GA1UECAwITmV3IFlvcmsxETAPBgNVBAcMCE5ldyBZb3JrMSQw
+IgYDVQQKDBtNb2Rlcm4gTGFuZ3VhZ2UgQ29ycG9yYXRpb24xJzAlBgNVBAMMHm9y
+Y2lkLWdhdGV3YXkuaGNvbW1vbnMtZGV2Lm9yZzEhMB8GCSqGSIb3DQEJARYSYWRt
+aW5AaGNvbW1vbnMub3JnMB4XDTIwMDUwMjAyMDczMloXDTMwMDUwMjAyMDczMlow
+gaUxCzAJBgNVBAYTAlVTMREwDwYDVQQIDAhOZXcgWW9yazERMA8GA1UEBwwITmV3
+IFlvcmsxJDAiBgNVBAoMG01vZGVybiBMYW5ndWFnZSBDb3Jwb3JhdGlvbjEnMCUG
+A1UEAwweb3JjaWQtZ2F0ZXdheS5oY29tbW9ucy1kZXYub3JnMSEwHwYJKoZIhvcN
+AQkBFhJhZG1pbkBoY29tbW9ucy5vcmcwggGiMA0GCSqGSIb3DQEBAQUAA4IBjwAw
+ggGKAoIBgQCvZwqjIXIQLXmvWcd92MhjmZnX4VDhgsBoRI0uvHHQcK36OwedSuyh
+8O8lOWmWsTFv7SCFpzbJBhQdTs2z+kWFmFfdsRQ5n7DA1bGM79TC9YSA3Dli0Tuw
+1X9uTxCz57IyhDSz1yGD4+L9ePudiBSomTVjT7fqqSl/fHHy7QA/Eoi7MuZOHm1y
++VnMAiSBVvHe5cWyaminOrXquHfVGDhMJlKOd+6ABdIwrDumj0Gdy9Z6YLwJvKGb
+FlRtrPsN6plBBVqJvAxVpGCZ4wCjXWZf/kHkEi136zBb+KXWmwgu7h/5kRxwu65U
+RmfAQCaWyF7kitbb5xyl6zjya0PBu2FjaD0aWzTjD/N7bGsOPSKzkzkaMUY9HQqp
+xsn1dM5yXHqslEChhB0gxnYMLRP/xPAcrYLDJJIFnQXKKaKK0Av7oZFJTMbsTkcp
+9uxaXamIGRgscQ97JJ22mwzRu/BIiXq6lffTqVKCy48kIQR95lpqQky76phl3ge0
+BSkr/U6A+pcCAwEAAaNTMFEwHQYDVR0OBBYEFK5weQYA2DEYNZRTxLWQoBWBSiKn
+MB8GA1UdIwQYMBaAFK5weQYA2DEYNZRTxLWQoBWBSiKnMA8GA1UdEwEB/wQFMAMB
+Af8wDQYJKoZIhvcNAQELBQADggGBACK+8nS45WIEFBaNp6V72/DLlDkMYwcDUTtR
+fJbP8uH04YaJMDNzQI8oJpMiMyD/xF9EutMVNDRMiQq8UbdoHsaqHqe3hxAR31/O
+DKEcuKR/aCJVwN9Ar/FX36q3J1kLgGNhRWKXXfd9zdkKBbeyyLqpLjjpDhc/dRG5
+6Oi6YqoaY3cymS5bfoZcP5VDaTzj+dsf2RZH6szGG+/cKKenosgQXeQQnKxa7xvO
+8eWkeVRj9RlkNMuraKBHf1DGeBlzaR/WnYI18jWK39szhcSPtM1nO3wCh7ocSVMq
+oBTvO6icFoRhekqZK29qRJa1PWzN9TkaWJnrtQGeX/V/VKFu82MHyO45YL3TLuwD
+OygSVZ9++9n1nHII3H51WOuobWShkgFNA/NhR+JNILChLZnDfVoMYrOPhaju0HwF
+Hc/Ze7PmnlupzuAEoFI9iAwqnz3c8Ze/nPxiP+zTJt6OWNtAzyUUzJG/nGQmV0Qa
+pPZGW6yDaPYz/2FQcJML+ZBGnV2JLw==
+                        </ds:X509Certificate>
+                    </ds:X509Data>
+                </ds:KeyInfo>
+            </KeyDescriptor>
+
+            <SingleSignOnService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+                Location="https://orcid-gateway.hcommons-dev.org/simplesaml/saml2/idp/SSOService.php"/>
+
+        </IDPSSODescriptor>
+
+        <Organization>
+            <OrganizationName xml:lang="en">Humanities Commons</OrganizationName>
+            <OrganizationDisplayName xml:lang="en">Humanities Commons</OrganizationDisplayName>
+            <OrganizationURL xml:lang="en">https://hcommons.org</OrganizationURL>
+        </Organization>
+
+        <ContactPerson contactType="technical">
+            <GivenName>Eric</GivenName>
+            <SurName>Knappe</SurName>
+            <EmailAddress>eknappe@mla.org</EmailAddress>
+        </ContactPerson>
+
+    </EntityDescriptor>
+
+    <!-- mla idp -->
+    <EntityDescriptor entityID="https://mla-idp.hcommons-dev.org/idp/shibboleth"
+        xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
+        xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+        xmlns:shibmd="urn:mace:shibboleth:metadata:1.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+        <IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+
+            <Extensions>
+                <shibmd:Scope regexp="false">dev.mla.org</shibmd:Scope>
+                <mdui:UIInfo xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui">
+                  <mdui:DisplayName xml:lang="en">Legacy MLA login</mdui:DisplayName>
+                  <mdui:Description xml:lang="en">Legacy MLA login</mdui:Description>
+                  <mdui:InformationURL xml:lang="en">https://hcommons-dev.org/about/</mdui:InformationURL>
+                  <mdui:PrivacyStatementURL xml:lang="en">https://hcommons-dev.org/privacy/</mdui:PrivacyStatementURL>
+                  <mdui:Logo width="80" height="60" xml:lang="en">https://registry.hcommons-dev.org/img/icons/mla-commons-icon.png</mdui:Logo>
+                </mdui:UIInfo>
+            </Extensions>
+
+            <KeyDescriptor>
+                <ds:KeyInfo>
+                    <ds:X509Data>
+                        <ds:X509Certificate>
+MIIDcTCCAlmgAwIBAgIJANLvv8VDLDMzMA0GCSqGSIb3DQEBBQUAMCMxITAfBgNV
+BAMMGG1sYS1pZHAuaGNvbW1vbnMtZGV2Lm9yZzAeFw0xNzA3MDcyMjEyMjdaFw0z
+NzA3MDcyMjEyMjdaMCMxITAfBgNVBAMMGG1sYS1pZHAuaGNvbW1vbnMtZGV2Lm9y
+ZzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAK+bVBv3R2cSNfvuk74C
+npk9yVpjgldKEpAZX5mUszYhXBvJi+V4RGGgPT+NJ0wMDwKlGQaM/AAQg2IiauXu
+PxZwDCEtC5irPgmn93lgeI2hCqtsZP4lCVkeovkg9JKl5pORp7srM8blpsSxOh05
+AbV8LnW9i2dkuVN1Z2VbasE7Ac8Ujd7mlr9G/SbyPhJurss16qYy8kc63MGVnoq4
+nzv7vwIppQakkUpPq+DBx9rHDDcUX0P/crj764zlDoti+utNTr+DO4N8WKoGAMa+
+hCw5r1CsrBrTsQQGnHFNluL3+K3Uo5/31bZVgYEMPZQq9QIPBhAralzlzfdcfAEx
+YO0CAwEAAaOBpzCBpDBUBgNVHREETTBLghhtbGEtaWRwLmhjb21tb25zLWRldi5v
+cmeCL2h0dHBzOi8vbWxhLWlkcC5oY29tbW9ucy1kZXYub3JnL2lkcC9zaGliYm9s
+ZXRoMB0GA1UdDgQWBBQLG5L+SbBmF8PLczJ0mnEacBTBCjAfBgNVHSMEGDAWgBQL
+G5L+SbBmF8PLczJ0mnEacBTBCjAMBgNVHRMEBTADAQH/MA0GCSqGSIb3DQEBBQUA
+A4IBAQBUAkMwerooIHKoJXbmef6N1kKtDQH1LxWk+1pd3+L8hE7KuNn9QQklkrHU
+voIOo9DtvbyHylR5T/irh5MScsCMe5P5+I5pRMR8FaaXFqj4jOsUoOXTbNEW3sHM
+sVi1cCo81uZf8WjrOo93SUsbjKKQklfJu900etZ/KrjRoQnK8MCB0/2GSqJAyZMk
+v7qvgBx89oJkOKWFUPb0810onurgRQmSK+o3urVeRhdhfYeeOtojrN3cA0OoC+y7
+wXSMI1hevoVSwZWJKVyPFYbDwZTfgg6GAvgO3N30ER7Xn7sGuRVkfZoW12I3rEdb
+cJeYVxe9IJnbRuoTMr+Yec9q6lHv
+                        </ds:X509Certificate>
+                    </ds:X509Data>
+                </ds:KeyInfo>
+            </KeyDescriptor>
+
+            <SingleSignOnService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+                Location="https://mla-idp.hcommons-dev.org/simplesaml/saml2/idp/SSOService.php"/>
+
+        </IDPSSODescriptor>
+
+        <Organization>
+            <OrganizationName xml:lang="en">Modern Language Association</OrganizationName>
+            <OrganizationDisplayName xml:lang="en">Modern Language Association</OrganizationDisplayName>
+            <OrganizationURL xml:lang="en">http://mla.org</OrganizationURL>
+        </Organization>
+
+        <ContactPerson contactType="technical">
+            <GivenName>Eric</GivenName>
+            <SurName>Knappe</SurName>
+            <EmailAddress>eknappe@mla.org</EmailAddress>
+        </ContactPerson>
+
+    </EntityDescriptor>
+
+    <!-- maps idp -->
+    <EntityDescriptor entityID="https://maps-idp.hcommons-dev.org/simplesaml/saml2/idp"
+        xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
+        xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+        xmlns:shibmd="urn:mace:shibboleth:metadata:1.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+        <IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+
+            <Extensions>
+                <shibmd:Scope regexp="false">dev.mla.org</shibmd:Scope>
+                <mdui:UIInfo xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui">
+                  <mdui:DisplayName xml:lang="en">MAPS login</mdui:DisplayName>
+                  <mdui:Description xml:lang="en">MAPS login</mdui:Description>
+                  <mdui:InformationURL xml:lang="en">https://hcommons-dev.org/about/</mdui:InformationURL>
+                  <mdui:PrivacyStatementURL xml:lang="en">https://hcommons-dev.org/privacy/</mdui:PrivacyStatementURL>
+                  <mdui:Logo width="80" height="60" xml:lang="en">https://registry.hcommons-dev.org/img/icons/mla-commons-icon.png</mdui:Logo>
+                </mdui:UIInfo>
+            </Extensions>
+
+            <KeyDescriptor>
+                <ds:KeyInfo>
+                    <ds:X509Data>
+                        <ds:X509Certificate>
+MIIFEjCCA3qgAwIBAgIJAORaH5yTGlwnMA0GCSqGSIb3DQEBCwUAMIGdMQswCQYD
+VQQGEwJVUzERMA8GA1UECAwITmV3IFlvcmsxETAPBgNVBAcMCE5ldyBZb3JrMSQw
+IgYDVQQKDBtNb2Rlcm4gTGFuZ3VhZ2UgQXNzb2NpYXRpb24xIjAgBgNVBAMMGW1h
+cHMtaWRwLmhjb21tb25zLWRldi5vcmcxHjAcBgkqhkiG9w0BCQEWD2VrbmFwcGVA
+bWxhLm9yZzAeFw0yMDA1MDIyMjQ1MjNaFw0zMDA1MDIyMjQ1MjNaMIGdMQswCQYD
+VQQGEwJVUzERMA8GA1UECAwITmV3IFlvcmsxETAPBgNVBAcMCE5ldyBZb3JrMSQw
+IgYDVQQKDBtNb2Rlcm4gTGFuZ3VhZ2UgQXNzb2NpYXRpb24xIjAgBgNVBAMMGW1h
+cHMtaWRwLmhjb21tb25zLWRldi5vcmcxHjAcBgkqhkiG9w0BCQEWD2VrbmFwcGVA
+bWxhLm9yZzCCAaIwDQYJKoZIhvcNAQEBBQADggGPADCCAYoCggGBAMPrA0pTHg+9
+gc1UEJ2ZzBQ8Vk+hxPv1e5uW/s8UdsH0ZRtUAObh/GR4iReLdmskzjff+11jb9Y5
+CJojFpAglwe/wO3cfA6cW7a8zwSvuKhnFswtkKTChhvczo6AUVMPX76Srnxjlsqb
+wHo+61MZ8yq6bT9oio0N4nnLeIesdGw61e8UVctNhqUeKA/6CNl6mnszUK7u3r08
+FpoSIYogpNBIkG/0Xbk6NjxU/a0naNag/n0D5SShoFITceCMMALsJjx9Lk9pA2LV
+xWRL5RFUvnysYl+y+HU/NNV4APkinuaydKWVV49Z9FIVg6g9+OMX5zRVLrRXOX73
+pvVf8HsyUs2RJ3UVZAcXihcE92S6p+wXqbb6kL+rznscwAtDCxWA/xuxFaFRTWQB
+M8Nk86P4uUyL0PuUIvtzLSxHsZ/Xrgy8qrbe2WscwYTmJNngCPhw/uhTO6SGrKv5
+qJO/zX4X2jMdzOj7H6DM5ngfljMtpXX+QAvP79UjiINzAu1NWQOSowIDAQABo1Mw
+UTAdBgNVHQ4EFgQU/XozCcufyLB8FUfun3J0GQbNcwwwHwYDVR0jBBgwFoAU/Xoz
+CcufyLB8FUfun3J0GQbNcwwwDwYDVR0TAQH/BAUwAwEB/zANBgkqhkiG9w0BAQsF
+AAOCAYEAlA3E4r2Y86qKNcTRf/iqJ2TdWZi8YKoq1twXFXSNTuu1lUnrGY0PQfJJ
+o1P85w5qJTMoYlshmS3m9XlahhUxI2rpII8IqrCuo2/Arrm03qE0XpFSavFUZdYJ
+SFk5IeeY2i8+5oEBCbAYnEOuJDN6dob2GWaoEs5FlZVnRkAu1hWCri17kyKSrgEF
+ZGT/F7hygqPWhtXY6OmWaKOo0plARb+I9PRGBxIw/HGuN5tvEvjQlVzFtA/SmJj7
+QvIJ8M/6UKeN2gjWahf6PpkrKzyb49/y374HLAZuB2dDjOUjk8jPFRtKNJ7enyWN
+0CbRxG7nza8AWYQDGe6uHqtLFh3o1iFq80oqV/Z3V9EgXFgHtXQBZLzUnDhewWNE
+lPAMtS6Gg4SULRlH25PkIZlzDjSZmebaKx06bEK5z4J4atjYQlzFzQXogbLDj+b2
+QwQx+odtaRc4GCopR7BmxrtpyuUPrEh4EzD7cLrk/PyJt/fVrV8r0E1PBTWVl2Xe
+u1U0RCBT
+                        </ds:X509Certificate>
+                    </ds:X509Data>
+                </ds:KeyInfo>
+            </KeyDescriptor>
+
+            <SingleSignOnService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+                Location="https://maps-idp.hcommons-dev.org/simplesaml/saml2/idp/SSOService.php"/>
+
+        </IDPSSODescriptor>
+
+        <Organization>
+            <OrganizationName xml:lang="en">Modern Language Association</OrganizationName>
+            <OrganizationDisplayName xml:lang="en">Modern Language Association</OrganizationDisplayName>
+            <OrganizationURL xml:lang="en">http://mla.org</OrganizationURL>
+        </Organization>
+
+        <ContactPerson contactType="technical">
+            <GivenName>Eric</GivenName>
+            <SurName>Knappe</SurName>
+            <EmailAddress>eknappe@mla.org</EmailAddress>
+        </ContactPerson>
+
+    </EntityDescriptor>
+
+    <!-- hc idp -->
+    <EntityDescriptor entityID="https://hc-idp.hcommons-dev.org/idp/shibboleth"
+        xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
+        xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+        xmlns:shibmd="urn:mace:shibboleth:metadata:1.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+        <IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+
+            <Extensions>
+                <shibmd:Scope regexp="false">hcommons-test.mla.org</shibmd:Scope>
+                <mdui:UIInfo xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui">
+                  <mdui:DisplayName xml:lang="en">HC login</mdui:DisplayName>
+                  <mdui:Description xml:lang="en">HC login</mdui:Description>
+                  <mdui:InformationURL xml:lang="en">https://hcommons-dev.org/about/</mdui:InformationURL>
+                  <mdui:PrivacyStatementURL xml:lang="en">https://hcommons-dev.org/privacy/</mdui:PrivacyStatementURL>
+                  <mdui:Logo width="80" height="60" xml:lang="en">https://registry.hcommons-dev.org/img/icons/humanities-commons-icon.png</mdui:Logo>
+                </mdui:UIInfo>
+            </Extensions>
+
+            <KeyDescriptor>
+                <ds:KeyInfo>
+                    <ds:X509Data>
+                        <ds:X509Certificate>
+MIIDPDCCAiSgAwIBAgIJAOFs44UIUFXhMA0GCSqGSIb3DQEBBQUAMCIxIDAeBgNV
+BAMTF2hjLWlkcC5oY29tbW9ucy1kZXYub3JnMB4XDTE3MDcxMDE1MjY0NFoXDTI3
+MDcwODE1MjY0NFowIjEgMB4GA1UEAxMXaGMtaWRwLmhjb21tb25zLWRldi5vcmcw
+ggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC1+XvyRDH8DIKXukmLNdio
+tmHKEN7LxwQajgCT71LcX9aYavqppvmMujijCnRM807G7/PbiVJPzCyM9fn37fSj
+E4FdO596kS/LCs/RmweJXcDV735Ox/D/mS7zmj1tQVQP5GioC4C+Rjsvrmpo4B50
+bi5wJz+c5PdDllgIw9ElvDis79wWNtpTBSd/thbwDX2CPGTFOAhKfcTrOMjIOEHy
+7KmaP+Ec4LEiFhkMwAJJ0UwtCK+gdv2tOJ0O9p6Y6iujSHNLt1dTmJiRt199Pcue
+N8VwTcSpr1HUwYgNFKcpBhoZBn4Rt9JTSsmLznzlBFdgQ3lCiaEYIAlvEm6bUfA7
+AgMBAAGjdTBzMFIGA1UdEQRLMEmCF2hjLWlkcC5oY29tbW9ucy1kZXYub3Jnhi5o
+dHRwczovL2hjLWlkcC5oY29tbW9ucy1kZXYub3JnL2lkcC9zaGliYm9sZXRoMB0G
+A1UdDgQWBBSG5D9s5ApRO/cRZVAUWM3OULij/jANBgkqhkiG9w0BAQUFAAOCAQEA
+htg/ald1bngPX2ZQF3gKgt025jcpi0TdY/31MX/Ss//jJWIQ1vHtUjjJh3o5oIPq
+aG2nWrriHeBCZJdNcSz8khQTlctCZ3nuEHGqzcj4G3hD0XlrsIKjo49mDd88SFQV
+QhJEZt7ym196hH7NCBY7fpg0R1kXvL7NNwh6VsDQJrH1FuS7/Pb/dOdiv0lEMtSB
+DaeKAWXxK3DByLyygLs0xqUsPk7UiXNKEckSxvoKjoB5KXUeL4pbx8JvEIJ8Y/2g
+yQpEuGxogy2Po2EqaPYpPLqDKhONdylne09ZnFGhMAH//BYUpmRabeMAntkYPQhn
+SlkeQbEyzLrsje0yslzpIw==
+                        </ds:X509Certificate>
+                    </ds:X509Data>
+                </ds:KeyInfo>
+            </KeyDescriptor>
+
+            <SingleSignOnService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+                Location="https://hc-idp.hcommons-dev.org/simplesaml/saml2/idp/SSOService.php"/>
+
+        </IDPSSODescriptor>
+
+        <Organization>
+            <OrganizationName xml:lang="en">Humanities Commons</OrganizationName>
+            <OrganizationDisplayName xml:lang="en">Humanities Commons</OrganizationDisplayName>
+            <OrganizationURL xml:lang="en">https://hcommons.org</OrganizationURL>
+        </Organization>
+
+        <ContactPerson contactType="technical">
+            <GivenName>Eric</GivenName>
+            <SurName>Knappe</SurName>
+            <EmailAddress>eknappe@mla.org</EmailAddress>
+        </ContactPerson>
+
+    </EntityDescriptor>
+
+    <!-- comanage registry -->
+    <EntityDescriptor entityID="https://registry.hcommons-dev.org/shibboleth"
+                      xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
+                      xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+                      xmlns:shibmd="urn:mace:shibboleth:metadata:1.0"
+                      xmlns:idpdisc="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol"
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+        <SPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+            <Extensions>
+                <idpdisc:DiscoveryResponse
+                    index="1"
+                    Binding="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol"
+                    Location="https://registry.hcommons-dev.org/Shibboleth.sso/Login" />
+                <mdui:UIInfo xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui">
+                    <mdui:DisplayName xml:lang="en">Humanities Commons Registry DEV</mdui:DisplayName>
+                    <mdui:Description xml:lang="en">Humanities Commons Registry development</mdui:Description>
+                </mdui:UIInfo>
+            </Extensions>
+
+            <KeyDescriptor>
+                <ds:KeyInfo>
+                    <ds:X509Data>
+                        <ds:X509Certificate>
+MIIDQDCCAiigAwIBAgIJAIAxNncjSCA/MA0GCSqGSIb3DQEBBQUAMCQxIjAgBgNV
+BAMTGXJlZ2lzdHJ5Lmhjb21tb25zLWRldi5vcmcwHhcNMTcwNzA3MjE0NTA5WhcN
+MjcwNzA1MjE0NTA5WjAkMSIwIAYDVQQDExlyZWdpc3RyeS5oY29tbW9ucy1kZXYu
+b3JnMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvjTCb5jNos4DTWcx
+G8Ue05Q4WkEvXHw8YT2aOb+thpt9xehKdvlbM+xeOw/5wp1P90tOon7u0eVW4+W2
+7I/l/C501I5g7JxqFMCpmRHk9cCV9ibKf8EMsNwmjqi2JeHSPiuOfVsThaNnvTyG
+toqBJC2coyWY4/4vN2KsXejnrMvjmX/Hqy4qOUn2uJkOztgxuI0Lslfr26FqYgUm
+2Tk86pN4zqNzFoV22vGHoy9UhwOzLyvaQjP5nvv5Play5vvvU/Z0sHYilb3ick4j
+zH3pbtyIi/ylhwt8KDBSiaeQ4kvh+aJFWtIuvZaFNCda1hKTIGGfsAhKR1/L+H3p
+0SviswIDAQABo3UwczBSBgNVHREESzBJghlyZWdpc3RyeS5oY29tbW9ucy1kZXYu
+b3JnhixodHRwczovL3JlZ2lzdHJ5Lmhjb21tb25zLWRldi5vcmcvc2hpYmJvbGV0
+aDAdBgNVHQ4EFgQUbwEQl39eTxM1Ww88pGP1fB2uW9gwDQYJKoZIhvcNAQEFBQAD
+ggEBAABJpt978CEfW9cJPiZ19SdJDqaj2JxUQWylFSQK6KxZTM+AyXb+2GaAseIl
+Z0Yyhv6psvxcRFhKVTMfkBR/cJUsLcEXDYibQ2ZTCXBBOSjTlz1F75XmuQD4F6UT
+5fxdKyriFlDvHCzwXpW4+2KgrWwHGODW6mPnpyylurmBARI/x5DEhgoDf6Su+6UH
+Rq05Fh+mxL3t0y8QHelyr3W3NFD/K2WcC9syMlKOxem/4cnJtWDSLCjzxM7YYeDr
+had5wbMHN6jsuZlBmidKLAvs3cqIJObEPr+4Sl3BgIktkg23Rrr3LR5abLHJ+BGn
+xzN2USc5HdwLHF+HniBTIqELDFg=
+                        </ds:X509Certificate>
+                    </ds:X509Data>
+                </ds:KeyInfo>
+            </KeyDescriptor>
+
+            <AssertionConsumerService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+                Location="https://registry.hcommons-dev.org/Shibboleth.sso/SAML2/POST" index="1"/>
+            <AssertionConsumerService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign"
+                Location="https://registry.hcommons-dev.org/Shibboleth.sso/SAML2/POST-SimpleSign" index="2"/>
+            <AssertionConsumerService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact"
+                Location="https://registry.hcommons-dev.org/Shibboleth.sso/SAML2/Artifact" index="3"/>
+            <AssertionConsumerService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:PAOS"
+                Location="https://registry.hcommons-dev.org/Shibboleth.sso/SAML2/ECP" index="4"/>
+        </SPSSODescriptor>
+
+        <Organization>
+            <OrganizationName xml:lang="en">Humanities Commons</OrganizationName>
+            <OrganizationDisplayName xml:lang="en">Humanities Commons</OrganizationDisplayName>
+            <OrganizationURL xml:lang="en">https://hcommons.org</OrganizationURL>
+        </Organization>
+
+        <ContactPerson contactType="technical">
+            <GivenName>Eric</GivenName>
+            <SurName>Knappe</SurName>
+            <EmailAddress>eknappe@mla.org</EmailAddress>
+        </ContactPerson>
+    </EntityDescriptor>
+
+    <!-- attribute authority -->
+    <EntityDescriptor entityID="https://registry.hcommons-dev.org/aa/shibboleth"
+        xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
+        xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+        xmlns:shibmd="urn:mace:shibboleth:metadata:1.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+        <AttributeAuthorityDescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+
+            <Extensions>
+                <shibmd:Scope regexp="false">commons.mla.org</shibmd:Scope>
+            </Extensions>
+
+            <KeyDescriptor>
+                <ds:KeyInfo>
+                    <ds:X509Data>
+                        <ds:X509Certificate>
+MIIDQDCCAiigAwIBAgIJAN2li6o+6/BPMA0GCSqGSIb3DQEBBQUAMCQxIjAgBgNV
+BAMTGXJlZ2lzdHJ5Lmhjb21tb25zLWRldi5vcmcwHhcNMTcwNzA3MTg0OTAzWhcN
+MjcwNzA1MTg0OTAzWjAkMSIwIAYDVQQDExlyZWdpc3RyeS5oY29tbW9ucy1kZXYu
+b3JnMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA8oo/DFhitZKps22u
+n/Y1u1lR3SzWUVLVmNWYiU8rFyVH9Sw7d3rzWQXyJw0X8km4GB6ZTE/4PAYxU7w4
+Y7tdlRKKma5Iz1WZUgE8v1IjdCYTRqemQePlpLjWA1WQ6cNGbQzyTNoyl/AIlei2
+jIp/tbz4H+McoL+1KIFHi6BS9pz+NPMbqy6rNDxrdZkbF7Uai2jPLUDoL3fANixe
+6IJ9OomZW/1uyp2sFcE71M299PM2NQQQOyK3jRUSwns/3edhAhpi5cwkYsUKxKj9
+47+qfkswZCaXAPLnfPbOuiK3Ikh9Hx3XUmaR18NC4wDewAOS4xrSyO3nTTZ5Yqu6
+jEDnVQIDAQABo3UwczBSBgNVHREESzBJghlyZWdpc3RyeS5oY29tbW9ucy1kZXYu
+b3JnhixodHRwczovL3JlZ2lzdHJ5Lmhjb21tb25zLWRldi5vcmcvc2hpYmJvbGV0
+aDAdBgNVHQ4EFgQUTmUwW6Z2n/nmZSXnJ3Xkq1qtpxwwDQYJKoZIhvcNAQEFBQAD
+ggEBAD875SVCDTdLErrDxV5CyAbANg3DmKOreVGz4QpqQE/5+qcEr3H7KDNazVBy
+Z0AQ0npgaBWFRPCETcufd5YLWijEDSgrmy8k/+gUCxW38/OnlrUaOqw3Vh139CNj
+DJOrmSavz6L4UHHdemCEJXVc+hPMIlVA4P7qJ4BnTB0EjErWANmek0rDMEluCJRW
+2CyEKyELMPCeNBd66XX9itrhb+VXs26Qqggn+y992a8rWikzyyF4zmeDsSw6Mn1N
++xeDWJm6HJVXTLLBmI1pQbVyQOrlv6YAhwPDcJcj7JmMlzAAi1U2F6sqKdZWP/KU
+FdFE3/wB7ANhDGyIGGwU0rK81sc=
+                        </ds:X509Certificate>
+                    </ds:X509Data>
+                </ds:KeyInfo>
+            </KeyDescriptor>
+
+            <AttributeService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
+                Location="https://registry.hcommons-dev.org:8443/idp/profile/SAML2/SOAP/AttributeQuery"/>
+        </AttributeAuthorityDescriptor>
+
+        <Organization>
+            <OrganizationName xml:lang="en">Humanities Commons</OrganizationName>
+            <OrganizationDisplayName xml:lang="en">Humanities Commons</OrganizationDisplayName>
+            <OrganizationURL xml:lang="en">https://hcommons.org</OrganizationURL>
+        </Organization>
+
+        <ContactPerson contactType="technical">
+            <GivenName>Eric</GivenName>
+            <SurName>Knappe</SurName>
+            <EmailAddress>eknappe@mla.org</EmailAddress>
+        </ContactPerson>
+
+    </EntityDescriptor>
+
+    <!-- hcommons-dev -->
+    <EntityDescriptor entityID="https://hcommons-dev.org/shibboleth"
+                      xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
+                      xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+                      xmlns:shibmd="urn:mace:shibboleth:metadata:1.0"
+                      xmlns:idpdisc="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol"
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+        <SPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+            <Extensions>
+                <idpdisc:DiscoveryResponse
+                    index="1"
+                    Binding="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol"
+                    Location="https://hcommons-dev.org/Shibboleth.sso/Login" />
+                <mdui:UIInfo xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui">
+                    <mdui:DisplayName xml:lang="en">Humanities Commons WordPress STAGE</mdui:DisplayName>
+                    <mdui:Description xml:lang="en">Humanities Commons WordPress staging</mdui:Description>
+                </mdui:UIInfo>
+            </Extensions>
+
+            <KeyDescriptor>
+                <ds:KeyInfo>
+                    <ds:X509Data>
+                        <ds:X509Certificate>
+MIIDETCCAfmgAwIBAgIJAIeqN8742a7lMA0GCSqGSIb3DQEBBQUAMBsxGTAXBgNV
+BAMTEGhjb21tb25zLWRldi5vcmcwHhcNMTYxMTE2MTYxNzAyWhcNMjYxMTE0MTYx
+NzAyWjAbMRkwFwYDVQQDExBoY29tbW9ucy1kZXYub3JnMIIBIjANBgkqhkiG9w0B
+AQEFAAOCAQ8AMIIBCgKCAQEAvYM70vjiK6RTra7Wgb7N89/fJKwfIbAfcW+gVQm9
+zXHoM5BZEnRoHv/+jlzGlJ5o9RAGZFUc1oSqVjr6t4VMer8OVEERGJRIJv8ot3gT
+v/n1kPPpq0EY3k5mseAlG6cyZLBrhZWUlZRFwdYe5poU+di04LdfcSuChVCelFBm
+UCpoU8fHe88Tv3KBCI1RvWZ769M+3fRZuxrqd8OMlisb7szSzYINJAFe9mvCqJ+Q
+bXCOtv4Oy0Z7GoEPymZ+uUl2vxRmrIUtiltODCvq4tGFf1Dw3f87EORxDE1kApfA
+q9OvxxcKQadQCPsJdK7XC+NvbjuekAWpjQWFgfy/9WHo4wIDAQABo1gwVjA1BgNV
+HREELjAsghBoY29tbW9ucy1kZXYub3JnhhhodHRwczovL2hjb21tb25zLWRldi5v
+cmcwHQYDVR0OBBYEFDKWG7MlGpoioRob5/CSd48PEoj6MA0GCSqGSIb3DQEBBQUA
+A4IBAQCzDIW0l21Try7+MYZU5DYf57M+ZambEM00kt/IjdidISVl95IxHYFrtt7A
+NyqpbltFxluVFsUsSEJx6qkKGIrEz0UA/4zxIF+qv+4VA1ILhVvKYlwEcBm0xxId
+cBix0z3wl0a0byy+VUOPEFJ9zyTXKVb8t1jtMGP27YCU+JYhDYxuTEzMe2sY1YER
+WSrWNcMpGgKMABbqsvZG0MWlngCfzhl1uPAUF3KkVj3gTfVlUflUE6u/kmMa9qHg
+ygqW1wdpGyL5559et7KbzLyUylkxkPf5o3Re019f4gAIR6Lv8JqoZmSPK6ciJsuI
+io+UqPY73YeZ0tbL9zfovHYSQBLV
+                        </ds:X509Certificate>
+                    </ds:X509Data>
+                </ds:KeyInfo>
+            </KeyDescriptor>
+
+            <AssertionConsumerService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+                Location="https://hcommons-dev.org/simplesaml/module.php/saml/sp/saml2-acs.php/default-sp"
+                index="1"
+            />
+            <AssertionConsumerService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+                Location="https://style.mla-dev.org/simplesaml/module.php/saml/sp/saml2-acs.php/default-sp"
+                index="2"
+            />
+            <AssertionConsumerService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+                Location="https://action.mla-dev.org/simplesaml/module.php/saml/sp/saml2-acs.php/default-sp"
+                index="3"
+            />
+            <AssertionConsumerService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+                Location="https://symposium.mla-dev.org/simplesaml/module.php/saml/sp/saml2-acs.php/default-sp"
+                index="4"
+            />
+            <AssertionConsumerService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+                Location="https://stemcommons-dev.org/simplesaml/module.php/saml/sp/saml2-acs.php/default-sp"
+                index="5"
+            />
+            <AssertionConsumerService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+                Location="https://socscicommons-dev.org/simplesaml/module.php/saml/sp/saml2-acs.php/default-sp"
+                index="6"
+            />
+            <AssertionConsumerService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+                Location="https://commonshub-dev.org/simplesaml/module.php/saml/sp/saml2-acs.php/default-sp"
+                index="7"
+            />
+
+
+
+        </SPSSODescriptor>
+
+        <Organization>
+            <OrganizationName xml:lang="en">Humanities Commons</OrganizationName>
+            <OrganizationDisplayName xml:lang="en">Humanities Commons</OrganizationDisplayName>
+            <OrganizationURL xml:lang="en">https://hcommons.org</OrganizationURL>
+        </Organization>
+
+        <ContactPerson contactType="technical">
+            <GivenName>Eric</GivenName>
+            <SurName>Knappe</SurName>
+            <EmailAddress>eknappe@mla.org</EmailAddress>
+        </ContactPerson>
+    </EntityDescriptor>
+    
+    <!-- local dev -->
+        <EntityDescriptor entityID="https://commons-wordpress.lndo.site/simplesaml"
+                          xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
+                          xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+                          xmlns:shibmd="urn:mace:shibboleth:metadata:1.0"
+                          xmlns:idpdisc="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol"
+                          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+            <SPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+                <Extensions>
+                    <idpdisc:DiscoveryResponse
+                        index="1"
+                        Binding="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol"
+                        Location="https://commons-wordpress.lndo.site/Shibboleth.sso/Login" />
+                    <mdui:UIInfo xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui">
+                        <mdui:DisplayName xml:lang="en">Humanities Commons WordPress Local</mdui:DisplayName>
+                        <mdui:Description xml:lang="en">Humanities Commons WordPress local dev</mdui:Description>
+                    </mdui:UIInfo>
+                </Extensions>
+
+                <KeyDescriptor>
+                    <ds:KeyInfo>
+                        <ds:X509Data>
+                            <ds:X509Certificate>
+    MIIDETCCAfmgAwIBAgIJAIeqN8742a7lMA0GCSqGSIb3DQEBBQUAMBsxGTAXBgNV
+    BAMTEGhjb21tb25zLWRldi5vcmcwHhcNMTYxMTE2MTYxNzAyWhcNMjYxMTE0MTYx
+    NzAyWjAbMRkwFwYDVQQDExBoY29tbW9ucy1kZXYub3JnMIIBIjANBgkqhkiG9w0B
+    AQEFAAOCAQ8AMIIBCgKCAQEAvYM70vjiK6RTra7Wgb7N89/fJKwfIbAfcW+gVQm9
+    zXHoM5BZEnRoHv/+jlzGlJ5o9RAGZFUc1oSqVjr6t4VMer8OVEERGJRIJv8ot3gT
+    v/n1kPPpq0EY3k5mseAlG6cyZLBrhZWUlZRFwdYe5poU+di04LdfcSuChVCelFBm
+    UCpoU8fHe88Tv3KBCI1RvWZ769M+3fRZuxrqd8OMlisb7szSzYINJAFe9mvCqJ+Q
+    bXCOtv4Oy0Z7GoEPymZ+uUl2vxRmrIUtiltODCvq4tGFf1Dw3f87EORxDE1kApfA
+    q9OvxxcKQadQCPsJdK7XC+NvbjuekAWpjQWFgfy/9WHo4wIDAQABo1gwVjA1BgNV
+    HREELjAsghBoY29tbW9ucy1kZXYub3JnhhhodHRwczovL2hjb21tb25zLWRldi5v
+    cmcwHQYDVR0OBBYEFDKWG7MlGpoioRob5/CSd48PEoj6MA0GCSqGSIb3DQEBBQUA
+    A4IBAQCzDIW0l21Try7+MYZU5DYf57M+ZambEM00kt/IjdidISVl95IxHYFrtt7A
+    NyqpbltFxluVFsUsSEJx6qkKGIrEz0UA/4zxIF+qv+4VA1ILhVvKYlwEcBm0xxId
+    cBix0z3wl0a0byy+VUOPEFJ9zyTXKVb8t1jtMGP27YCU+JYhDYxuTEzMe2sY1YER
+    WSrWNcMpGgKMABbqsvZG0MWlngCfzhl1uPAUF3KkVj3gTfVlUflUE6u/kmMa9qHg
+    ygqW1wdpGyL5559et7KbzLyUylkxkPf5o3Re019f4gAIR6Lv8JqoZmSPK6ciJsuI
+    io+UqPY73YeZ0tbL9zfovHYSQBLV
+                            </ds:X509Certificate>
+                        </ds:X509Data>
+                    </ds:KeyInfo>
+                </KeyDescriptor>
+
+                <AssertionConsumerService
+                    Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+                    Location="https://commons-wordpress.lndo.site/simplesaml/module.php/saml/sp/saml2-acs.php/default-sp"
+                    index="1"
+                />
+            </SPSSODescriptor>
+
+            <Organization>
+                <OrganizationName xml:lang="en">Humanities Commons</OrganizationName>
+                <OrganizationDisplayName xml:lang="en">Humanities Commons</OrganizationDisplayName>
+                <OrganizationURL xml:lang="en">https://hcommons.org</OrganizationURL>
+            </Organization>
+
+            <ContactPerson contactType="technical">
+                <GivenName>Mike</GivenName>
+                <SurName>Thicke</SurName>
+                <EmailAddress>thickemi@msu.edu</EmailAddress>
+            </ContactPerson>
+        </EntityDescriptor>
+
+    <!-- hcommons-staging -->
+    <EntityDescriptor entityID="https://hcommons-staging.org/sp"
+                      xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
+                      xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+                      xmlns:shibmd="urn:mace:shibboleth:metadata:1.0"
+                      xmlns:idpdisc="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol"
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+        <SPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+            <Extensions>
+                <idpdisc:DiscoveryResponse
+                    index="1"
+                    Binding="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol"
+                    Location="https://hcommons-staging.org/Shibboleth.sso/Login" />
+                <mdui:UIInfo xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui">
+                    <mdui:DisplayName xml:lang="en">Humanities Commons WordPress STAGE</mdui:DisplayName>
+                    <mdui:Description xml:lang="en">Humanities Commons WordPress staging</mdui:Description>
+                </mdui:UIInfo>
+            </Extensions>
+
+            <KeyDescriptor>
+                <ds:KeyInfo>
+                    <ds:X509Data>
+                        <ds:X509Certificate>
+MIIDETCCAfmgAwIBAgIJAIeqN8742a7lMA0GCSqGSIb3DQEBBQUAMBsxGTAXBgNV
+BAMTEGhjb21tb25zLWRldi5vcmcwHhcNMTYxMTE2MTYxNzAyWhcNMjYxMTE0MTYx
+NzAyWjAbMRkwFwYDVQQDExBoY29tbW9ucy1kZXYub3JnMIIBIjANBgkqhkiG9w0B
+AQEFAAOCAQ8AMIIBCgKCAQEAvYM70vjiK6RTra7Wgb7N89/fJKwfIbAfcW+gVQm9
+zXHoM5BZEnRoHv/+jlzGlJ5o9RAGZFUc1oSqVjr6t4VMer8OVEERGJRIJv8ot3gT
+v/n1kPPpq0EY3k5mseAlG6cyZLBrhZWUlZRFwdYe5poU+di04LdfcSuChVCelFBm
+UCpoU8fHe88Tv3KBCI1RvWZ769M+3fRZuxrqd8OMlisb7szSzYINJAFe9mvCqJ+Q
+bXCOtv4Oy0Z7GoEPymZ+uUl2vxRmrIUtiltODCvq4tGFf1Dw3f87EORxDE1kApfA
+q9OvxxcKQadQCPsJdK7XC+NvbjuekAWpjQWFgfy/9WHo4wIDAQABo1gwVjA1BgNV
+HREELjAsghBoY29tbW9ucy1kZXYub3JnhhhodHRwczovL2hjb21tb25zLWRldi5v
+cmcwHQYDVR0OBBYEFDKWG7MlGpoioRob5/CSd48PEoj6MA0GCSqGSIb3DQEBBQUA
+A4IBAQCzDIW0l21Try7+MYZU5DYf57M+ZambEM00kt/IjdidISVl95IxHYFrtt7A
+NyqpbltFxluVFsUsSEJx6qkKGIrEz0UA/4zxIF+qv+4VA1ILhVvKYlwEcBm0xxId
+cBix0z3wl0a0byy+VUOPEFJ9zyTXKVb8t1jtMGP27YCU+JYhDYxuTEzMe2sY1YER
+WSrWNcMpGgKMABbqsvZG0MWlngCfzhl1uPAUF3KkVj3gTfVlUflUE6u/kmMa9qHg
+ygqW1wdpGyL5559et7KbzLyUylkxkPf5o3Re019f4gAIR6Lv8JqoZmSPK6ciJsuI
+io+UqPY73YeZ0tbL9zfovHYSQBLV
+                        </ds:X509Certificate>
+                    </ds:X509Data>
+                </ds:KeyInfo>
+            </KeyDescriptor>
+
+            <AssertionConsumerService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+                Location="https://hcommons-staging.org/simplesaml/module.php/saml/sp/saml2-acs.php/default-sp"
+                index="1"
+            />
+            <AssertionConsumerService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+                Location="https://style.mla-dev.org/Shibboleth.sso/SAML2/POST" index="2"/>
+            <AssertionConsumerService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+                Location="https://action.mla-dev.org/Shibboleth.sso/SAML2/POST" index="3"/>
+            <AssertionConsumerService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+                Location="https://symposium.mla-dev.org/Shibboleth.sso/SAML2/POST" index="4"/>
+            <AssertionConsumerService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+                Location="https://commons-dev.meshresearch.net/Shibboleth.sso/SAML2/POST" index="5"/>
+        </SPSSODescriptor>
+
+        <Organization>
+            <OrganizationName xml:lang="en">Humanities Commons</OrganizationName>
+            <OrganizationDisplayName xml:lang="en">Humanities Commons</OrganizationDisplayName>
+            <OrganizationURL xml:lang="en">https://hcommons.org</OrganizationURL>
+        </Organization>
+
+        <ContactPerson contactType="technical">
+            <GivenName>Eric</GivenName>
+            <SurName>Knappe</SurName>
+            <EmailAddress>eknappe@mla.org</EmailAddress>
+        </ContactPerson>
+    </EntityDescriptor>
+
+    <!-- hcommons-dev-2 -->
+    <EntityDescriptor entityID="https://hcommons-2.dev/sp"
+                      xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
+                      xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+                      xmlns:shibmd="urn:mace:shibboleth:metadata:1.0"
+                      xmlns:idpdisc="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol"
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+        <SPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+            <Extensions>
+                <idpdisc:DiscoveryResponse
+                    index="1"
+                    Binding="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol"
+                    Location="https://hcommons-2.dev/Shibboleth.sso/Login" />
+                <mdui:UIInfo xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui">
+                    <mdui:DisplayName xml:lang="en">Humanities Commons WordPress STAGE</mdui:DisplayName>
+                    <mdui:Description xml:lang="en">Humanities Commons WordPress staging</mdui:Description>
+                </mdui:UIInfo>
+            </Extensions>
+
+            <KeyDescriptor>
+                <ds:KeyInfo>
+                    <ds:X509Data>
+                        <ds:X509Certificate>
+MIIDETCCAfmgAwIBAgIJAIeqN8742a7lMA0GCSqGSIb3DQEBBQUAMBsxGTAXBgNV
+BAMTEGhjb21tb25zLWRldi5vcmcwHhcNMTYxMTE2MTYxNzAyWhcNMjYxMTE0MTYx
+NzAyWjAbMRkwFwYDVQQDExBoY29tbW9ucy1kZXYub3JnMIIBIjANBgkqhkiG9w0B
+AQEFAAOCAQ8AMIIBCgKCAQEAvYM70vjiK6RTra7Wgb7N89/fJKwfIbAfcW+gVQm9
+zXHoM5BZEnRoHv/+jlzGlJ5o9RAGZFUc1oSqVjr6t4VMer8OVEERGJRIJv8ot3gT
+v/n1kPPpq0EY3k5mseAlG6cyZLBrhZWUlZRFwdYe5poU+di04LdfcSuChVCelFBm
+UCpoU8fHe88Tv3KBCI1RvWZ769M+3fRZuxrqd8OMlisb7szSzYINJAFe9mvCqJ+Q
+bXCOtv4Oy0Z7GoEPymZ+uUl2vxRmrIUtiltODCvq4tGFf1Dw3f87EORxDE1kApfA
+q9OvxxcKQadQCPsJdK7XC+NvbjuekAWpjQWFgfy/9WHo4wIDAQABo1gwVjA1BgNV
+HREELjAsghBoY29tbW9ucy1kZXYub3JnhhhodHRwczovL2hjb21tb25zLWRldi5v
+cmcwHQYDVR0OBBYEFDKWG7MlGpoioRob5/CSd48PEoj6MA0GCSqGSIb3DQEBBQUA
+A4IBAQCzDIW0l21Try7+MYZU5DYf57M+ZambEM00kt/IjdidISVl95IxHYFrtt7A
+NyqpbltFxluVFsUsSEJx6qkKGIrEz0UA/4zxIF+qv+4VA1ILhVvKYlwEcBm0xxId
+cBix0z3wl0a0byy+VUOPEFJ9zyTXKVb8t1jtMGP27YCU+JYhDYxuTEzMe2sY1YER
+WSrWNcMpGgKMABbqsvZG0MWlngCfzhl1uPAUF3KkVj3gTfVlUflUE6u/kmMa9qHg
+ygqW1wdpGyL5559et7KbzLyUylkxkPf5o3Re019f4gAIR6Lv8JqoZmSPK6ciJsuI
+io+UqPY73YeZ0tbL9zfovHYSQBLV
+                        </ds:X509Certificate>
+                    </ds:X509Data>
+                </ds:KeyInfo>
+            </KeyDescriptor>
+
+            <AssertionConsumerService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+                Location="https://hcommons-2.dev/simplesaml/module.php/saml/sp/saml2-acs.php/default-sp"
+                index="1"
+            />
+            <AssertionConsumerService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+                Location="https://style.mla-dev.org/Shibboleth.sso/SAML2/POST" index="2"/>
+            <AssertionConsumerService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+                Location="https://action.mla-dev.org/Shibboleth.sso/SAML2/POST" index="3"/>
+            <AssertionConsumerService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+                Location="https://symposium.mla-dev.org/Shibboleth.sso/SAML2/POST" index="4"/>
+            <AssertionConsumerService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+                Location="https://commons-dev.meshresearch.net/Shibboleth.sso/SAML2/POST" index="5"/>
+        </SPSSODescriptor>
+
+        <Organization>
+            <OrganizationName xml:lang="en">Humanities Commons</OrganizationName>
+            <OrganizationDisplayName xml:lang="en">Humanities Commons</OrganizationDisplayName>
+            <OrganizationURL xml:lang="en">https://hcommons.org</OrganizationURL>
+        </Organization>
+
+        <ContactPerson contactType="technical">
+            <GivenName>Eric</GivenName>
+            <SurName>Knappe</SurName>
+            <EmailAddress>eknappe@mla.org</EmailAddress>
+        </ContactPerson>
+    </EntityDescriptor>
+
+    <!-- hcommons-dev-3 -->
+    <EntityDescriptor entityID="https://hcommons-3.dev/sp"
+                      xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
+                      xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+                      xmlns:shibmd="urn:mace:shibboleth:metadata:1.0"
+                      xmlns:idpdisc="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol"
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+        <SPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+            <Extensions>
+                <idpdisc:DiscoveryResponse
+                    index="1"
+                    Binding="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol"
+                    Location="https://hcommons-3.dev/Shibboleth.sso/Login" />
+                <mdui:UIInfo xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui">
+                    <mdui:DisplayName xml:lang="en">Humanities Commons WordPress DEV 3</mdui:DisplayName>
+                    <mdui:Description xml:lang="en">Humanities Commons WordPress dev 3</mdui:Description>
+                </mdui:UIInfo>
+            </Extensions>
+
+            <KeyDescriptor>
+                <ds:KeyInfo>
+                    <ds:X509Data>
+                        <ds:X509Certificate>
+MIIDETCCAfmgAwIBAgIJAIeqN8742a7lMA0GCSqGSIb3DQEBBQUAMBsxGTAXBgNV
+BAMTEGhjb21tb25zLWRldi5vcmcwHhcNMTYxMTE2MTYxNzAyWhcNMjYxMTE0MTYx
+NzAyWjAbMRkwFwYDVQQDExBoY29tbW9ucy1kZXYub3JnMIIBIjANBgkqhkiG9w0B
+AQEFAAOCAQ8AMIIBCgKCAQEAvYM70vjiK6RTra7Wgb7N89/fJKwfIbAfcW+gVQm9
+zXHoM5BZEnRoHv/+jlzGlJ5o9RAGZFUc1oSqVjr6t4VMer8OVEERGJRIJv8ot3gT
+v/n1kPPpq0EY3k5mseAlG6cyZLBrhZWUlZRFwdYe5poU+di04LdfcSuChVCelFBm
+UCpoU8fHe88Tv3KBCI1RvWZ769M+3fRZuxrqd8OMlisb7szSzYINJAFe9mvCqJ+Q
+bXCOtv4Oy0Z7GoEPymZ+uUl2vxRmrIUtiltODCvq4tGFf1Dw3f87EORxDE1kApfA
+q9OvxxcKQadQCPsJdK7XC+NvbjuekAWpjQWFgfy/9WHo4wIDAQABo1gwVjA1BgNV
+HREELjAsghBoY29tbW9ucy1kZXYub3JnhhhodHRwczovL2hjb21tb25zLWRldi5v
+cmcwHQYDVR0OBBYEFDKWG7MlGpoioRob5/CSd48PEoj6MA0GCSqGSIb3DQEBBQUA
+A4IBAQCzDIW0l21Try7+MYZU5DYf57M+ZambEM00kt/IjdidISVl95IxHYFrtt7A
+NyqpbltFxluVFsUsSEJx6qkKGIrEz0UA/4zxIF+qv+4VA1ILhVvKYlwEcBm0xxId
+cBix0z3wl0a0byy+VUOPEFJ9zyTXKVb8t1jtMGP27YCU+JYhDYxuTEzMe2sY1YER
+WSrWNcMpGgKMABbqsvZG0MWlngCfzhl1uPAUF3KkVj3gTfVlUflUE6u/kmMa9qHg
+ygqW1wdpGyL5559et7KbzLyUylkxkPf5o3Re019f4gAIR6Lv8JqoZmSPK6ciJsuI
+io+UqPY73YeZ0tbL9zfovHYSQBLV
+                        </ds:X509Certificate>
+                    </ds:X509Data>
+                </ds:KeyInfo>
+            </KeyDescriptor>
+
+            <AssertionConsumerService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+                Location="https://hcommons-3.dev/simplesaml/module.php/saml/sp/saml2-acs.php/default-sp"
+                index="1"
+            />
+            <AssertionConsumerService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+                Location="https://style.mla-dev.org/Shibboleth.sso/SAML2/POST" index="2"/>
+            <AssertionConsumerService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+                Location="https://action.mla-dev.org/Shibboleth.sso/SAML2/POST" index="3"/>
+            <AssertionConsumerService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+                Location="https://symposium.mla-dev.org/Shibboleth.sso/SAML2/POST" index="4"/>
+            <AssertionConsumerService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+                Location="https://commons-dev.meshresearch.net/Shibboleth.sso/SAML2/POST" index="5"/>
+        </SPSSODescriptor>
+
+        <Organization>
+            <OrganizationName xml:lang="en">Humanities Commons</OrganizationName>
+            <OrganizationDisplayName xml:lang="en">Humanities Commons</OrganizationDisplayName>
+            <OrganizationURL xml:lang="en">https://hcommons.org</OrganizationURL>
+        </Organization>
+
+        <ContactPerson contactType="technical">
+            <GivenName>Eric</GivenName>
+            <SurName>Knappe</SurName>
+            <EmailAddress>eknappe@mla.org</EmailAddress>
+        </ContactPerson>
+    </EntityDescriptor>
+
+    <!-- dev:satosa idp -->
+    <EntityDescriptor entityID="https://proxy.hcommons-dev.org/idp">
+        <IDPSSODescriptor
+            protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+            <Extensions>
+                <shibmd:Scope regexp="false">hcommons-dev.org</shibmd:Scope>
+                <mdui:UIInfo>
+                    <mdui:DisplayName xml:lang="en">Humanities Commons SAML Proxy IdP DEV</mdui:DisplayName>
+                    <mdui:Description xml:lang="en">SAML proxy supporting the Humanities Commons development environment</mdui:Description>
+                </mdui:UIInfo>
+            </Extensions>
+            <KeyDescriptor use="signing">
+                <ds:KeyInfo>
+                    <ds:X509Data>
+                        <ds:X509Certificate>
+MIIELTCCApWgAwIBAgIJAPeDxhrttBXNMA0GCSqGSIb3DQEBCwUAMCExHzAdBgNV
+BAMTFnByb3h5Lmhjb21tb25zLWRldi5vcmcwHhcNMTcxMTAxMTc0NTE3WhcNMjcx
+MDMwMTc0NTE3WjAhMR8wHQYDVQQDExZwcm94eS5oY29tbW9ucy1kZXYub3JnMIIB
+ojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEA0d6ycqcxviv946IzS7ZobCK0
+XAsrwHvcKo65hWkOZsxYBTRvjKITSpKv4TGyVG4leI0Ifthz7o3QAA4IKkkgY15k
+YO5AhJc9pVa+11vG0DM58qO6yraQRM4U/71AgDEmEZXsUblf3TCkN5w351G26jNw
+gax+aWNuwzX5EDS5farOhruGG2FwVYEOEHOtWSOKBR8duq1O/yY9OKMhIc2kmh9R
+m1594qTzZbxNXjyCY+LU/GZbYQP+WlbjM/dHflK5Y2WexyT942xHYnesvPnzGvEM
+B4g685Yyjl+9xz+AE41sifKYy03m7GgkimXNxQ2SnGZ4Rtj+3DlDC9S/dB2CRJd2
+uaTwgxEEK/zJJ1K2TFRfDH/wxCW5DwI3n8BMglc8TPZ33FDqNgZPwPDl92/shwNI
+U3sFM/lmDtLm/4XeKZjOZYa+WCVC71tnFYDltK1//oAqFSVRF0WT6+dcnjXxJSdR
+rQo+C1gWI+aXJzmDmhp8WBN2q7nUGapJYSu0a5yXAgMBAAGjaDBmMEUGA1UdEQQ+
+MDyCFnByb3h5Lmhjb21tb25zLWRldi5vcmeGImh0dHBzOi8vcHJveHkuaGNvbW1v
+bnMtZGV2Lm9yZy9pZHAwHQYDVR0OBBYEFDLkys52MyePCpr5IN2ybhgIosmlMA0G
+CSqGSIb3DQEBCwUAA4IBgQDOuUnSwfru5uNorAISo5QEVUi3UrholF0RPFFvM6P6
+3MOpWZwdFQYKjY1eaaE+X++AZ1FkHQv/esy7F0FRWiyU3LHUX3Yzuttb7vj7mw5D
+6IYuSIG1/0Edj/eSpnOs+6MQUUpfaFi+A0C9Smng6L1kj3SOlePprJdwfIdGG/6o
+iDaF1bhoWs/eidouzMLMKiGY6KzmaT8fInST1BGMdm4+zqNvwd1FuifDOvVQqqtl
+q2og0arTXG01YyCvU+NJT/6KjLDZf1bSmDWAPQ51Fc4fpkeOj+aG0DfwdutO2SNk
+dDDdD/m7pnepxv2u8jqSKyYKdrzLd0lJPrqH8YV4AYmyJ1UortJXFoTsGSbPv0fw
+qM1b1JAKsPMP22xmp2i4BcYOT1jZ+R+RXmMNK+fUSXAmSkhk/8h6CMgmU4ldBj5j
+tyn/M4GrGesMU1sIgidoCj/5F3jQlswz0eoaX3LyWQkDZbUbIm6Vz4h3GFwwlky8
+c5RbLEmwlolP+zSzoq4T/tw=
+                        </ds:X509Certificate>
+                    </ds:X509Data>
+                </ds:KeyInfo>
+            </KeyDescriptor>
+            <SingleSignOnService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+                Location="https://proxy.hcommons-dev.org/Saml2/sso/redirect"/>
+        </IDPSSODescriptor>
+        <Organization>
+            <OrganizationName xml:lang="en">Humanities Commons</OrganizationName>
+            <OrganizationDisplayName xml:lang="en">Humanities Commons</OrganizationDisplayName>
+            <OrganizationURL xml:lang="en">https://hcommons.org</OrganizationURL>
+        </Organization>
+
+        <ContactPerson contactType="technical">
+            <GivenName>Eric</GivenName>
+            <SurName>Knappe</SurName>
+            <EmailAddress>eknappe@mla.org</EmailAddress>
+        </ContactPerson>
+    </EntityDescriptor>
+
+    <!-- dev:satosa sp -->
+    <EntityDescriptor entityID="https://proxy.hcommons-dev.org/sp">
+        <SPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+            <Extensions>
+                <idpdisc:DiscoveryResponse Binding="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol" Location="https://proxy.hcommons-dev.org/Saml2/disco" index="1"/>
+                <mdui:UIInfo xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui">
+                    <mdui:DisplayName xml:lang="en">Humanities Commons SAML Proxy SP DEV</mdui:DisplayName>
+                    <mdui:Description xml:lang="en">SAML proxy supporting the Humanities Commons development environment</mdui:Description>
+                </mdui:UIInfo>
+            </Extensions>
+            <KeyDescriptor>
+                <ds:KeyInfo>
+                    <ds:X509Data>
+                        <ds:X509Certificate>
+MIIELDCCApSgAwIBAgIJANq4T6TxpUGIMA0GCSqGSIb3DQEBCwUAMCExHzAdBgNV
+BAMTFnByb3h5Lmhjb21tb25zLWRldi5vcmcwHhcNMTcxMTAxMTc0NTI3WhcNMjcx
+MDMwMTc0NTI3WjAhMR8wHQYDVQQDExZwcm94eS5oY29tbW9ucy1kZXYub3JnMIIB
+ojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAwK2kjkil3SbzFERBbpz12cfx
+eQ4VnBIFq3MLTaw+NC049BON4lxJbmGBoo+XP/SRzpcWlVA+LoSp72QhKdu0pQGC
+XnrazG4TGofcVg3U20h2Egk5ZdrE7z7Tr/2ORD+bRfVVgL6dSds9gvoyGkKnJuoR
++d4xi8cHdEYb6519gTDF3CB7yyfwo6U6zHyi+/s3G0NpJ0aaqu36S8+SFjtVXNDO
+ORmloLKGMkvaBnI1j+Ql+bvCuhJrVqr9RUxcEjhbt94rmLTu0Qdrur1N+cpjzjlF
+tgCdhayXv9AFvGwjEnFAnOm4iLZOOW+qytO0w3SW8xFGcYwOvQI4D3rKDtL0o0L7
+Vw49ZhYobNYs5qM2X0rXq0KS0FU/gKRMYKUwrAgKJD/+p3Gq2/aFpaMw7lt1te42
+qXM3aU+XNqMARRSta2ocXjZWOyOJoFuphD2Tu+w4JeSnDfD/ApWAYR1KjlmxaC2i
+1XofxxzHusQ5w0wv/DDk70537ODf7X1nozXzp56pAgMBAAGjZzBlMEQGA1UdEQQ9
+MDuCFnByb3h5Lmhjb21tb25zLWRldi5vcmeGIWh0dHBzOi8vcHJveHkuaGNvbW1v
+bnMtZGV2Lm9yZy9zcDAdBgNVHQ4EFgQUB2i+JLprCCv98Q3sPpy1t9s2QSMwDQYJ
+KoZIhvcNAQELBQADggGBAER3LWhbSWsWMlObmnoiAjXkY3rmsDx/3v+W6etshzrR
+zw1HLaexkj419sShLpK558o8xyHDX4q8sK9nDH6b//I9hD5rWkt5BwLWz5fdozA+
+LtgRMVKTIXPvMnBhX99SZeXrIuVCkDWhUQg9BnW6w31lK/E7sOSBjCohvY7uj+rU
+suzLTn4SqaL5NG3FaQjfc34mwBx0euTmH4Vw1ROxJRaI2tBWYNLgVf9Zm+zb4mQ5
+2CmDC+zoOFdG09S07iNk8fwRIeJWscAOgdVM6q74dRCZtuby0pUNL1hgenrIkYUt
+1ewC6OdXuIypZJFapLPCbTzEmjXRhTatyviJlIjSYQIN2FzqyatD5tnO23Ig2ixk
+dCAOSoBz99QTN4JbB0eA3Zt2ONuJiUV0HBfpq9x9zLV3/eBQa/Pw/nhc41C5j29h
+IgAv/FMoKr3na6Y013JFJCXQU/ZnDu4pzmJxkYltB0zqPQiEP/tM1RttX6/owZT2
+Paq4lZGzO+N5tztFKWlICw==
+                        </ds:X509Certificate>
+                    </ds:X509Data>
+                </ds:KeyInfo>
+            </KeyDescriptor>
+            <AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://proxy.hcommons-dev.org/Saml2/acs/post" index="1"/>
+        </SPSSODescriptor>
+        <Organization>
+            <OrganizationName xml:lang="en">Humanities Commons</OrganizationName>
+            <OrganizationDisplayName xml:lang="en">Humanities Commons</OrganizationDisplayName>
+            <OrganizationURL xml:lang="en">https://hcommons.org</OrganizationURL>
+        </Organization>
+
+        <ContactPerson contactType="technical">
+            <GivenName>Eric</GivenName>
+            <SurName>Knappe</SurName>
+            <EmailAddress>eknappe@mla.org</EmailAddress>
+        </ContactPerson>
+    </EntityDescriptor>
+
+    <!-- MSU metadata using "internal" entityID rather than "InCommon" entityID -->
+    <EntityDescriptor entityID="https://idp.idm.msu.edu/idp/shibboleth"
+        xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
+        xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+        xmlns:shibmd="urn:mace:shibboleth:metadata:1.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	>
+
+        <IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+
+            <Extensions>
+                <shibmd:Scope regexp="false">msu.edu</shibmd:Scope>
+                <mdui:UIInfo xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui">
+                  <mdui:DisplayName xml:lang="en">MSU login</mdui:DisplayName>
+                  <mdui:Description xml:lang="en">MSU Okta login</mdui:Description>
+                </mdui:UIInfo>
+            </Extensions>
+
+            <KeyDescriptor>
+                <ds:KeyInfo>
+                    <ds:X509Data>
+                        <ds:X509Certificate>
+MIIDJzCCAg+gAwIBAgIUeJxFbzo6QUFQBwO2YCaJYbi4LNAwDQYJKoZIhvcNAQEF
+BQAwGjEYMBYGA1UEAxMPaWRwLmlkbS5tc3UuZWR1MB4XDTEwMDgyMzE4NDYwNFoX
+DTMwMDgyMzE4NDYwNFowGjEYMBYGA1UEAxMPaWRwLmlkbS5tc3UuZWR1MIIBIjAN
+BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAn2RrXq71PF/4zxddF3P2oCnCtCHQ
+obO7E2Okfg/tjVFIh/aG1YHZRttPF8wbQHBCgmUgGn2vY8ER7LqHDaBGHlQXCNRZ
+1SU5v4+y4gWk4vhyPRaIsb6u5nLv5+LDqgK/9Vsvy5VeHjpfz9iq9RgiATYdM0mr
+xCm/YZyfcR7HD/Cxqx78EwuO2zzTHHzFc7Srkc3Gds402eIfz2Egz2VlaWtbBxGJ
+nHeSDr+8IlylYGci0uc8t53MpIUjHkEhEI5PutnRGP8YbWWnsZU+WeodluQ72Hlc
+kbltmpPfU/Ax5popLImgCaUDp1W1XK38CMnbWbuAwOj4XvrhI43X7TWwfQIDAQAB
+o2UwYzBCBgNVHREEOzA5gg9pZHAuaWRtLm1zdS5lZHWGJmh0dHBzOi8vaWRwLmlk
+bS5tc3UuZWR1L2lkcC9zaGliYm9sZXRoMB0GA1UdDgQWBBTwCin10rPLtpdOnk4J
+VwuQ+TIybDANBgkqhkiG9w0BAQUFAAOCAQEANGJBWy0BETga4XisIU4eUKsDbhB/
+dOs160S/r8Z+2KyY6HpXgA1VwHwX0UKd5zBwEFPatDed5rKb+q1mEg+GFhirkroX
+U1BPnp04URMaoKejO9TedQM96/Ym0pQhkDbQCkuN+P556H/WEVsJr/nTNReoLRAu
+QiEsqE+9onXd3TKwKPh5pLkYPM4+5bGDCIeeZGfFNcps6rRSP+bkoMJ39hmDUmqC
+bfkNIuyhSG8qzEKSdLYdg4PocBa2BrNetkjLwsBG1AGb7DxtDZw0wFZ/JjItlOqr
+IWSXrZlHRA8K/3KR3Augqn/TSQCTmWuhM+gxc/ooYDV3CGCC3Kn9OgMkXQ==
+                        </ds:X509Certificate>
+                    </ds:X509Data>
+                </ds:KeyInfo>
+            </KeyDescriptor>
+
+            <SingleSignOnService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+                Location="https://idp.idm.msu.edu/idp/profile/SAML2/Redirect/SSO"/>
+
+        </IDPSSODescriptor>
+
+        <Organization>
+            <OrganizationName xml:lang="en">Michigan State University</OrganizationName>
+            <OrganizationDisplayName xml:lang="en">Michigan State University</OrganizationDisplayName>
+            <OrganizationURL xml:lang="en">http://www.msu.edu/home/</OrganizationURL>
+        </Organization>
+
+        <ContactPerson contactType="technical">
+            <GivenName>Identity and Access Management</GivenName>
+            <EmailAddress>identity@msu.edu</EmailAddress>
+        </ContactPerson>
+
+    </EntityDescriptor>
+
+</EntitiesDescriptor>

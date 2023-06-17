@@ -178,12 +178,7 @@ $config = [
      *   'trusted.url.domains' => ['sp.example.com', 'app.example.com'],
      */
     'trusted.url.domains' => [
-      '.*\.hcommons-dev.org',
-      '.*\.commonshub-dev.org',
-      '.*\.socscicommons-dev.org',
-      '.*\.stemcommons-dev.org',
-      '.*\.mla-dev.org', 
-      '.*\.meshresearch.net'
+      '.*\.commons-wordpress.lndo.site', '.*\.hcommons-dev.org'
     ],
 
 
@@ -259,9 +254,9 @@ $config = [
      * empty array.
      */
     'debug' => [
-        'saml' => false,
+        'saml' => true,
         'backtraces' => true,
-        'validatexml' => false,
+        'validatexml' => true,
     ],
 
     /*
@@ -509,6 +504,7 @@ $config = [
          'exampleauth' => false,
          'core' => true,
          'saml' => true,
+         'admin' => true,
          'idpsamlmdattributes' => true, // Scott Koranda SAML Attributes module
      ],
 
@@ -568,7 +564,7 @@ $config = [
      * Example:
      *  'session.cookie.domain' => '.example.org',
      */
-    'session.cookie.domain' => '.lndo.site/',
+    'session.cookie.domain' => '.commons-wordpress.lndo.site',
 
     /*
      * Set the secure flag in the cookie.
@@ -817,7 +813,7 @@ $config = [
     'language.cookie.secure' => false,
     'language.cookie.httponly' => false,
     'language.cookie.lifetime' => (60 * 60 * 24 * 900),
-    'language.cookie.samesite' => $httpUtils->canSetSameSiteNone() ? 'None' : null,
+    'language.cookie.samesite' => null,
 
     /**
      * Custom getLanguage function called from SimpleSAML\Locale\Language::getLanguage().
@@ -1181,7 +1177,7 @@ $config = [
      * ],
      */
     'metadata.sources' => [
-        ['type' => 'xml', 'file' => '/app/config/local/simplesamlphp/metadata/dev-metadata.xml']
+        ['type' => 'xml', 'file' => '/app/config/all/simplesamlphp/metadata/dev-metadata.xml']
     ],
 
     /*

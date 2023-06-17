@@ -3,6 +3,7 @@
     "description": "SimpleSAMLphp module to assert details from IdP metadata into attributes",
     "type": "simplesamlphp-module",
     "license": "MIT",
+    "version": "1.1.0",
     "authors": [
         {
             "name": "Scott Koranda",
