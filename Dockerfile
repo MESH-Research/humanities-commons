@@ -8,12 +8,6 @@ ADD https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar /u
 RUN chmod a+x /usr/local/bin/wp-cli.phar && \
 	mv /usr/local/bin/wp-cli.phar /usr/local/bin/wp
 
-RUN apk add --no-cache $PHPIZE_DEPS \
-	&& pecl install xdebug-3.1.6 \
-    && docker-php-ext-enable xdebug \
-	&& touch /tmp/xdebug.log \
-	&& chmod 777 /tmp/xdebug.log
-
 RUN apk add mysql mysql-client
 
 EXPOSE 9000
