@@ -20,32 +20,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use MLA\Commons\Plugin\Logging\Logger;
-
-global $hcommons_logger;
-$hcommons_logger = new Logger( 'hcommons_error' );
-$hcommons_logger->createLog( 'hcommons_error' );
-
 /**
  * Write a formatted HCommons error or informational message.
  */
 function hcommons_write_error_log( $error_type, $error_message, $info = null ) {
-
-	global $hcommons_logger;
-	try {
-		if ( 'info' === $error_type ) {
-			if ( empty( $info ) ) {
-				$hcommons_logger->addInfo( $error_message );
-			} else {
-				$hcommons_logger->addInfo( $error_message . ' : ', $info );
-			}
-		} else {
-			$hcommons_logger->addError( $error_message );
-		}
-	} catch ( Exception $e ) {
-		//Do nothing
-	}
-	
+	$info_text = $info ? ': ' . serialize( $info ) : '';
+	$message = '[' . date( 'Y-m-d H:i:s' ) . '] ' . $error_message . $info_text . "\n";
+	$destination = WP_LOGS_DIR ? WP_LOGS_DIR : WP_CONTENT_DIR . '/logs/';
+	error_log( $message, 3, $destination . 'hcommons_error.log' );
 }
 
 require_once ( dirname( __FILE__ ) . '/society-settings.php' );
@@ -53,7 +35,6 @@ require_once ( dirname( __FILE__ ) . '/wpmn-taxonomy-functions.php' );
 require_once ( dirname( __FILE__ ) . '/admin-toolbar.php' );
 require_once ( dirname( __FILE__ ) . '/hc-simplesaml.php' );
 require_once ( dirname( __FILE__ ) . '/class.comanage-api.php' );
-require_once ( dirname( __FILE__ ) . '/class-logger.php' );
 require_once ( dirname( __FILE__ ) . '/frontend-filters.php' );
 require_once ( dirname( __FILE__ ) . '/plugin-hooks.php' );
 require_once ( dirname( __FILE__ ) . '/buddypress.php' );
