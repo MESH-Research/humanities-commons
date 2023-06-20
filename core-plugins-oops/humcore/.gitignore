@@ -1,7 +1,0 @@
-.DS_Store
-vendor/
-
-# IDEs
-*.code-workspace
-.idea
-.vscode
