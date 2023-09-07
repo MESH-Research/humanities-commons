@@ -57,6 +57,7 @@ require_once ( dirname( __FILE__ ) . '/class-logger.php' );
 require_once ( dirname( __FILE__ ) . '/frontend-filters.php' );
 require_once ( dirname( __FILE__ ) . '/plugin-hooks.php' );
 require_once ( dirname( __FILE__ ) . '/buddypress.php' );
+require_once ( dirname( __FILE__ ) . '/mailchimp.php' );
 
 class Humanities_Commons {
 
