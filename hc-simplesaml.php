@@ -232,7 +232,7 @@ function hcommons_maybe_set_user_role_for_site( $user ) {
 	if ( $is_site_member ) {
 		if ( empty( $user_site_roles ) ) {
 			hcommons_write_error_log( 'info', "hcommons_maybe_set_user_role_for_site - user: {$user->data->user_nicename} - setting role to subscriber" );
-			$base_site_user->set_role( 'subscriber' );
+			$base_site_user->add_role( 'subscriber' );
 		}
 	} else {
 		hcommons_write_error_log( 'info', 'hcommons_maybe_set_user_role_for_site - removing roles for site' );
