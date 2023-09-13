@@ -7,6 +7,8 @@
  * Note: See dev-scripts/mailchimp/update-mailchimp.php for reccurring update script.
  */
 
+const MAILCHIMP_NEWSLETTER_GROUP_ID = '0824906e15';
+
  /**
   * Add user to MailChimp list on user registration.
   */
@@ -26,14 +28,22 @@ function hcommons_add_new_user_to_mailchimp( $user_id, $userdata ) {
 		hcommons_write_error_log( 'error', 'Mailchimp user creation failed: no email address provided.' );
 		return;
 	}
-	
+
 	$existing_mailchimp_response = hcommons_mailchimp_request(
 		'/lists/' . MAILCHIMP_LIST_ID . '/members/' . $userdata['user_email']
 	);
 
+	$mailchimp_user_id = '';
+	$request_method = 'POST';
 	if ( is_array( $existing_mailchimp_response ) && isset( $existing_mailchimp_response['email_address'] ) ) {
 		hcommons_write_error_log( 'info', 'Mailchimp user exists for email ' . $userdata['user_email'] );
-		return;
+		if ( $existing_mailchimp_response['status'] === 'archived') {
+			$mailchimp_user_id = $existing_mailchimp_response['id'];
+			$request_method = 'PUT';
+		} else {
+			hcommons_write_error_log( 'info', 'Mailchimp user exists and is not archived for email ' . $userdata['user_email'] );
+			return;
+		}
 	}
 
 	$member_types = bp_get_member_type( $user_id, false );
@@ -43,8 +53,8 @@ function hcommons_add_new_user_to_mailchimp( $user_id, $userdata ) {
 	$tags = array_merge( $member_types, [ 'new-user' ] );
 
 	$mailchimp_response = hcommons_mailchimp_request(
-		'/lists/' . MAILCHIMP_LIST_ID . '/members',
-		'POST',
+		'/lists/' . MAILCHIMP_LIST_ID . '/members/' . $mailchimp_user_id,
+		$request_method,
 		[
 			'email_address' => $userdata['user_email'],
 			'status'        => 'subscribed',
@@ -55,13 +65,16 @@ function hcommons_add_new_user_to_mailchimp( $user_id, $userdata ) {
 				'USERNAME' => $userdata['user_login'],
 			],
 			'tags'          => $tags,
+			'interests'     => [
+				MAILCHIMP_NEWSLETTER_GROUP_ID => true, // Newsletter
+			],
 		]
 	);
 
 	if ( is_array( $mailchimp_response ) && isset( $mailchimp_response['id'] ) ) {
 		hcommons_write_error_log( 'info', 'Mailchimp user created for email ' . $userdata['user_email'] . ' with status ' . $mailchimp_response['status'] );
 	} else {
-		hcommons_write_error_log( 'error', 'Mailchimp user creation failed for email ' . $userdata['user_email'] );
+		hcommons_write_error_log( 'error', 'Mailchimp user creation failed. Response:' . var_export( $mailchimp_response, true ) );
 	}
 }
 add_action( 'user_register', 'hcommons_add_new_user_to_mailchimp', 10, 2 );
