@@ -82,10 +82,13 @@ add_action( 'user_register', 'hcommons_add_new_user_to_mailchimp', 10, 2 );
  */
 function hcommons_remove_user_from_mailchimp( $user_id ) {
 	$user = get_user_by( 'id', $user_id );
+	
 	if ( ! $user ) {
 		hcommons_write_error_log( 'error', 'Mailchimp user deletion failed: no user found for ID ' . $user_id );
 		return;
 	}
+	
+	hcommons_write_error_log( 'info', 'Removing user ' . $user->user_login . ' from Mailchimp.');
 
 	$existing_mailchimp_response = hcommons_mailchimp_request(
 		'/lists/' . MAILCHIMP_LIST_ID . '/members/' . $user->user_email
@@ -99,7 +102,7 @@ function hcommons_remove_user_from_mailchimp( $user_id ) {
 			[]
 		);
 
-		if ( is_array( $mailchimp_response ) && isset( $mailchimp_response['id'] ) ) {
+		if ( $mailchimp_response !== false ) {
 			hcommons_write_error_log( 'info', 'Mailchimp user deleted for email ' . $user->user_email );
 		} else {
 			hcommons_write_error_log( 'error', 'Mailchimp user deletion failed. Response:' . var_export( $mailchimp_response, true ) );
@@ -109,6 +112,7 @@ function hcommons_remove_user_from_mailchimp( $user_id ) {
 	}
 }
 add_action( 'delete_user', 'hcommons_remove_user_from_mailchimp', 10, 1 );
+add_action( 'wpmu_delete_user', 'hcommons_remove_user_from_mailchimp', 10, 1 );
 
 /**
  * Make a request to the MailChimp API and return the response body.
