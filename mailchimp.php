@@ -7,7 +7,8 @@
  * Note: See dev-scripts/mailchimp/update-mailchimp.php for reccurring update script.
  */
 
-const MAILCHIMP_NEWSLETTER_GROUP_ID = '0824906e15';
+// const MAILCHIMP_NEWSLETTER_GROUP_ID = '0824906e15'; // commons-test
+const MAILCHIMP_NEWSLETTER_GROUP_ID = 'c0a8d5d2c3'; // commons-active
 
  /**
   * Add user to MailChimp list on user registration.
